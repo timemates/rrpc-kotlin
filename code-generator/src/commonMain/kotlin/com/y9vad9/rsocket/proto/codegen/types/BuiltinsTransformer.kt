@@ -1,0 +1,29 @@
+package com.y9vad9.rsocket.proto.codegen.types
+
+import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.wire.schema.ProtoType
+import com.y9vad9.rsocket.proto.codegen.Transformer
+import com.y9vad9.rsocket.proto.codegen.Types
+
+internal object BuiltinsTransformer : Transformer<ProtoType, TypeName> {
+    override fun transform(incoming: ProtoType): TypeName {
+        return when (incoming) {
+            ProtoType.BOOL -> BOOLEAN
+            ProtoType.INT32, ProtoType.SINT32, ProtoType.FIXED32, ProtoType.SFIXED32 -> INT
+            ProtoType.INT64, ProtoType.SINT64, ProtoType.FIXED64, ProtoType.SFIXED64 -> LONG
+            ProtoType.BYTES -> BYTE_ARRAY
+            ProtoType.FLOAT -> FLOAT
+            ProtoType.UINT32 -> U_INT
+            ProtoType.UINT64 -> U_LONG
+            ProtoType.DOUBLE -> DOUBLE
+            ProtoType.DURATION -> LONG // todo
+            ProtoType.EMPTY -> UNIT
+            ProtoType.STRING, ProtoType.TIMESTAMP -> STRING
+            ProtoType.STRUCT_LIST ->
+                LIST.parameterizedBy(ClassName(incoming.enclosingTypeOrPackage ?: "", incoming.simpleName))
+            else -> Types.any
+        }
+    }
+
+}

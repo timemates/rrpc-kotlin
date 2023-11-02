@@ -18,6 +18,8 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "kotlin-project-template"
+rootProject.name = "rsocket-kotlin-proto"
 
 includeBuild("build-conventions")
+
+include(":code-generator", ":gradle-plugin")
