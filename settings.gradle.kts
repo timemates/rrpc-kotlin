@@ -22,4 +22,4 @@ rootProject.name = "rsocket-kotlin-proto"
 
 includeBuild("build-conventions")
 
-include(":code-generator", ":gradle-plugin")
+include(":core", ":code-generator", ":gradle-plugin")
