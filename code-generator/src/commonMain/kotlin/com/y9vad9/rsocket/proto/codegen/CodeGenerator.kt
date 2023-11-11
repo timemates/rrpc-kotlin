@@ -16,8 +16,6 @@ public class CodeGenerator(
         fileSystem.createDirectories(outputPath)
 
         val sourcePath = files.map { path ->
-            val metadata = fileSystem.metadata(path)
-
             Location(rootPath.name, path = path.name)
         }
 

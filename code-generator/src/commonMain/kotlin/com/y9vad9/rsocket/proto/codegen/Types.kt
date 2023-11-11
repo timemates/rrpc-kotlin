@@ -16,4 +16,19 @@ internal object Types {
             .parameterizedBy(ofTypeName)
 
     val any: TypeName = ClassName("kotlin", "Any")
+
+    val serviceDescriptor = ClassName("com.y9vad9.rsocket.proto.services", "ServiceDescriptor")
+
+    @Suppress("ClassName")
+    object procedureDescriptor {
+        val root = ClassName(
+            "com.y9vad9.rsocket.proto.procedures", "ProcedureDescriptor"
+        )
+
+        val requestResponse = root.nestedClass("RequestResponse")
+
+        val requestStream = root.nestedClass("RequestStream")
+
+        val requestChannel = root.nestedClass("RequestChannel")
+    }
 }

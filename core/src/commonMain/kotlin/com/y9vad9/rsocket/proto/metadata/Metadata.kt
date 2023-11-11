@@ -12,4 +12,6 @@ import kotlinx.serialization.Serializable
 public data class Metadata(
     val service: String = "",
     val method: String = "",
+    val custom: Map<String, String>,
 )
+

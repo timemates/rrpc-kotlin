@@ -5,5 +5,8 @@ plugins {
 
 dependencies {
     commonMainImplementation(libs.rsocket.server)
-    commonMainImplementation(libs.kotlinx.serialization)
+    commonMainImplementation(libs.kotlinx.serialization.proto)
+    commonMainImplementation(libs.ktor.server.websockets)
+
+    commonMainImplementation(libs.ktor.server.core)
 }

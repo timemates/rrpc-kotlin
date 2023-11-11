@@ -15,7 +15,7 @@ rsocket = "0.15.4"
 [libraries]
 # kotlinx libraries
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-proto = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
 
 # Ktor libraries
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }

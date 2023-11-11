@@ -1,4 +1,4 @@
-package com.y9vad9.rsocket.proto.requests
+package com.y9vad9.rsocket.proto.procedures
 
 public enum class RequestKind {
     /**
