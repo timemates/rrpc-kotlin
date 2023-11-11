@@ -64,7 +64,9 @@ internal object MessageTypeTransformer : Transformer<MessageType, TypeSpec> {
                     .build()
             )
             .addTypes(incoming.nestedTypes.map { TypeTransformer.transform(it) })
-            .addType(MessageBuilderTransformer.transform(incoming.name to properties))
+            .addType(MessageBuilderTransformer.transform(
+                incoming.name to properties.mapIndexed { index, it -> it to incoming.declaredFields[index].type!! }
+            ))
             .addProperties(properties)
             .build()
     }
