@@ -10,19 +10,31 @@ import kotlinx.serialization.ExperimentalSerializationApi
 public class RSocketProtoServerBuilder internal constructor() {
     @OptIn(ExperimentalInstancesApi::class)
     private val instances: MutableList<ProvidableInstance> = mutableListOf()
+    private val services: MutableList<RSocketService> = mutableListOf()
+    @OptIn(ExperimentalInterceptorsApi::class)
+    private val interceptors: MutableList<Interceptor> = mutableListOf()
 
-    public fun service(service: RSocketService): RSocketProtoServerBuilder = apply {}
+    public fun service(service: RSocketService) {
+        services += service
+    }
 
     @ExperimentalInterceptorsApi
-    public fun interceptor(interceptor: Interceptor): RSocketProtoServerBuilder = apply {}
+    public fun interceptor(interceptor: Interceptor) {
+        interceptors += interceptor
+    }
 
     @ExperimentalInstancesApi
     public fun instances(block: InstancesBuilder.() -> Unit) {
         instances += InstancesBuilder().apply(block).build()
     }
 
+    @OptIn(ExperimentalInterceptorsApi::class, ExperimentalInstancesApi::class)
     public fun build(): RSocketProtoServer {
-        TODO()
+        return RSocketProtoServerImpl(
+            services = services.map { it.descriptor },
+            interceptors = interceptors.toList(),
+            instances = instances.associateBy { it.key },
+        )
     }
 
     @ExperimentalInstancesApi

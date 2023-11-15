@@ -11,6 +11,7 @@ import com.y9vad9.rsproto.server.instances.getInstance
 import com.y9vad9.rsproto.server.interceptors.Interceptor
 import com.y9vad9.rsproto.metadata.ExtraMetadata
 import com.y9vad9.rsproto.metadata.Metadata
+import com.y9vad9.rsproto.server.instances.ProvidableInstance
 import io.ktor.server.routing.*
 import io.ktor.utils.io.core.*
 import io.rsocket.kotlin.RSocketError
@@ -154,3 +155,10 @@ private fun Payload.metadataOrFailure(): ByteArray {
 
 private fun throwServiceNotFound(): Nothing = throw RSocketError.Invalid("Service is not found.")
 private fun throwProcedureNotFound(): Nothing = throw RSocketError.Invalid("Procedure is not found.")
+
+@OptIn(ExperimentalInstancesApi::class, ExperimentalInterceptorsApi::class)
+internal class RSocketProtoServerImpl(
+    override val services: List<ServiceDescriptor>,
+    override val interceptors: List<Interceptor>,
+    override val instances: Map<ProvidableInstance.Key<*>, ProvidableInstance>
+) : RSocketProtoServer

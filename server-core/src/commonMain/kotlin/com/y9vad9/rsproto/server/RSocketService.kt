@@ -35,6 +35,6 @@ public abstract class RSocketService {
         return coroutineContext[CoroutineContextInstanceContainer]?.container?.getInstance(key)
     }
 
-    protected suspend fun getExtras(): Map<String, String> =
+    protected suspend fun getExtras(): Map<String, ByteArray> =
         coroutineContext[ExtraMetadata]?.extra ?: emptyMap()
 }
