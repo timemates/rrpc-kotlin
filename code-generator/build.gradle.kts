@@ -1,12 +1,16 @@
 plugins {
-    id(libs.plugins.conventions.multiplatform.library.get().pluginId)
+    id(libs.plugins.conventions.jvm.get().pluginId)
+}
+
+kotlin {
+    explicitApi()
 }
 
 dependencies {
-    commonMainImplementation(libs.squareup.wire.schema)
-    commonMainImplementation(libs.squareup.kotlinpoet)
-    commonMainImplementation(libs.squareup.okio)
+    implementation(libs.squareup.wire.schema)
+    implementation(libs.squareup.kotlinpoet)
+    implementation(libs.squareup.okio)
 
-    jvmTestImplementation(libs.kotlin.test)
-    jvmTestImplementation(libs.squareup.okio.fakeFs)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.squareup.okio.fakeFs)
 }
