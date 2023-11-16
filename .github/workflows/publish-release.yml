@@ -1,0 +1,38 @@
+name: Gradle Publish Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+
+      - name: Set Gradle executable permissions
+        run: chmod +x ./gradlew
+
+      - name: Build and Publish
+        env:
+          LIB_VERSION: ${{ github.ref }}
+          SSH_DEPLOY_PATH: ${{ secrets.TIMEMATES_SSH_DEPLOY_PATH }}
+          SSH_HOST: ${{ secrets.TIMEMATES_SSH_HOST }}
+          SSH_PASSWORD: ${{ secrets.TIMEMATES_SSH_PASSWORD }}
+          SSH_USER: ${{ secrets.TIMEMATES_SSH_USER }}
+        run: ./gradlew publish publishPlugins -Pversion=${{ env.LIB_VERSION }} -Pgradle.publish.key=${{ env.GRADLE_PUBLISH_KEY }} -Pgradle.publish.secret=${{ env.GRADLE_PUBLISH_SECRET }}
