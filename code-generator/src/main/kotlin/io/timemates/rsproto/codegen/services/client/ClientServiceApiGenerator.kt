@@ -15,8 +15,17 @@ internal object ClientServiceApiGenerator {
                     .addParameter("protobuf", Types.protoBuf)
                     .build()
             )
-            .addProperty(PropertySpec.builder("rsocket", Types.rsocket).initializer("rsocket").build())
-            .addProperty(PropertySpec.builder("protobuf", Types.protoBuf).initializer("protobuf").build())
+            .addProperty(
+                PropertySpec.builder("rsocket", Types.rsocket)
+                    .addModifiers(KModifier.PRIVATE)
+                    .initializer("rsocket")
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("protobuf", Types.protoBuf)
+                    .addModifiers(KModifier.PRIVATE)
+                    .initializer("protobuf").build()
+            )
             .addFunctions(service.rpcs.map { mapRpc(it, service.name) })
             .build()
     }
