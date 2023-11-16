@@ -72,6 +72,7 @@ accompanist-systemUiController = { module = "com.google.accompanist:accompanist-
 
 # Plugin classpaths
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+vanniktech-maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.require = "0.25.3" }
 
 [plugins]
 # Build Conventions
@@ -94,3 +95,6 @@ android-application = { id = "com.android.library", version.ref = "android-gradl
 
 # Other
 compose = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+
+# Gradle
+gradle-publish = { id = "com.gradle.plugin-publish", version.require = "1.1.0" }
