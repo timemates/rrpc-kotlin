@@ -3,12 +3,12 @@ package io.timemates.rsproto.codegen.services.server
 import com.squareup.kotlinpoet.*
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
-import com.y9vad9.rsproto.codegen.*
-import com.y9vad9.rsproto.codegen.Types
-import com.y9vad9.rsproto.codegen.isRequestChannel
-import com.y9vad9.rsproto.codegen.isRequestResponse
-import com.y9vad9.rsproto.codegen.isRequestStream
-import com.y9vad9.rsproto.codegen.services.RpcTransformer
+import io.timemates.rsproto.codegen.*
+import io.timemates.rsproto.codegen.Types
+import io.timemates.rsproto.codegen.isRequestChannel
+import io.timemates.rsproto.codegen.isRequestResponse
+import io.timemates.rsproto.codegen.isRequestStream
+import io.timemates.rsproto.codegen.services.RpcTransformer
 
 internal object ServerServiceTransformer {
     fun transform(incoming: Service): TypeSpec {

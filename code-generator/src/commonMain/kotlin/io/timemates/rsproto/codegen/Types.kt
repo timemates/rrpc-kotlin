@@ -10,12 +10,12 @@ internal object Types {
         ClassName("kotlinx.coroutines.flow", "Flow")
             .parameterizedBy(ofTypeName)
 
-    val serviceDescriptor = ClassName("com.y9vad9.rsproto.services", "ServiceDescriptor")
+    val serviceDescriptor = ClassName("io.timemates.rsproto.services", "ServiceDescriptor")
 
     @Suppress("ClassName")
     object procedureDescriptor {
         val root = ClassName(
-            "com.y9vad9.rsproto.procedures", "ProcedureDescriptor"
+            "io.timemates.rsproto.procedures", "ProcedureDescriptor"
         )
 
         val requestResponse = root.nestedClass("RequestResponse")
@@ -25,7 +25,7 @@ internal object Types {
         val requestChannel = root.nestedClass("RequestChannel")
     }
 
-    val metadata = ClassName("com.y9vad9.rsproto", "Metadata")
+    val metadata = ClassName("io.timemates.rsproto", "Metadata")
 
     val protoBuf = ClassName("kotlinx.serialization.protobuf", "ProtoBuf")
 

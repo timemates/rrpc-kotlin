@@ -2,7 +2,7 @@ package io.timemates.rsproto.codegen.types
 
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.EnumType
-import com.y9vad9.rsproto.codegen.Annotations
+import io.timemates.rsproto.codegen.Annotations
 
 internal object EnumTypeTransformer {
     fun transform(incoming: EnumType): TypeSpec {

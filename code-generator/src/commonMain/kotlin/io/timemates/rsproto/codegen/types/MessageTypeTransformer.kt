@@ -27,13 +27,13 @@ internal object MessageTypeTransformer {
         val properties = incoming.declaredFields.mapIndexed { index, field ->
             PropertySpec.builder(field.name, parameterTypes[index])
                 .initializer(field.name)
-                .addAnnotation(com.y9vad9.rsproto.codegen.Annotations.ProtoNumber(field.tag))
+                .addAnnotation(io.timemates.rsproto.codegen.Annotations.ProtoNumber(field.tag))
                 .build()
         }
 
         return TypeSpec.classBuilder(incoming.name)
             .addKdoc(incoming.documentation)
-            .addAnnotation(com.y9vad9.rsproto.codegen.Annotations.Serializable)
+            .addAnnotation(io.timemates.rsproto.codegen.Annotations.Serializable)
             .primaryConstructor(
                 FunSpec.constructorBuilder()
                     .addParameters(incoming.declaredFields.mapIndexed { index, field ->

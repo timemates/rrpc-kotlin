@@ -3,9 +3,9 @@ package io.timemates.rsproto.codegen
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.schema.ProtoFile
-import com.y9vad9.rsproto.codegen.services.client.ClientServiceApiGenerator
-import com.y9vad9.rsproto.codegen.services.server.ServerServiceTransformer
-import com.y9vad9.rsproto.codegen.types.TypeTransformer
+import io.timemates.rsproto.codegen.services.client.ClientServiceApiGenerator
+import io.timemates.rsproto.codegen.services.server.ServerServiceTransformer
+import io.timemates.rsproto.codegen.types.TypeTransformer
 
 internal object FileTransformer {
     fun transform(protoFile: ProtoFile, clientGeneration: Boolean, serverGeneration: Boolean): FileSpec {

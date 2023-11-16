@@ -1,4 +1,4 @@
-package com.y9vad9.rsproto.codegen
+package io.timemates.rsproto.codegen
 
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem

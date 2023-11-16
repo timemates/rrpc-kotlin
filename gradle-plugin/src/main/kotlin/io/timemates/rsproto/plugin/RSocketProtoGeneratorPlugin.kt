@@ -1,6 +1,6 @@
 package io.timemates.rsproto.plugin
 
-import com.y9vad9.rsproto.codegen.CodeGenerator
+import io.timemates.rsproto.codegen.CodeGenerator
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import org.gradle.api.Plugin

@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Service
-import com.y9vad9.rsproto.codegen.*
+import io.timemates.rsproto.codegen.*
 
 internal object ClientServiceApiGenerator {
     fun generate(service: Service): TypeSpec {
