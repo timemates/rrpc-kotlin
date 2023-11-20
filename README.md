@@ -6,7 +6,7 @@
 RSProto is a framework that designed to provide ability to expose your API as RPC Services. It facilitates the creation of gRPC-like services from .proto files through code generation. The framework also provides essential core components for both server and client.
 
 > **Warning** <br>
-> This project is still under development and it's not production-ready. In addition, **we're waiting for an approval on Gradle Plugin Portal**.
+> This project is still under development and it's not production-ready.
 
 ## Features
 - **Gradle Plugin**: `.proto` to RSocket code generator (both client and server).
