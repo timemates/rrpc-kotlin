@@ -4,10 +4,11 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.ProtoType
 
 internal object MessageBuilderTransformer {
-    fun transform(name: String, properties: List<Pair<PropertySpec, ProtoType>>): TypeSpec {
+    fun transform(name: String, properties: List<Pair<PropertySpec, Field>>): TypeSpec {
         return TypeSpec.classBuilder("Builder")
             .addProperties(properties.map { (spec, type) ->
                 spec.toBuilder().initializer(TypeDefaultValueTransformer.transform(type)).mutable(true).also {

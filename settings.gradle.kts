@@ -5,6 +5,7 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         google()
+        maven("https://maven.timemates.io")
     }
 }
 
@@ -15,13 +16,14 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://jitpack.io")
         maven("https://maven.y9vad9.com")
+        maven("https://maven.timemates.io")
     }
 }
 
-rootProject.name = "rsocket-kotlin-proto"
+rootProject.name = "rsproto"
 
 includeBuild("build-conventions")
 
-include(":server-core", ":client-core")
+include(":common-core", ":server-core", ":client-core")
 include(":code-generator")
 include(":gradle-plugin")

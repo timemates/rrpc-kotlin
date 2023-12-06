@@ -2,11 +2,14 @@ package io.timemates.rsproto.codegen.types
 
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.EnumType
+import com.squareup.wire.schema.Schema
 import io.timemates.rsproto.codegen.Annotations
+import io.timemates.rsproto.codegen.Types
 
 internal object EnumTypeTransformer {
-    fun transform(incoming: EnumType): TypeSpec {
+    fun transform(incoming: EnumType, schema: Schema): TypeSpec {
         return TypeSpec.enumBuilder(incoming.name)
+            .addAnnotation(Annotations.OptIn(Types.experimentalSerializationApi))
             .addAnnotation(Annotations.Serializable)
             .apply {
                 incoming.constants.forEach { constant ->
@@ -17,7 +20,7 @@ internal object EnumTypeTransformer {
                             .build()
                     )
                 }
-            }.addTypes(incoming.nestedTypes.map { io.timemates.rsproto.codegen.types.TypeTransformer.transform(it) })
+            }.addTypes(incoming.nestedTypes.map { TypeTransformer.transform(it, schema) })
             .build()
     }
 

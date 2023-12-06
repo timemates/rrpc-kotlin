@@ -15,7 +15,7 @@ internal object BuiltinsTransformer {
             ProtoType.UINT32 -> U_INT
             ProtoType.UINT64 -> U_LONG
             ProtoType.DOUBLE -> DOUBLE
-            ProtoType.DURATION -> LONG // todo
+            ProtoType.DURATION -> TODO("This type is not yet implemented.")
             ProtoType.EMPTY -> UNIT
             ProtoType.STRING, ProtoType.TIMESTAMP -> STRING
             ProtoType.STRUCT_LIST ->

@@ -11,4 +11,8 @@ internal object Annotations {
         ).addMember(number.toString()).build()
 
     val Serializable = AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable")).build()
+
+    fun OptIn(className: ClassName): AnnotationSpec = AnnotationSpec.builder(
+        ClassName("kotlin", "OptIn")
+    ).addMember("%T::class", className).build()
 }

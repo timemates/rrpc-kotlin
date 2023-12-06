@@ -1,10 +1,13 @@
 plugins {
-    id(libs.plugins.conventions.jvm.get().pluginId)
+    id(libs.plugins.conventions.jvm.library.get().pluginId)
 }
 
 kotlin {
     explicitApi()
 }
+
+group = "io.timemates.rsproto"
+version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
     implementation(libs.squareup.wire.schema)
@@ -13,4 +16,17 @@ dependencies {
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.squareup.okio.fakeFs)
+}
+
+mavenPublishing {
+    coordinates(
+        groupId = "io.timemates.rsproto",
+        artifactId = "code-generator",
+        version = System.getenv("LIB_VERSION") ?: return@mavenPublishing,
+    )
+
+    pom {
+        name.set("RSProto Client Core")
+        description.set("Code-generation library for RSProto servers and clients.")
+    }
 }

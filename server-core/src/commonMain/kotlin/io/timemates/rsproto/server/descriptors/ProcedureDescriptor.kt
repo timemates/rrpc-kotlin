@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.protobuf.ProtoBuf
 
@@ -19,8 +20,8 @@ public sealed interface ProcedureDescriptor {
 
     public data class RequestResponse(
         override val name: String,
-        override val inputSerializer: DeserializationStrategy<Any>,
-        override val outputSerializer: SerializationStrategy<Any>,
+        override val inputSerializer: KSerializer<Any>,
+        override val outputSerializer: KSerializer<Any>,
         private val procedure: suspend (Any) -> Any,
     ) : ProcedureDescriptor {
         public suspend fun execute(
@@ -28,9 +29,9 @@ public sealed interface ProcedureDescriptor {
             request: ByteReadPacket,
         ): Payload {
             return protoBuf.encodeToByteArray(
-                    serializer = outputSerializer,
-                    value = procedure(protoBuf.decodeFromByteArray(inputSerializer, request.readBytes())),
-                ).let { Payload(ByteReadPacket(it)) }
+                serializer = outputSerializer,
+                value = procedure(protoBuf.decodeFromByteArray(inputSerializer, request.readBytes())),
+            ).let { Payload(ByteReadPacket(it)) }
         }
     }
 
@@ -66,11 +67,4 @@ public sealed interface ProcedureDescriptor {
             ).map { Payload(ByteReadPacket(protoBuf.encodeToByteArray(outputSerializer, it))) }
         }
     }
-}
-
-public suspend fun accepts(string: String): String = ""
-
-public suspend fun main() {
-    val test: suspend (Any) -> Any = { accepts(it as String) }
-
 }

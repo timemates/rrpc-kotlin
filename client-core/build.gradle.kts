@@ -3,9 +3,13 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
+group = "io.timemates.rsproto"
+version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
+
 dependencies {
-    commonMainImplementation(libs.rsocket.client)
-    commonMainImplementation(libs.kotlinx.serialization.proto)
+    commonMainApi(libs.rsocket.client)
+    commonMainApi(libs.kotlinx.serialization.proto)
+    commonMainApi(projects.commonCore)
 }
 
 kotlin {

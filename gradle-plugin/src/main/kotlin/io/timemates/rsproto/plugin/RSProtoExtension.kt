@@ -3,7 +3,7 @@ package io.timemates.rsproto.plugin
 /**
  * Class representing the extension for generating Protobuf code.
  */
-public open class ProtoGeneratorExtension {
+public open class RSProtoExtension {
     /**
      * Contains the path to the folder where the Proto definition files are located.
      */

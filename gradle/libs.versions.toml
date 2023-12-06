@@ -79,6 +79,7 @@ vanniktech-maven-publish = { module = "com.vanniktech.maven.publish:com.vannikte
 conventions-multiplatform = { id = "multiplatform-convention", version.require = "SNAPSHOT" }
 conventions-multiplatform-library = { id = "multiplatform-library-convention", version.require = "SNAPSHOT" }
 conventions-jvm = { id = "jvm-convention", version.require = "SNAPSHOT" }
+conventions-jvm-library = { id = "jvm-library-convention", version.require = "SNAPSHOT" }
 
 # Compiler plugins
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

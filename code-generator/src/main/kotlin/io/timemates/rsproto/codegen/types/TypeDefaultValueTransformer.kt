@@ -1,10 +1,16 @@
 package io.timemates.rsproto.codegen.types
 
+import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.ProtoType
 
 internal object TypeDefaultValueTransformer {
-    fun transform(incoming: ProtoType): String {
-        return when (incoming) {
+    fun transform(field: Field): String {
+        val type = field.type!!
+
+        if(field.isRepeated)
+            return "emptyList()"
+
+        return when (type) {
             ProtoType.INT32,
             ProtoType.INT64,
             ProtoType.DURATION,

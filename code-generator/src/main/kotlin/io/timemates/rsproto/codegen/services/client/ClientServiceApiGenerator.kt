@@ -3,11 +3,12 @@ package io.timemates.rsproto.codegen.services.client
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.wire.schema.Rpc
+import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import io.timemates.rsproto.codegen.*
 
 internal object ClientServiceApiGenerator {
-    fun generate(service: Service): TypeSpec {
+    fun generate(service: Service, schema: Schema): TypeSpec {
         return TypeSpec.classBuilder("${service.name}Api")
             .primaryConstructor(
                 FunSpec.constructorBuilder()
@@ -26,22 +27,22 @@ internal object ClientServiceApiGenerator {
                     .addModifiers(KModifier.PRIVATE)
                     .initializer("protobuf").build()
             )
-            .addFunctions(service.rpcs.map { mapRpc(it, service.name) })
+            .addFunctions(service.rpcs.map { mapRpc(it, service.name, schema) })
             .build()
     }
 
-    private fun mapRpc(rpc: Rpc, serviceName: String): FunSpec {
+    private fun mapRpc(rpc: Rpc, serviceName: String, schema: Schema): FunSpec {
         val callCode = when {
             rpc.isRequestChannel ->
                 "requestChannel(initialPayload, payloads)"
-            rpc.isRequestResponse -> "requestResponse(payload, metadata)"
-            rpc.isRequestStream -> "requestStream(payload, metadata)"
+            rpc.isRequestResponse -> "requestResponse(payload)"
+            rpc.isRequestStream -> "requestStream(payload)"
             else -> error("Should never reach this state")
         }
 
         val deserializationCode = when (rpc.requestStreaming) {
-            true -> ".let·{ responses -> responses.map·{ protobuf.decodeFromByteArray(it) } }"
-            false -> ".let·{ protobuf.decodeFromByteArray(it) }"
+            true -> ".let·{ responses -> responses.map·{ protobuf.decodeFromByteArray(it.data.readBytes()) } }"
+            false -> ".let·{ protobuf.decodeFromByteArray(it.data.readBytes()) }"
         }
 
         val code = when (rpc.requestStreaming) {
@@ -51,7 +52,7 @@ internal object ClientServiceApiGenerator {
                     format = "val encodedMetadata = protobuf.encodeToByteArray(%1T(serviceName = %2S, procedureName = %3S, extra = extra))",
                     args = arrayOf(Types.metadata, serviceName, rpc.name),
                 )
-                .addStatement("val initPayload = Payload(data = encodedInitMessage, metadata = encodedMetadata)")
+                .addStatement("val initPayload = Payload(data = %1T(encodedInitMessage), metadata = %1T(encodedMetadata))", Types.byteReadPacket)
                 .addStatement("val payloads = messages.map { protobuf.encodeToByteArray(it) }")
                 .addStatement("return rsocket.$callCode$deserializationCode")
                 .build()
@@ -62,20 +63,40 @@ internal object ClientServiceApiGenerator {
                     format = "val encodedMetadata = protobuf.encodeToByteArray(%1T(%2S, %3S, extra))",
                     args = arrayOf(Types.metadata, serviceName, rpc.name),
                 )
-                .addStatement("val payload = Payload(data = encodedMessage, metadata = encodedMetadata)")
+                .addStatement("val payload = Payload(data = %1T(encodedMessage), metadata = %1T(encodedMetadata))", Types.byteReadPacket)
                 .addStatement("return rsocket.$callCode$deserializationCode")
                 .build()
         }
 
         return FunSpec.builder(rpc.name)
-            .addParameter("message", rpc.requestType!!.asClassName())
+            .apply {
+                val className = rpc.requestType!!
+                    .asClassName(schema)
+
+                if (rpc.isRequestStream) {
+                    addParameter(
+                        name = "initMessage",
+                        type = className,
+                    )
+                    addParameter(
+                        name = "messages",
+                        type = Types.flow(className)
+                    )
+                } else {
+                    addParameter(
+                        name = "message",
+                        type = className,
+                    )
+                }
+            }
             .addParameter(
-                ParameterSpec.builder("extra", MAP.parameterizedBy(STRING, STRING))
+                ParameterSpec.builder("extra", MAP.parameterizedBy(STRING, BYTE_ARRAY))
                     .defaultValue("emptyMap()")
                     .build()
             )
             .addModifiers(KModifier.SUSPEND)
             .addCode(code)
+            .returns(rpc.responseType!!.asClassName(schema))
             .build()
     }
 }

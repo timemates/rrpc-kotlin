@@ -2,6 +2,7 @@ package io.timemates.rsproto.codegen.services.server
 
 import com.squareup.kotlinpoet.*
 import com.squareup.wire.schema.Rpc
+import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import io.timemates.rsproto.codegen.*
 import io.timemates.rsproto.codegen.Types
@@ -11,26 +12,32 @@ import io.timemates.rsproto.codegen.isRequestStream
 import io.timemates.rsproto.codegen.services.RpcTransformer
 
 internal object ServerServiceTransformer {
-    fun transform(incoming: Service): TypeSpec {
-        val procedures = incoming.rpcs.map(RpcTransformer::transform)
+    fun transform(incoming: Service, schema: Schema): TypeSpec {
+        val procedures = incoming.rpcs.map { RpcTransformer.transform(it, schema) }
 
-        val procedureDescriptors = incoming.rpcs.mapIndexed { index, rpc ->
-            createDescriptor(rpc, rpc.requestType!!.asClassName(), rpc.requestType!!.asClassName())
+        val procedureDescriptors = incoming.rpcs.map { rpc ->
+            createDescriptor(rpc, rpc.requestType!!.asClassName(schema), rpc.requestType!!.asClassName(schema))
         }
 
         return TypeSpec.classBuilder(incoming.name)
+            .addAnnotation(Annotations.OptIn(Types.experimentalSerializationApi))
+            .superclass(Types.rSocketService)
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(incoming.documentation)
             .addProperty(
                 PropertySpec.builder("descriptor", Types.serviceDescriptor)
+                    .addAnnotation(AnnotationSpec.builder(Suppress::class).addMember("\"UNCHECKED_CAST\"").build())
                     .addModifiers(KModifier.FINAL, KModifier.OVERRIDE)
                     .initializer(
                         CodeBlock.builder()
                             .addStatement("ServiceDescriptor(")
                             .indent()
                             .addStatement("name = %S,", incoming.name)
-                            .add("procedures = ")
+                            .add("procedures = listOf(")
+                            .indent()
                             .addAllSeparated(procedureDescriptors)
+                            .unindent()
+                            .addStatement(")")
                             .unindent()
                             .addStatement(")")
                             .build()
@@ -45,8 +52,8 @@ internal object ServerServiceTransformer {
         """
     %1T(
         name = "${rpc.name}",
-        inputSerializer = %2T.serializer(),
-        outputSerializer = %3T.serializer(),
+        inputSerializer = %2T.serializer() as %4T<Any>,
+        outputSerializer = %3T.serializer() as %4T<Any>,
         procedure = ${getProcedure(rpc)}
     )
     """.trimIndent(),
@@ -59,6 +66,7 @@ internal object ServerServiceTransformer {
             },
             receiverType,
             returnType,
+            Types.kserializer,
         )
     )
 
@@ -66,6 +74,6 @@ internal object ServerServiceTransformer {
         rpc.isRequestResponse -> "{ ${rpc.name}(it as %2T) as %3T }"
         rpc.isRequestStream -> "{ ${rpc.name}(it as %2T) as Flow<%3T> }"
         rpc.isRequestChannel -> "{ init, incoming -> ${rpc.name}(init as %2T, incoming·as·Flow<%2T>)·as·Flow<%3T> }"
-        else -> error("Invalid state.")
+        else -> error("Request Streaming with no Response Streaming is not supported.")
     }
 }

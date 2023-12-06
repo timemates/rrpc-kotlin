@@ -8,12 +8,18 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import kotlin.math.log
 
 public class RSocketProtoGeneratorPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val extension = target.extensions.create<ProtoGeneratorExtension>("protoGenerator")
+        val extension = target.extensions.create<RSProtoExtension>("rsproto")
 
         val generationTask = target.tasks.create("generateProto") {
+            group = "rsproto"
+
+            inputs.dir(extension.protoSourcePath)
+            outputs.dir(extension.generationOutputPath)
+
             doLast {
                 val codeGenerator = CodeGenerator(FileSystem.SYSTEM)
 

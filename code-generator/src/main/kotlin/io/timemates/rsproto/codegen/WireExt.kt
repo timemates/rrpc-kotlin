@@ -3,18 +3,17 @@ package io.timemates.rsproto.codegen
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.wire.schema.ProtoType
 import com.squareup.wire.schema.Rpc
+import com.squareup.wire.schema.Schema
+import com.squareup.wire.schema.internal.javaPackage
 
-/**
- * Converts the given [ProtoType] to a [ClassName].
- *
- * @return The converted [ClassName].
- */
-internal fun ProtoType.asClassName(): ClassName {
-    val type = toString()
+internal fun ProtoType.asClassName(schema: Schema): ClassName {
+    val file = schema.protoFile(this) ?: return ClassName(enclosingTypeOrPackage ?: "", simpleName)
 
-    val packageName = type.substringBeforeLast('.')
-    val className = type.substringAfterLast('.')
-    return ClassName(packageName, className)
+    val packageName: String =  (file.wirePackage() ?: file.javaPackage())?.plus(".") ?: ""
+    val enclosingName: String = (enclosingTypeOrPackage?.replace(file.packageName ?: "", "") ?: "")
+        .replace("..", ".")
+
+    return ClassName(packageName + enclosingName, simpleName)
 }
 
 /**
