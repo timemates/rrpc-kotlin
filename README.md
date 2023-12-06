@@ -6,12 +6,16 @@
 RSProto is a framework that designed to provide ability to expose your API as RPC Services. It facilitates the creation of gRPC-like services from .proto files through code generation. The framework also provides essential core components for both server and client.
 
 > **Warning** <br>
-> This project is still under development and it's not production-ready.
+> This project is still under development, and it's not production-ready. Use it only in your toy projects.
 
 ## Features
 - **Gradle Plugin**: `.proto` to RSocket code generator (both client and server).
 - **Server Core** (JVM only): Interceptors, Instances API and bridge between Ktor and library.
 - **Client Core** (JVM, Web, iOS): Metadata and basic interface-markers.
+
+> **Known issues** <br>
+> As RSocket does not natively support client-only streaming – it's not supported by the
+> code-generator.
 
 ## Getting Started
 First of all, you should have the following repository:
@@ -28,7 +32,10 @@ dependencies {
     // for server
     implementation("io.timemates.rsproto:server-core:$version")
     // for client
-    implementation("io.timemates.rsproto:client-core:$version")
+    commonMainImplementation("io.timemates.rsproto:client-core:$version")
+
+    // for server & client
+    commonMainImplementation("io.timemates.rsproto:common-core:$version")
 }
 ```
 #### Server initialization
@@ -60,12 +67,12 @@ apiService.sayHello()
 To implement code-generation plugin in your buildscript, add the following:
 ```kotlin
 plugins {
-    id("io.timemates.rsproto.plugin") version "$version"
+    id("io.timemates.rsproto") version "$version"
 }
 ```
 And use it inside your buildscript:
 ```kotlin
-generateProto {
+rsproto {
     protoSourcePath = "src/main/proto"
     generationOutputPath = "generated/proto-generator/src/commonMain"
     clientGeneration = true
