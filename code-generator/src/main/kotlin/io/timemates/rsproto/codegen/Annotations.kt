@@ -15,4 +15,12 @@ internal object Annotations {
     fun OptIn(className: ClassName): AnnotationSpec = AnnotationSpec.builder(
         ClassName("kotlin", "OptIn")
     ).addMember("%T::class", className).build()
+
+    fun Suppress(vararg warnings: String): AnnotationSpec = AnnotationSpec.builder(Suppress::class)
+        .apply {
+            warnings.forEach { warning ->
+                addMember("\"$warning\"")
+            }
+        }
+        .build()
 }

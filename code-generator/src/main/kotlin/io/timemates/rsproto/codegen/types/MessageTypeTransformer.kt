@@ -10,6 +10,7 @@ import io.timemates.rsproto.codegen.asClassName
 
 internal object MessageTypeTransformer {
     fun transform(incoming: MessageType, schema: Schema): TypeSpec {
+        println(incoming.oneOfs)
         val parameterTypes = incoming.declaredFields.map { field ->
             val fieldType = field.type!!
 
@@ -24,19 +25,24 @@ internal object MessageTypeTransformer {
                 else -> fieldType.asClassName(schema).let {
                     when {
                         field.isRepeated -> LIST.parameterizedBy(it)
-                        field.isOneOf -> ANY
-                        else -> it
+                        field.isOneOf -> TODO("OneOf fields are unsupported for now.")
+                        else -> it.copy(nullable = true)
                     }
-                }.copy(nullable = true)
+                }
             }
         }
 
-        val properties = incoming.declaredFields.mapIndexed { index, field ->
+        val oneOfs = incoming.oneOfs.map { OneOfGenerator.generate(it, schema) }
+
+        val properties = (incoming.declaredFields).mapIndexed { index, field ->
             PropertySpec.builder(field.name, parameterTypes[index])
                 .initializer(field.name)
+                .addKdoc(field.documentation)
                 .addAnnotation(Annotations.ProtoNumber(field.tag))
                 .build()
         }
+
+        val oneOfProperties = oneOfs.map { it.property }
 
         val className = incoming.type.asClassName(schema)
 
@@ -57,6 +63,9 @@ internal object MessageTypeTransformer {
                             )
                             .build()
                     })
+                    .addParameters(oneOfs.map {
+                        ParameterSpec.builder(it.property.name, it.property.type).defaultValue("null").build()
+                    })
                     .build()
             )
             .addType(
@@ -73,11 +82,11 @@ internal object MessageTypeTransformer {
                                         "builder",
                                         LambdaTypeName.get(
                                             receiver = ClassName("", "Builder"),
-                                            returnType = ClassName("", incoming.name)
+                                            returnType = UNIT,
                                         )
                                     )
                                     .addCode("return Builder().apply(builder).build()")
-                                    .returns(ClassName(incoming.type.enclosingTypeOrPackage ?: "", incoming.name))
+                                    .returns(incoming.type.asClassName(schema))
                                     .build()
                             )
                         }
@@ -89,12 +98,16 @@ internal object MessageTypeTransformer {
                 if(incoming.fields.isNotEmpty()) {
                     addType(
                         MessageBuilderTransformer.transform(
-                            incoming.name, properties.mapIndexed { index, it -> it to incoming.declaredFields[index] }
+                            incoming.name,
+                            properties.mapIndexed { index, it -> it to incoming.declaredFields[index] },
+                            oneOfs.map { it.property },
                         )
                     )
                 }
             }
             .addProperties(properties)
+            .addProperties(oneOfProperties)
+            .addTypes(oneOfs.map { it.oneOfClass })
             .build()
     }
 }

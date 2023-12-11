@@ -28,7 +28,7 @@ internal object RpcTransformer {
 
     private fun getRpcType(rpc: Rpc, schema: Schema): Pair<TypeName, TypeName> {
         val requestClassName = rpc.requestType!!.asClassName(schema)
-        val responseClassName = rpc.requestType!!.asClassName(schema)
+        val responseClassName = rpc.responseType!!.asClassName(schema)
 
         return (if (rpc.requestStreaming) Types.flow(requestClassName) else requestClassName) to
             (if (rpc.responseStreaming) Types.flow(responseClassName) else responseClassName)

@@ -16,11 +16,10 @@ internal object ServerServiceTransformer {
         val procedures = incoming.rpcs.map { RpcTransformer.transform(it, schema) }
 
         val procedureDescriptors = incoming.rpcs.map { rpc ->
-            createDescriptor(rpc, rpc.requestType!!.asClassName(schema), rpc.requestType!!.asClassName(schema))
+            createDescriptor(rpc, rpc.requestType!!.asClassName(schema), rpc.responseType!!.asClassName(schema))
         }
 
         return TypeSpec.classBuilder(incoming.name)
-            .addAnnotation(Annotations.OptIn(Types.experimentalSerializationApi))
             .superclass(Types.rSocketService)
             .addModifiers(KModifier.ABSTRACT)
             .addKdoc(incoming.documentation)
@@ -33,7 +32,7 @@ internal object ServerServiceTransformer {
                             .addStatement("ServiceDescriptor(")
                             .indent()
                             .addStatement("name = %S,", incoming.name)
-                            .add("procedures = listOf(")
+                            .add("procedures = listOf(\n")
                             .indent()
                             .addAllSeparated(procedureDescriptors)
                             .unindent()

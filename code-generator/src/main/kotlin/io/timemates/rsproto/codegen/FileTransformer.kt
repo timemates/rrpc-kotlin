@@ -13,6 +13,8 @@ internal object FileTransformer {
         val fileName = ClassName(protoFile.javaPackage() ?: protoFile.packageName ?: "", protoFile.name())
 
         return FileSpec.builder(fileName).apply {
+            addAnnotation(Annotations.Suppress("UNUSED", "RedundantVisibilityModifier"))
+            addAnnotation(Annotations.OptIn(Types.experimentalSerializationApi))
             addFileComment(Constant.GENERATED_COMMENT)
 
             if(serverGeneration && protoFile.services.isNotEmpty()) {
