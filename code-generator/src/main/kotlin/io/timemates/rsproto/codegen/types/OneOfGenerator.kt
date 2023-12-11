@@ -37,6 +37,7 @@ internal object OneOfGenerator {
                     )
                     .addProperty(
                         PropertySpec.builder("value", typeName).initializer("value")
+                            .addAnnotation(Annotations.ProtoNumber(field.tag))
                             .build()
                     )
                     .addSuperinterface(oneOfClassName)
