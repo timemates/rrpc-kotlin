@@ -12,7 +12,7 @@ public open class RSProtoExtension {
     /**
      * Contains the path to the folder where the generated code will be saved.
      */
-    public var generationOutputPath: String = "generated/proto-generator/src/commonMain"
+    public var generationOutputPath: String = "build/generated/proto-generator/src/commonMain"
 
     /**
      * Represents the flag indicating whether the code generation for the client should be performed.

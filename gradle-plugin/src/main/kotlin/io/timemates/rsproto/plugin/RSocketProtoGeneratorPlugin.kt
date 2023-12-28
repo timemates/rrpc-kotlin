@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.io.File
 import kotlin.math.log
 
 public class RSocketProtoGeneratorPlugin : Plugin<Project> {
@@ -25,8 +26,7 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
 
                 codeGenerator.generate(
                     rootPath = target.file(extension.protoSourcePath).toOkioPath(),
-                    outputPath = target.layout.buildDirectory.asFile.get().toOkioPath()
-                        .resolve(extension.generationOutputPath),
+                    outputPath = File(extension.generationOutputPath).toOkioPath(),
                     clientGeneration = extension.clientGeneration,
                     serverGeneration = extension.serverGeneration,
                 )
