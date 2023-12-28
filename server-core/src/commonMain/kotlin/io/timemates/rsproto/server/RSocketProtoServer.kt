@@ -179,7 +179,7 @@ private suspend inline fun <R> RSocketProtoServer.runInterceptors(metadata: Meta
 
     interceptors.forEach { inteceptor ->
         with(inteceptor) {
-            scope.intercept(coroutineContext, metadata)
+            coroutineContext = scope.intercept(coroutineContext, metadata)
         }
     }
 
