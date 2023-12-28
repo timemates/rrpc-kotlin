@@ -19,6 +19,8 @@ import io.timemates.rsproto.server.instances.ProtobufInstance
 import io.timemates.rsproto.server.instances.ProvidableInstance
 import io.timemates.rsproto.server.instances.getInstance
 import io.timemates.rsproto.server.interceptors.Interceptor
+import io.timemates.rsproto.server.interceptors.InterceptorScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -118,8 +120,11 @@ public fun RSocketRequestHandlerBuilder.useServer(server: RSocketProtoServer) {
         val service: ServiceDescriptor = getService(metadata)
         val method = service.procedure<ProcedureDescriptor.RequestResponse>(metadata.procedureName)
             ?: throwProcedureNotFound()
-        withContext(ExtraMetadata(metadata.extra)) {
-            method.execute(protobuf, payload.data)
+
+        server.runInterceptors(metadata) {
+            withContext(ExtraMetadata(metadata.extra)) {
+                method.execute(protobuf, payload.data)
+            }
         }
     }
 
@@ -130,8 +135,10 @@ public fun RSocketRequestHandlerBuilder.useServer(server: RSocketProtoServer) {
         val method = service.procedure<ProcedureDescriptor.RequestStream>(metadata.procedureName)
             ?: throwProcedureNotFound()
 
-        withContext(ExtraMetadata(metadata.extra)) {
-            method.execute(protobuf, payload.data)
+        server.runInterceptors(metadata) {
+            withContext(ExtraMetadata(metadata.extra)) {
+                method.execute(protobuf, payload.data)
+            }
         }
     }
 
@@ -142,8 +149,10 @@ public fun RSocketRequestHandlerBuilder.useServer(server: RSocketProtoServer) {
         val method = service.procedure<ProcedureDescriptor.RequestChannel>(metadata.procedureName)
             ?: throwProcedureNotFound()
 
-        withContext(ExtraMetadata(metadata.extra)) {
-            method.execute(protobuf, initial.data, payloads.map { it.data })
+        server.runInterceptors(metadata) {
+            withContext(ExtraMetadata(metadata.extra)) {
+                method.execute(protobuf, initial.data, payloads.map { it.data })
+            }
         }
     }
 }
@@ -162,3 +171,19 @@ internal class RSocketProtoServerImpl(
     override val interceptors: List<Interceptor>,
     override val instances: Map<ProvidableInstance.Key<*>, ProvidableInstance>
 ) : RSocketProtoServer
+
+@OptIn(ExperimentalInterceptorsApi::class)
+private suspend inline fun <R> RSocketProtoServer.runInterceptors(metadata: Metadata, crossinline block: suspend () -> R): R {
+    val scope = InterceptorScope(this)
+    var coroutineContext = currentCoroutineContext()
+
+    interceptors.forEach { inteceptor ->
+        with(inteceptor) {
+            scope.intercept(coroutineContext, metadata)
+        }
+    }
+
+    return withContext(coroutineContext) {
+        block()
+    }
+}
