@@ -26,9 +26,9 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
 
                 codeGenerator.generate(
                     rootPath = target.file(extension.protoSourcePath.get()).toOkioPath(),
-                    outputPath = File(extension.generationOutputPath.get()).toOkioPath(),
-                    clientGeneration = extension.clientGeneration,
-                    serverGeneration = extension.serverGeneration,
+                    outputPath = target.file(extension.generationOutputPath.get()).toOkioPath(),
+                    clientGeneration = extension.clientGeneration.get(),
+                    serverGeneration = extension.serverGeneration.get(),
                 )
             }
         }
