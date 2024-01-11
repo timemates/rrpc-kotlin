@@ -25,7 +25,10 @@ public class CodeGenerator(
         val schema = schemaLoader.loadSchema()
 
         schema.protoFiles
-            .filter { it.packageName?.startsWith("wire") != true }
+            .filter {
+                it.packageName?.startsWith("wire") != true &&
+                    it.location.toString() != "google/protobuf/descriptor.proto"
+            }
             .map { file ->
                 FileTransformer.transform(schema, file, clientGeneration, serverGeneration)
             }.forEach { file ->
