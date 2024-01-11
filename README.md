@@ -6,7 +6,7 @@
 RSProto is a framework that designed to provide ability to expose your API as RPC Services. It facilitates the creation of gRPC-like services from .proto files through code generation. The framework also provides essential core components for both server and client.
 
 > **Warning** <br>
-> This project is still under development, and it's not production-ready. Use it only in your toy projects.
+> This project is experimental, be ready for bugs and possible changes.
 
 ## Features
 - **Gradle Plugin**: `.proto` to RSocket code generator (both client and server).
@@ -73,10 +73,10 @@ plugins {
 And use it inside your buildscript:
 ```kotlin
 rsproto {
-    protoSourcePath = "src/main/proto"
-    generationOutputPath = "generated/proto-generator/src/commonMain"
-    clientGeneration = true
-    serverGeneration = true
+    protoSourcePath.set("src/main/proto")
+    generationOutputPath.set("generated/proto-generator/src/commonMain")
+    clientGeneration.set(true)
+    serverGeneration.set(true)
 }
 ```
 
