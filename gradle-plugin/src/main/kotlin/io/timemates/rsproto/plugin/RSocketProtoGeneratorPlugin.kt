@@ -13,7 +13,7 @@ import kotlin.math.log
 
 public class RSocketProtoGeneratorPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val extension = target.extensions.create<RSProtoExtension>("rsproto")
+        val extension = target.extensions.create<RSProtoExtension>("rsproto", target.objects)
 
         val generationTask = target.tasks.create("generateProto") {
             group = "rsproto"
@@ -25,8 +25,8 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
                 val codeGenerator = CodeGenerator(FileSystem.SYSTEM)
 
                 codeGenerator.generate(
-                    rootPath = target.file(extension.protoSourcePath).toOkioPath(),
-                    outputPath = File(extension.generationOutputPath).toOkioPath(),
+                    rootPath = target.file(extension.protoSourcePath.get()).toOkioPath(),
+                    outputPath = File(extension.generationOutputPath.get()).toOkioPath(),
                     clientGeneration = extension.clientGeneration,
                     serverGeneration = extension.serverGeneration,
                 )
