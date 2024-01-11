@@ -10,7 +10,6 @@ import io.timemates.rsproto.codegen.asClassName
 
 internal object MessageTypeTransformer {
     fun transform(incoming: MessageType, schema: Schema): TypeSpec {
-        println(incoming.oneOfs)
         val parameterTypes = incoming.declaredFields.map { field ->
             val fieldType = field.type!!
 
@@ -25,7 +24,6 @@ internal object MessageTypeTransformer {
                 else -> fieldType.asClassName(schema).let {
                     when {
                         field.isRepeated -> LIST.parameterizedBy(it)
-                        field.isOneOf -> TODO("OneOf fields are unsupported for now.")
                         else -> it.copy(nullable = true)
                     }
                 }
