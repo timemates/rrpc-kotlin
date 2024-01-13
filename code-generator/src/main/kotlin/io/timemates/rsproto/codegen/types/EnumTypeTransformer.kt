@@ -8,6 +8,8 @@ import io.timemates.rsproto.codegen.Types
 
 internal object EnumTypeTransformer {
     fun transform(incoming: EnumType, schema: Schema): TypeSpec {
+        val nested = incoming.nestedTypes.map { TypeTransformer.transform(it, schema) }
+
         return TypeSpec.enumBuilder(incoming.name)
             .addAnnotation(Annotations.OptIn(Types.experimentalSerializationApi))
             .addAnnotation(Annotations.Serializable)
@@ -20,8 +22,13 @@ internal object EnumTypeTransformer {
                             .build()
                     )
                 }
-            }.addTypes(incoming.nestedTypes.map { TypeTransformer.transform(it, schema) })
+            }
+            .addTypes(nested.map(TypeTransformer.Result::typeSpec))
+            .addType(
+                TypeSpec.companionObjectBuilder()
+                    .addFunctions(nested.mapNotNull(TypeTransformer.Result::constructorFun))
+                    .build()
+            )
             .build()
     }
-
 }

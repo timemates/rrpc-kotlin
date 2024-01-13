@@ -1,6 +1,7 @@
 package io.timemates.rsproto.codegen.types
 
 import com.squareup.kotlinpoet.*
+import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.OneOf
 import com.squareup.wire.schema.Schema
 import io.timemates.rsproto.codegen.Annotations
@@ -22,22 +23,48 @@ internal object OneOfGenerator {
             .addModifiers(KModifier.SEALED)
             .addTypes(oneof.fields.map { field ->
                 val defaultValue = TypeDefaultValueTransformer.transform(field)
-                val typeName = field.type!!.asClassName(schema).copy(nullable = defaultValue == "null")
+                val typeName = field.type!!.asClassName(schema)
+                val builder = typeName.nestedClass("Builder")
 
-                TypeSpec.valueClassBuilder(field.name.capitalized())
+                val fieldName = field.name.capitalized()
+
+                TypeSpec.valueClassBuilder(fieldName)
                     .addAnnotation(JvmInline::class)
                     .primaryConstructor(
                         FunSpec.constructorBuilder()
                             .addParameter(
                                 ParameterSpec.builder("value", typeName)
-                                    .defaultValue(defaultValue)
+                                    .defaultValue(
+                                        defaultValue.takeUnless { it == "null" } ?: "%T.Default", typeName,
+                                    )
                                     .build()
                             )
                             .build()
-                    )
+                    ).apply {
+                        val type = schema.getType(field.type!!)
+                        if (type is MessageType && type.fields.isNotEmpty())
+                            addFunction(
+                                FunSpec.constructorBuilder()
+                                    .addParameter(
+                                        name = "builder",
+                                        type = LambdaTypeName.get(builder, returnType = UNIT),
+                                    )
+                                    .callThisConstructor(CodeBlock.of("%T().also(builder).build()", builder))
+                                    .build()
+                            )
+                    }
                     .addProperty(
                         PropertySpec.builder("value", typeName).initializer("value")
                             .addAnnotation(Annotations.ProtoNumber(field.tag))
+                            .build()
+                    )
+                    .addType(
+                        TypeSpec.companionObjectBuilder()
+                            .addProperty(
+                                PropertySpec.builder("Default", ClassName("", fieldName))
+                                    .initializer("$fieldName()")
+                                    .build()
+                            )
                             .build()
                     )
                     .addSuperinterface(oneOfClassName)

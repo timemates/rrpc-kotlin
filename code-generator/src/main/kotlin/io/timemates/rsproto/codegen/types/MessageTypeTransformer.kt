@@ -9,7 +9,9 @@ import io.timemates.rsproto.codegen.Types
 import io.timemates.rsproto.codegen.asClassName
 
 internal object MessageTypeTransformer {
-    fun transform(incoming: MessageType, schema: Schema): TypeSpec {
+    data class Result(val type: TypeSpec, val constructorFun: FunSpec?)
+
+    fun transform(incoming: MessageType, schema: Schema): Result {
         val parameterTypes = incoming.declaredFields.map { field ->
             val fieldType = field.type!!
 
@@ -44,12 +46,15 @@ internal object MessageTypeTransformer {
 
         val className = incoming.type.asClassName(schema)
 
+        val nested = incoming.nestedTypes.map { TypeTransformer.transform(it, schema) }
+
         return TypeSpec.classBuilder(className)
             .addAnnotation(Annotations.OptIn(Types.experimentalSerializationApi))
             .addKdoc(incoming.documentation)
             .addAnnotation(Annotations.Serializable)
             .primaryConstructor(
                 FunSpec.constructorBuilder()
+                    .addModifiers(KModifier.PRIVATE)
                     .addParameters(incoming.declaredFields.mapIndexed { index, field ->
                         val type = parameterTypes[index]
 
@@ -72,26 +77,11 @@ internal object MessageTypeTransformer {
                         PropertySpec.builder("Default", className)
                             .initializer("%T()", className)
                             .build()
-                    ).apply {
-                        if (incoming.fields.isNotEmpty()) {
-                            addFunction(
-                                FunSpec.builder("create")
-                                    .addParameter(
-                                        "builder",
-                                        LambdaTypeName.get(
-                                            receiver = ClassName("", "Builder"),
-                                            returnType = UNIT,
-                                        )
-                                    )
-                                    .addCode("return Builder().apply(builder).build()")
-                                    .returns(incoming.type.asClassName(schema))
-                                    .build()
-                            )
-                        }
-                    }
+                    )
+                    .addFunctions(nested.mapNotNull(TypeTransformer.Result::constructorFun))
                     .build()
             )
-            .addTypes(incoming.nestedTypes.map { TypeTransformer.transform(it, schema) })
+            .addTypes(nested.map(TypeTransformer.Result::typeSpec))
             .apply {
                 if(incoming.fields.isNotEmpty()) {
                     addType(
@@ -105,7 +95,26 @@ internal object MessageTypeTransformer {
             }
             .addProperties(properties)
             .addProperties(oneOfProperties)
-            .addTypes(oneOfs.map { it.oneOfClass })
+            .addTypes(oneOfs.map(OneOfGenerator.Result::oneOfClass))
             .build()
+            .let {
+                Result(
+                    type = it,
+                    constructorFun = if (incoming.fields.isNotEmpty()) {
+                        val nestedClassName = incoming.type.asClassName(schema)
+                        FunSpec.builder(it.name!!)
+                            .addParameter(
+                                "builder",
+                                LambdaTypeName.get(
+                                    receiver = nestedClassName.nestedClass("Builder"),
+                                    returnType = UNIT,
+                                )
+                            )
+                            .addCode("return ${it.name}.Builder().apply(builder).build()")
+                            .returns(nestedClassName)
+                            .build()
+                    } else null,
+                )
+            }
     }
 }
