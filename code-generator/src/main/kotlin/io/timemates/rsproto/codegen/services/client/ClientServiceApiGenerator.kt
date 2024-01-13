@@ -40,8 +40,8 @@ internal object ClientServiceApiGenerator {
             else -> error("Should never reach this state")
         }
 
-        val deserializationCode = when (rpc.requestStreaming) {
-            true -> ".let·{ responses -> responses.map·{ protobuf.decodeFromByteArray(it.data.readBytes()) } }"
+        val deserializationCode = when (rpc.responseStreaming) {
+            true -> ".map·{ protobuf.decodeFromByteArray(it.data.readBytes()) }"
             false -> ".let·{ protobuf.decodeFromByteArray(it.data.readBytes()) }"
         }
 
@@ -73,7 +73,7 @@ internal object ClientServiceApiGenerator {
                 val className = rpc.requestType!!
                     .asClassName(schema)
 
-                if (rpc.isRequestStream) {
+                if (rpc.requestStreaming) {
                     addParameter(
                         name = "initMessage",
                         type = className,
@@ -96,7 +96,8 @@ internal object ClientServiceApiGenerator {
             )
             .addModifiers(KModifier.SUSPEND)
             .addCode(code)
-            .returns(rpc.responseType!!.asClassName(schema))
+            .returns(rpc.responseType!!.asClassName(schema)
+                .let { if(rpc.responseStreaming) Types.flow(it) else it })
             .build()
     }
 }
