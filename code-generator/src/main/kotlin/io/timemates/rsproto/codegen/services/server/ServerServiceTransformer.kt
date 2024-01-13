@@ -51,8 +51,8 @@ internal object ServerServiceTransformer {
         """
     %1T(
         name = "${rpc.name}",
-        inputSerializer = %2T.serializer() as %3T<Any>,
-        outputSerializer = %3T.serializer() as %3T<Any>,
+        inputSerializer = %2T.serializer() as %4T<Any>,
+        outputSerializer = %3T.serializer() as %4T<Any>,
         procedure = ${getProcedure(rpc)}
     )
     """.trimIndent(),
@@ -64,7 +64,8 @@ internal object ServerServiceTransformer {
                 else -> error("Should never reach this state.")
             },
             receiverType,
-            Types.kserializer,
+            returnType,
+            Types.kserializer
         )
     )
 
