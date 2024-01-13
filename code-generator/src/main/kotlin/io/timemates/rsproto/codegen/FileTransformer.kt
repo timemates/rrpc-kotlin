@@ -29,7 +29,11 @@ internal object FileTransformer {
                 addImport("io.ktor.utils.io.core", "readBytes")
             }
 
-            addTypes(protoFile.types.map { TypeTransformer.transform(it, schema) })
+            val types = protoFile.types.map { TypeTransformer.transform(it, schema) }
+
+            types.mapNotNull(TypeTransformer.Result::constructorFun)
+                .forEach(::addFunction)
+            addTypes(types.map { it.typeSpec })
         }.build()
     }
 }
