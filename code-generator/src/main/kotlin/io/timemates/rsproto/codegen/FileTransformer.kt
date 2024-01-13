@@ -26,6 +26,7 @@ internal object FileTransformer {
                 addTypes(protoFile.services.map { ClientServiceApiGenerator.generate(it, schema) })
                 addImport(Types.payload.packageName, Types.payload.simpleName)
                 addImport("kotlinx.serialization", listOf("encodeToByteArray", "decodeFromByteArray"))
+                addImport("kotlinx.coroutines.flow", listOf("map"))
                 addImport("io.ktor.utils.io.core", "readBytes")
             }
 
