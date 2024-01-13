@@ -32,6 +32,9 @@ internal object ClientServiceApiGenerator {
     }
 
     private fun mapRpc(rpc: Rpc, serviceName: String, schema: Schema): FunSpec {
+        if(rpc.requestStreaming && !rpc.responseStreaming)
+            error("Client-only streaming is not supported.")
+
         val callCode = when {
             rpc.isRequestChannel ->
                 "requestChannel(initialPayload, payloads)"
