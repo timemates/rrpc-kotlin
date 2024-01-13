@@ -51,8 +51,8 @@ internal object ServerServiceTransformer {
         """
     %1T(
         name = "${rpc.name}",
-        inputSerializer = %2T.serializer() as %4T<Any>,
-        outputSerializer = %3T.serializer() as %4T<Any>,
+        inputSerializer = %2T.serializer() as %3T<Any>,
+        outputSerializer = %3T.serializer() as %3T<Any>,
         procedure = ${getProcedure(rpc)}
     )
     """.trimIndent(),
@@ -64,15 +64,14 @@ internal object ServerServiceTransformer {
                 else -> error("Should never reach this state.")
             },
             receiverType,
-            returnType,
             Types.kserializer,
         )
     )
 
     private fun getProcedure(rpc: Rpc) = when {
-        rpc.isRequestResponse -> "{ ${rpc.name}(it as %2T) as %3T }"
-        rpc.isRequestStream -> "{ ${rpc.name}(it as %2T) as Flow<%3T> }"
-        rpc.isRequestChannel -> "{ init, incoming -> ${rpc.name}(init as %2T, incoming·as·Flow<%2T>)·as·Flow<%3T> }"
+        rpc.isRequestResponse -> "{ ${rpc.name}(it as %2T) }"
+        rpc.isRequestStream -> "{ ${rpc.name}(it as %2T) }"
+        rpc.isRequestChannel -> "{ init, incoming -> ${rpc.name}(init as %2T, incoming·as·Flow<%2T>) }"
         else -> error("Request Streaming with no Response Streaming is not supported.")
     }
 }
