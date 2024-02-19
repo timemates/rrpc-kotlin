@@ -7,7 +7,7 @@ dependencies {
     commonMainImplementation(libs.kotlinx.serialization.proto)
 }
 
-group = "io.timemates.rsproto"
+group = "org.timemates.rsproto"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 kotlin {

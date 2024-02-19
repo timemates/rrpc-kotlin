@@ -21,7 +21,7 @@ RSProto is a framework that designed to provide ability to expose your API as RP
 First of all, you should have the following repository:
 ```kotlin
 repositories {
-    maven("https://maven.timemates.io")
+    maven("https://maven.timemates.org")
 }
 ```
 
@@ -30,12 +30,12 @@ Before using builtin generation from `.proto` to RSocket services, you should ad
 ```kotlin
 dependencies {
     // for server
-    implementation("io.timemates.rsproto:server-core:$version")
+    implementation("org.timemates.rsproto:server-core:$version")
     // for client
-    commonMainImplementation("io.timemates.rsproto:client-core:$version")
+    commonMainImplementation("org.timemates.rsproto:client-core:$version")
 
     // for server & client
-    commonMainImplementation("io.timemates.rsproto:common-core:$version")
+    commonMainImplementation("org.timemates.rsproto:common-core:$version")
 }
 ```
 #### Server initialization
@@ -67,7 +67,7 @@ apiService.sayHello()
 To implement code-generation plugin in your buildscript, add the following:
 ```kotlin
 plugins {
-    id("io.timemates.rsproto") version "$version"
+    id("org.timemates.rsproto") version "$version"
 }
 ```
 And use it inside your buildscript:
