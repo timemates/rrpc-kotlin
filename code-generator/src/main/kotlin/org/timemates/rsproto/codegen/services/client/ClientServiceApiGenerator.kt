@@ -27,7 +27,7 @@ internal object ClientServiceApiGenerator {
                     .addModifiers(KModifier.PRIVATE)
                     .initializer("protobuf").build()
             )
-            .addFunctions(service.rpcs.map { mapRpc(it, service.name, schema) })
+            .addFunctions(service.rpcs.map { mapRpc(it, service.toString(), schema) })
             .build()
     }
 

@@ -31,7 +31,7 @@ internal object ServerServiceTransformer {
                         CodeBlock.builder()
                             .addStatement("ServiceDescriptor(")
                             .indent()
-                            .addStatement("name = %S,", incoming.name)
+                            .addStatement("name = %S,", incoming.type.toString())
                             .add("procedures = listOf(\n")
                             .indent()
                             .addAllSeparated(procedureDescriptors)
