@@ -16,6 +16,12 @@ internal fun ProtoType.asClassName(schema: Schema): ClassName {
     return ClassName(packageName + enclosingName, simpleName)
 }
 
+internal fun ProtoType.qualifiedName(schema: Schema): String {
+    val packageName = schema.protoFile(this)?.packageName?.plus(".") ?: ""
+
+    return packageName + simpleName
+}
+
 /**
  * Determines if the RPC is a request-response type.
  *

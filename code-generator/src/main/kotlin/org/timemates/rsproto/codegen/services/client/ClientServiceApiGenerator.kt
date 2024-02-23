@@ -27,17 +27,18 @@ internal object ClientServiceApiGenerator {
                     .addModifiers(KModifier.PRIVATE)
                     .initializer("protobuf").build()
             )
-            .addFunctions(service.rpcs.map { mapRpc(it, service.toString(), schema) })
+            .addFunctions(service.rpcs.map { mapRpc(it, service.type.qualifiedName(schema), schema) })
             .build()
     }
 
     private fun mapRpc(rpc: Rpc, serviceName: String, schema: Schema): FunSpec {
-        if(rpc.requestStreaming && !rpc.responseStreaming)
+        if (rpc.requestStreaming && !rpc.responseStreaming)
             error("Client-only streaming is not supported.")
 
         val callCode = when {
             rpc.isRequestChannel ->
                 "requestChannel(initialPayload, payloads)"
+
             rpc.isRequestResponse -> "requestResponse(payload)"
             rpc.isRequestStream -> "requestStream(payload)"
             else -> error("Should never reach this state")
@@ -55,7 +56,10 @@ internal object ClientServiceApiGenerator {
                     format = "val encodedMetadata = protobuf.encodeToByteArray(%1T(serviceName = %2S, procedureName = %3S, extra = extra))",
                     args = arrayOf(Types.metadata, serviceName, rpc.name),
                 )
-                .addStatement("val initPayload = Payload(data = %1T(encodedInitMessage), metadata = %1T(encodedMetadata))", Types.byteReadPacket)
+                .addStatement(
+                    "val initPayload = Payload(data = %1T(encodedInitMessage), metadata = %1T(encodedMetadata))",
+                    Types.byteReadPacket
+                )
                 .addStatement("val payloads = messages.map { protobuf.encodeToByteArray(it) }")
                 .addStatement("return rsocket.$callCode$deserializationCode")
                 .build()
@@ -66,7 +70,10 @@ internal object ClientServiceApiGenerator {
                     format = "val encodedMetadata = protobuf.encodeToByteArray(%1T(%2S, %3S, extra))",
                     args = arrayOf(Types.metadata, serviceName, rpc.name),
                 )
-                .addStatement("val payload = Payload(data = %1T(encodedMessage), metadata = %1T(encodedMetadata))", Types.byteReadPacket)
+                .addStatement(
+                    "val payload = Payload(data = %1T(encodedMessage), metadata = %1T(encodedMetadata))",
+                    Types.byteReadPacket
+                )
                 .addStatement("return rsocket.$callCode$deserializationCode")
                 .build()
         }
@@ -97,10 +104,14 @@ internal object ClientServiceApiGenerator {
                     .defaultValue("emptyMap()")
                     .build()
             )
-            .addModifiers(KModifier.SUSPEND)
+            .apply {
+                if (!rpc.requestStreaming && !rpc.responseStreaming) {
+                    addModifiers(KModifier.SUSPEND)
+                }
+            }
             .addCode(code)
             .returns(rpc.responseType!!.asClassName(schema)
-                .let { if(rpc.responseStreaming) Types.flow(it) else it })
+                .let { if (rpc.responseStreaming) Types.flow(it) else it })
             .build()
     }
 }
