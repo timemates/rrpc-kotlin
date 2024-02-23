@@ -1,4 +1,4 @@
-![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.timemates.io%2Fio%2Ftimemates%2Frsproto%2Fclient-core%2Fmaven-metadata.xml)
+![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.timemates.org%2Fio%2Ftimemates%2Frsproto%2Fclient-core%2Fmaven-metadata.xml)
 ![GitHub issues](https://img.shields.io/github/issues/timemates/rsproto)
 ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/timemates/rsproto)
 ![GitHub License](https://img.shields.io/github/license/timemates/rsproto)
