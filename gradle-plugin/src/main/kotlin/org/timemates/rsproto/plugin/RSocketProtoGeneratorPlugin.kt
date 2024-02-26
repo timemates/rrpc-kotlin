@@ -24,6 +24,15 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
             doLast {
                 val codeGenerator = CodeGenerator(FileSystem.SYSTEM)
 
+                try {
+                    target.file(extension.generationOutputPath.get())
+                        .listFiles()
+                        ?.forEach(File::deleteRecursively)
+                } catch (e: Exception) {
+                    if(logger.isDebugEnabled)
+                        logger.error(e.stackTraceToString())
+                }
+
                 codeGenerator.generate(
                     rootPath = target.file(extension.protoSourcePath.get()).toOkioPath(),
                     outputPath = target.file(extension.generationOutputPath.get()).toOkioPath(),
