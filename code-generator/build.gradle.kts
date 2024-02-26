@@ -26,7 +26,7 @@ mavenPublishing {
     )
 
     pom {
-        name.set("RSProto Client Core")
+        name.set("RSProto Code Generator")
         description.set("Code-generation library for RSProto servers and clients.")
     }
 }

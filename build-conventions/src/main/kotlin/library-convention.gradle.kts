@@ -48,16 +48,5 @@ publishing {
                 password = System.getenv("REPOSILITE_SECRET")
             }
         }
-
-        maven {
-            name = "timeMatesDev"
-
-            url = uri("https://maven.timemates.org/dev")
-
-            credentials {
-                username = System.getenv("REPOSILITE_USER")
-                password = System.getenv("REPOSILITE_SECRET")
-            }
-        }
     }
 }
