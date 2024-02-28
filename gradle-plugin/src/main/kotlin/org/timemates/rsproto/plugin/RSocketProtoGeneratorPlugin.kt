@@ -18,14 +18,17 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
         val generationTask = target.tasks.create("generateProto") {
             group = "rsproto"
 
+            val generationOutputPath = target.layout.buildDirectory.file(extension.generationOutputPath)
+
             inputs.dir(extension.protoSourcePath)
-            outputs.dir(extension.generationOutputPath)
+            outputs.dir(generationOutputPath)
 
             doLast {
                 val codeGenerator = CodeGenerator(FileSystem.SYSTEM)
 
                 try {
-                    target.file(extension.generationOutputPath.get())
+                    generationOutputPath.get()
+                        .asFile
                         .listFiles()
                         ?.forEach(File::deleteRecursively)
                 } catch (e: Exception) {
@@ -35,15 +38,16 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
 
                 codeGenerator.generate(
                     rootPath = target.file(extension.protoSourcePath.get()).toOkioPath(),
-                    outputPath = target.file(extension.generationOutputPath.get()).toOkioPath(),
+                    outputPath = target.file(generationOutputPath).toOkioPath(),
                     clientGeneration = extension.clientGeneration.get(),
                     serverGeneration = extension.serverGeneration.get(),
                 )
             }
         }
 
-        target.tasks.withType<KotlinCompile> {
-            dependsOn(generationTask)
-        }
+        target.tasks.filter { it.name.startsWith("compileKotlin") }
+            .forEach { compileTask ->
+                compileTask.dependsOn(generationTask)
+            }
     }
 }

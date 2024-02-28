@@ -19,7 +19,7 @@ public open class RSProtoExtension(private val objects: ObjectFactory) {
      * Contains the path to the folder where the generated code will be saved.
      */
     public val generationOutputPath: Property<String> =
-        objects.property<String>().convention("build/generated/proto-generator/src/commonMain")
+        objects.property<String>().convention("generated/proto-generator/src/commonMain")
 
     /**
      * Represents the flag indicating whether the code generation for the client should be performed.
