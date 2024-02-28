@@ -45,9 +45,8 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
             }
         }
 
-        target.tasks.filter { it.name.contains("Kotlin", ignoreCase = true) }
-            .forEach { compileTask ->
-                compileTask.dependsOn(generationTask)
-            }
+        target.tasks.withType<KotlinCompile> {
+            mustRunAfter(generationTask)
+        }
     }
 }
