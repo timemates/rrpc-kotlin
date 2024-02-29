@@ -8,7 +8,14 @@ import org.gradle.kotlin.dsl.property
 /**
  * Class representing the extension for generating Protobuf code.
  */
-public open class RSProtoExtension(private val objects: ObjectFactory) {
+public open class RSProtoExtension(objects: ObjectFactory) {
+    /**
+     * If you have custom project structure that does not have commonMain / main sourceSets,
+     * you should specify your main source set in the [targetSourceSet].
+     */
+    public val targetSourceSet: Property<String?> = objects.property<String?>()
+        .convention(null)
+
     /**
      * Contains the path to the folder where the Proto definition files are located.
      */
