@@ -5,8 +5,9 @@ import okio.Path.Companion.toOkioPath
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.findByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.timemates.rsproto.codegen.CodeGenerator
@@ -46,8 +47,10 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
         }
 
         target.afterEvaluate {
-            val allSourceSets = target.extensions.getByType<KotlinMultiplatformExtension>()
-                .sourceSets
+            val allSourceSets = target.extensions.findByType<KotlinMultiplatformExtension>()?.sourceSets
+                ?: target.extensions.findByType<KotlinJvmProjectExtension>()?.sourceSets
+                ?: target.extensions.findByType<KotlinAndroidProjectExtension>()?.sourceSets
+                ?: error("Is Kotlin plugin applied to the buildscript?")
 
             val commonSourceSet = allSourceSets
                 .findByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
