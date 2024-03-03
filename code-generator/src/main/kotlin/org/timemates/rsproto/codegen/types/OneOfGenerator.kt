@@ -29,6 +29,7 @@ internal object OneOfGenerator {
                 val fieldName = field.name.capitalized()
 
                 TypeSpec.valueClassBuilder(fieldName)
+                    .addAnnotation(Annotations.Serializable)
                     .addAnnotation(JvmInline::class)
                     .primaryConstructor(
                         FunSpec.constructorBuilder()
