@@ -13,6 +13,9 @@ internal object MessageBuilderTransformer {
         declaredFields: List<Pair<PropertySpec, Field>>,
         oneOfs: List<PropertySpec>,
     ): TypeSpec {
+        val returnParametersSet = (declaredFields.map { it.first.name } + oneOfs.map { it.name })
+            .joinToString(", ")
+
         return TypeSpec.classBuilder("Builder")
             .addProperties(declaredFields.map { (spec, type) ->
                 spec.toBuilder().initializer(TypeDefaultValueTransformer.transform(type)).mutable(true).also {
@@ -22,7 +25,7 @@ internal object MessageBuilderTransformer {
             .addProperties(oneOfs.map { it.toBuilder().apply { annotations.clear()}.mutable(true).initializer("null").build() })
             .addFunction(
                 FunSpec.builder("build")
-                    .addCode("return ${name}(${declaredFields.joinToString(", ") { it.first.name }})")
+                    .addCode("return ${name}(${returnParametersSet})")
                     .returns(ClassName("", name))
                     .build()
             )
