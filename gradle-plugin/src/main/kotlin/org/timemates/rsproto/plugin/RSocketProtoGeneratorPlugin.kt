@@ -50,7 +50,7 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
             val allSourceSets = target.extensions.findByType<KotlinMultiplatformExtension>()?.sourceSets
                 ?: target.extensions.findByType<KotlinJvmProjectExtension>()?.sourceSets
                 ?: target.extensions.findByType<KotlinAndroidProjectExtension>()?.sourceSets
-                ?: error("Is Kotlin plugin applied to the buildscript?")
+                ?: error("Does Kotlin plugin apply to the buildscript?")
 
             val commonSourceSet = allSourceSets
                 .findByName(KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME)
