@@ -78,7 +78,7 @@ internal object ClientServiceApiGenerator {
                 .build()
         }
 
-        return FunSpec.builder(rpc.name)
+        return FunSpec.builder(rpc.name.decapitalize())
             .apply {
                 val className = rpc.requestType!!
                     .asClassName(schema)

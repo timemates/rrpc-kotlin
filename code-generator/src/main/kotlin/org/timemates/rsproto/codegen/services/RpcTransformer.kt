@@ -8,12 +8,13 @@ import com.squareup.wire.schema.Rpc
 import com.squareup.wire.schema.Schema
 import org.timemates.rsproto.codegen.Types
 import org.timemates.rsproto.codegen.asClassName
+import org.timemates.rsproto.codegen.decapitalize
 
 internal object RpcTransformer {
     fun transform(rpc: Rpc, schema: Schema): FunSpec {
         val (requestType, returnType) = getRpcType(rpc, schema)
 
-        return FunSpec.builder(rpc.name)
+        return FunSpec.builder(rpc.name.decapitalize())
             .addKdoc(rpc.documentation)
             .addModifiers(KModifier.ABSTRACT, KModifier.SUSPEND)
             .addParameter(
