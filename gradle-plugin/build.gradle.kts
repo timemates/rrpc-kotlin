@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.gradle.publish)
 }
 
-group = "org.timemates.rsproto"
+group = "org.timemates.rsp"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 kotlin {
@@ -12,7 +12,7 @@ kotlin {
 
 dependencies {
     constraints {
-        api("org.timemates.rsproto:code-generator:$version")
+        api("org.timemates.rsp:code-generator:$version")
     }
     api(projects.codeGenerator)
 
@@ -26,12 +26,12 @@ gradlePlugin {
 
     plugins {
         create("rsproto-plugin") {
-            id = "org.timemates.rsproto"
+            id = "org.timemates.rsp"
             displayName = "RSProto Code Generator"
             description = "Code Generator from .proto files to Kotlin code."
             tags = listOf("kotlin", "rsocket", "protobuf", "proto")
 
-            implementationClass = "org.timemates.rsproto.plugin.RSocketProtoGeneratorPlugin"
+            implementationClass = "org.timemates.rsp.plugin.RSocketProtoGeneratorPlugin"
         }
     }
 }

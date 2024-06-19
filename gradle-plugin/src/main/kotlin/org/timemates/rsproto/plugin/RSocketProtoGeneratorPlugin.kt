@@ -1,4 +1,4 @@
-package org.timemates.rsproto.plugin
+package org.timemates.rsp.plugin
 
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.timemates.rsproto.codegen.CodeGenerator
+import org.timemates.rsp.codegen.CodeGenerator
 import java.io.File
 
 public class RSocketProtoGeneratorPlugin : Plugin<Project> {

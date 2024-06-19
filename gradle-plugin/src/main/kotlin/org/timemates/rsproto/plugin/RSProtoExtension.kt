@@ -1,4 +1,4 @@
-package org.timemates.rsproto.plugin
+package org.timemates.rsp.plugin
 
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property

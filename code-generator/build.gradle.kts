@@ -6,7 +6,7 @@ kotlin {
     explicitApi()
 }
 
-group = "org.timemates.rsproto"
+group = "org.timemates.rsp"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
@@ -20,7 +20,7 @@ dependencies {
 
 mavenPublishing {
     coordinates(
-        groupId = "org.timemates.rsproto",
+        groupId = "org.timemates.rsp",
         artifactId = "code-generator",
         version = System.getenv("LIB_VERSION") ?: return@mavenPublishing,
     )

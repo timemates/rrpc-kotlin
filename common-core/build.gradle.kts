@@ -5,9 +5,10 @@ plugins {
 
 dependencies {
     commonMainImplementation(libs.kotlinx.serialization.proto)
+    commonMainImplementation(libs.rsocket.core)
 }
 
-group = "org.timemates.rsproto"
+group = "org.timemates.rsp"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 kotlin {

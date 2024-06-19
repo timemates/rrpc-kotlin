@@ -30,12 +30,12 @@ Before using builtin generation from `.proto` to RSocket services, you should ad
 ```kotlin
 dependencies {
     // for server
-    implementation("org.timemates.rsproto:server-core:$version")
+    implementation("org.timemates.rsp:server-core:$version")
     // for client
-    commonMainImplementation("org.timemates.rsproto:client-core:$version")
+    commonMainImplementation("org.timemates.rsp:client-core:$version")
 
     // for server & client
-    commonMainImplementation("org.timemates.rsproto:common-core:$version")
+    commonMainImplementation("org.timemates.rsp:common-core:$version")
 }
 ```
 #### Server initialization
@@ -67,7 +67,7 @@ apiService.sayHello()
 To implement code-generation plugin in your buildscript, add the following:
 ```kotlin
 plugins {
-    id("org.timemates.rsproto") version "$version"
+    id("org.timemates.rsp") version "$version"
 }
 ```
 And use it inside your buildscript:
