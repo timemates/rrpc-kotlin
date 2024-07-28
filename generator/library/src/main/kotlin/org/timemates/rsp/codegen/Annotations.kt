@@ -12,7 +12,7 @@ internal object Annotations {
 
     val Serializable = AnnotationSpec.builder(ClassName("kotlinx.serialization", "Serializable")).build()
 
-    val Deprecated = AnnotationSpec.builder(Deprecated::class).addMember(
+    val Deprecated = AnnotationSpec.builder(ClassName("kotlin", "Deprecated")).addMember(
         "\"Deprecated in .proto definition.\""
     ).build()
 
@@ -27,4 +27,7 @@ internal object Annotations {
             }
         }
         .build()
+
+    val ProtoPacked = AnnotationSpec.builder(ClassName("kotlinx.serialization.protobuf", "ProtoPacked")).build()
+    val ProtoOneOf = AnnotationSpec.builder(ClassName("kotlinx.serialization.protobuf", "ProtoOneOf")).build()
 }

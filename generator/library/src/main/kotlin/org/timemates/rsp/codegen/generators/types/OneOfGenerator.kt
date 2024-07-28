@@ -1,4 +1,4 @@
-package org.timemates.rsp.codegen.types
+package org.timemates.rsp.codegen.generators.types
 
 import com.squareup.kotlinpoet.*
 import com.squareup.wire.schema.MessageType
@@ -14,7 +14,7 @@ internal object OneOfGenerator {
         val property: PropertySpec,
     )
 
-    fun generate(oneof: OneOf, schema: Schema): Result {
+    fun generateOneOf(oneof: OneOf, schema: Schema): Result {
         val oneOfName = "${oneof.name.capitalized()}OneOf"
         val oneOfClassName = ClassName("", oneOfName)
 
@@ -22,13 +22,14 @@ internal object OneOfGenerator {
             .addAnnotation(Annotations.Serializable)
             .addModifiers(KModifier.SEALED)
             .addTypes(oneof.fields.map { field ->
-                val defaultValue = TypeDefaultValueTransformer.transform(field)
+                val defaultValue = TypeDefaultValueGenerator.generateTypeDefault(field)
                 val typeName = field.type!!.asClassName(schema)
                 val builder = typeName.nestedClass("Builder")
 
                 val fieldName = field.name.capitalized()
 
-                TypeSpec.valueClassBuilder(fieldName)
+                TypeSpec.classBuilder(fieldName)
+                    .addModifiers(KModifier.VALUE)
                     .addAnnotation(Annotations.Serializable)
                     .addAnnotation(JvmInline::class)
                     .primaryConstructor(
@@ -74,6 +75,7 @@ internal object OneOfGenerator {
             .build()
 
         val property = PropertySpec.builder(oneof.name, oneOfClassName.copy(nullable = true))
+            .addAnnotation(Annotations.ProtoOneOf)
             .addKdoc(oneof.documentation)
             .initializer(oneof.name)
             .build()
