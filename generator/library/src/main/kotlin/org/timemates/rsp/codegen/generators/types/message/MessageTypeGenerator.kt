@@ -1,0 +1,73 @@
+package org.timemates.rsp.codegen.generators.types.message
+
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.LambdaTypeName
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.UNIT
+import com.squareup.wire.schema.MessageType
+import com.squareup.wire.schema.Schema
+import org.timemates.rsp.codegen.typemodel.Annotations
+import org.timemates.rsp.codegen.typemodel.Types
+import org.timemates.rsp.codegen.ext.asClassName
+import org.timemates.rsp.codegen.generators.types.TypeGenerator
+
+internal object MessageTypeGenerator {
+    data class Result(val type: TypeSpec, val constructorFun: FunSpec?)
+
+    fun generateMessage(incoming: MessageType, schema: Schema): Result {
+        val parameterTypes = MessageParameterTypeGenerator.generateParameterTypes(incoming, schema)
+        val oneOfs = incoming.oneOfs.map {
+            OneOfGenerator.generateOneOf(it, schema)
+        }
+        val properties = MessagePropertyGenerator.generateProperties(incoming, parameterTypes)
+        val oneOfProperties = oneOfs.map { it.property }
+        val className = incoming.type.asClassName(schema)
+        val nested = MessageNestedTypeGenerator.generateNestedTypes(incoming, schema)
+
+        val typeSpec = TypeSpec.classBuilder(className)
+            .addAnnotation(Annotations.OptIn(Types.ExperimentalSerializationApi))
+            .addKdoc(incoming.documentation)
+            .addAnnotation(Annotations.Serializable)
+            .primaryConstructor(
+                MessageConstructorGenerator.generatePrimaryConstructor(
+                    incoming,
+                    parameterTypes,
+                    oneOfs
+                )
+            )
+            .addType(MessageCompanionObjectGenerator.generateCompanionObject(className, nested, oneOfs))
+            .addTypes(nested.map(TypeGenerator.Result::typeSpec))
+            .apply {
+                if (incoming.fields.isNotEmpty()) {
+                    addType(
+                        MessageDSLBuilderGenerator.generateMessageBuilder(
+                            incoming.name,
+                            properties.mapIndexed { index, it -> it to incoming.declaredFields[index] },
+                            oneOfProperties
+                        )
+                    )
+                }
+            }
+            .addProperties(properties)
+            .addProperties(oneOfProperties)
+            .addTypes(oneOfs.map(OneOfGenerator.Result::oneOfClass))
+            .build()
+
+        val constructorFun = if (incoming.fields.isNotEmpty()) {
+            FunSpec.builder(typeSpec.name!!)
+                .addParameter(
+                    "builder",
+                    LambdaTypeName.get(
+                        receiver = className.nestedClass("DSLBuilder"),
+                        returnType = UNIT
+                    )
+                )
+                .addCode("return ${typeSpec.name}.create(builder)")
+                .returns(className)
+                .build()
+        } else null
+
+        return Result(type = typeSpec, constructorFun = constructorFun)
+    }
+}
+

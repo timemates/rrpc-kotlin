@@ -6,6 +6,9 @@ plugins {
 dependencies {
     commonMainApi(libs.kotlinx.serialization.proto) 
     commonMainApi(libs.rsocket.core)
+
+    jvmTestImplementation(libs.kotlin.test)
+    jvmTestImplementation(libs.mockk)
 }
 
 kotlin {

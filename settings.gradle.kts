@@ -19,10 +19,14 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "rsproto"
+rootProject.name = "rsp"
 
 includeBuild("build-conventions")
 
-include(":common-core", ":server-core", ":client-core")
-include(":code-generator")
-include(":gradle-plugin")
+include(":common:core")
+
+include(":server:core")
+
+include(":client:core")
+
+include(":generator:library", ":generator:gradle-plugin")

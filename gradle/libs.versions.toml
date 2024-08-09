@@ -1,8 +1,8 @@
 [versions]
 kotlin = "2.0.0"
-kotlinx-coroutines = "1.9.0-RC"
-kotlinx-serialization = "1.7.0-RC"
-ktor = "2.3.11"
+kotlinx-coroutines = "1.7.3"
+kotlinx-serialization = "1.7.1"
+ktor = "2.3.12"
 jupiter = "5.4.0"
 exposed = "0.41.1"
 android-gradle-plugin = "7.3.1"
@@ -44,7 +44,7 @@ squareup-wire-schema = { module = "com.squareup.wire:wire-schema", version.requi
 squareup-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 squareup-okio-fakeFs = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 
-squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.require = "1.14.2" }
+squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.require = "1.18.0" }
 
 # Other JVM Libraries
 h2-database = { module = "com.h2database:h2", version.require = "2.2.224" }
@@ -56,6 +56,8 @@ exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "e
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 vanniktech-maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.require = "0.25.3" }
 android-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+
+mockk = { group = "io.mockk", name = "mockk", version.require = "1.13.12" }
 
 [plugins]
 # Build Conventions
@@ -78,4 +80,4 @@ android-library = { id = "com.android.library", version.ref = "android-gradle-pl
 android-application = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 
 # Gradle
-gradle-publish = { id = "com.gradle.plugin-publish", version.require = "1.1.0" }
+gradle-publish = { id = "com.gradle.plugin-publish", version.require = "1.2.1" }
