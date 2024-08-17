@@ -1,10 +1,11 @@
 package org.timemates.rsp
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.jvm.JvmInline
+import kotlin.jvm.JvmSynthetic
 
 /**
  * Represents a value that can be in one of three states: a single value, a streaming value, or a failure.
@@ -20,111 +21,116 @@ public sealed interface DataVariant<T : Any> {
      * @return `true` if the other [DataVariant] is of the same type, `false` otherwise.
      */
     public fun isSameType(other: DataVariant<*>): Boolean
+}
 
-    /**
-     * Represents a single value.
-     *
-     * @param T The type of the value.
-     * @property value The single value.
-     */
-    @JvmInline
-    public value class Single<T : Any>(public val value: T) : DataVariant<T> {
-        override fun isSameType(other: DataVariant<*>): Boolean {
-            return other is Single
-        }
-
-        override fun toString(): String {
-            return "DataVariant.Single(value=$value)"
-        }
+/**
+ * Represents a single value.
+ *
+ * @param T The type of the value.
+ * @property value The single value.
+ */
+public data class Single<T : Any>(public val value: T) : DataVariant<T> {
+    override fun isSameType(other: DataVariant<*>): Boolean {
+        return other is Single
     }
 
-    /**
-     * Represents a streaming value.
-     *
-     * @param T The type of the values in the stream.
-     * @property flow The flow of values.
-     */
-    @JvmInline
-    public value class Streaming<T : Any>(public val flow: Flow<T>) : DataVariant<T> {
-        override fun isSameType(other: DataVariant<*>): Boolean {
-            return other is Streaming
-        }
-        override fun toString(): String {
-            return "DataVariant.Streaming(flow=$flow)"
-        }
+    override fun toString(): String {
+        return "Single(value=$value)"
+    }
+}
+
+/**
+ * Represents a failure state, usually relevant only for clients as the server can return an error without a body.
+ * In addition, it's applicable only if original expected type is [Single]. For [Streaming] use flow's
+ * operators to handle failures.
+ *
+ * @param T The type of the value that was expected.
+ * @property exception The exception representing the failure.
+ */
+public data class Failure<T : Any>(public val exception: Exception) : DataVariant<T> {
+    override fun isSameType(other: DataVariant<*>): Boolean {
+        return other is Failure
+    }
+}
+
+/**
+ * Represents a streaming value.
+ *
+ * @param T The type of the values in the stream.
+ * @property flow The flow of values.
+ */
+public class Streaming<T : Any>(
+    @get:JvmSynthetic
+    public val flow: Flow<T>,
+) : DataVariant<T> {
+    override fun isSameType(other: DataVariant<*>): Boolean {
+        return other is Streaming
     }
 
-    /**
-     * Represents a failure state, usually relevant only for clients as the server can return an error without a body.
-     * In addition, it's applicable only if original expected type is [Single]. For [Streaming] use flow's
-     * operators to handle failures.
-     *
-     * @param T The type of the value that was expected.
-     * @property exception The exception representing the failure.
-     */
-    @JvmInline
-    public value class Failure<T : Any>(public val exception: Exception) : DataVariant<T> {
-        override fun isSameType(other: DataVariant<*>): Boolean {
-            return other is Failure
-        }
+    override fun toString(): String {
+        return "Streaming(flow=$flow)"
     }
+
+    public fun <R : Any> map(
+        transform: Transformer<T, R>,
+    ): Streaming<R> = Streaming(flow.map { transform.transform(it) })
 }
 
 /**
  * Checks if the [DataVariant] is a single value.
  *
- * @return `true` if the variant is a [DataVariant.Single], `false` otherwise.
+ * @return `true` if the variant is a [Single], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public fun <T : Any> DataVariant<T>.isSingle(): Boolean {
+public inline fun <T : Any> DataVariant<T>.isSingle(): Boolean {
     contract {
-        returns(true) implies (this@isSingle is DataVariant.Single<T>)
-        returns(false) implies (this@isSingle !is DataVariant.Single<T>)
+        returns(true) implies (this@isSingle is Single<T>)
+        returns(false) implies (this@isSingle !is Single<T>)
     }
 
-    return this is DataVariant.Single<T>
+    return this is Single<T>
 }
 
 /**
  * Checks if the [DataVariant] is a streaming value.
  *
- * @return `true` if the variant is a [DataVariant.Streaming], `false` otherwise.
+ * @return `true` if the variant is a [Streaming], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public fun <T : Any> DataVariant<T>.isStreaming(): Boolean {
+public inline fun <T : Any> DataVariant<T>.isStreaming(): Boolean {
     contract {
-        returns(true) implies (this@isStreaming is DataVariant.Streaming<T>)
-        returns(false) implies (this@isStreaming !is DataVariant.Streaming<T>)
+        returns(true) implies (this@isStreaming is Streaming<T>)
+        returns(false) implies (this@isStreaming !is Streaming<T>)
     }
 
-    return this is DataVariant.Streaming<T>
+    return this is Streaming<T>
 }
 
 /**
  * Checks if the [DataVariant] represents a failure.
  *
- * @return `true` if the variant is a [DataVariant.Failure], `false` otherwise.
+ * @return `true` if the variant is a [Failure], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public fun <T : Any> DataVariant<T>.isNotPresent(): Boolean {
+public inline fun <T : Any> DataVariant<T>.isNotPresent(): Boolean {
     contract {
-        returns(true) implies (this@isNotPresent is DataVariant.Failure)
-        returns(false) implies (this@isNotPresent !is DataVariant.Failure)
+        returns(true) implies (this@isNotPresent is Failure)
+        returns(false) implies (this@isNotPresent !is Failure)
     }
 
-    return this is DataVariant.Failure
+    return this is Failure
 }
 
 /**
  * Requires that the [DataVariant] is a single value and returns it.
  *
  * @return The single value.
- * @throws IllegalStateException if the variant is not a [DataVariant.Single].
+ * @throws IllegalStateException if the variant is not a [Single].
  */
 @OptIn(ExperimentalContracts::class)
-public fun <T : Any> DataVariant<T>.requireSingle(): T {
+public inline fun <T : Any> DataVariant<T>.requireSingle(): T {
     contract {
-        returns() implies (this@requireSingle is DataVariant.Single<T>)
+        returns() implies (this@requireSingle is Single<T>)
     }
     return if (isSingle()) this.value else error("Expected a single value, but got: $this.")
 }
@@ -133,24 +139,17 @@ public fun <T : Any> DataVariant<T>.requireSingle(): T {
  * Requires that the [DataVariant] is a streaming value and returns it.
  *
  * @return The streaming value.
- * @throws IllegalStateException if the variant is not a [DataVariant.Streaming].
+ * @throws IllegalStateException if the variant is not a [Streaming].
  */
 @OptIn(ExperimentalContracts::class)
-public fun <T : Any> DataVariant<T>.requireStreaming(): Flow<T> {
+public inline fun <T : Any> DataVariant<T>.requireStreaming(): Flow<T> {
     contract {
-        returns() implies (this@requireStreaming is DataVariant.Streaming<T>)
+        returns() implies (this@requireStreaming is Streaming<T>)
     }
     return if (isStreaming()) this.flow else error("Expected a streaming value, but was not.")
 }
 
-/**
- * Applies the given [action] to each element of the [DataVariant.Streaming] flow.
- *
- * @param action The action to apply to each element.
- * @return A new [DataVariant.Streaming] with the action applied to each element.
- */
-public fun <T : Any> DataVariant.Streaming<T>.onEach(
-    action: suspend (T) -> Unit
-): DataVariant.Streaming<T> {
-    return DataVariant.Streaming(flow.onEach(action))
+public fun interface Transformer<T : Any, R : Any> {
+    public fun transform(value: T): R
 }
+

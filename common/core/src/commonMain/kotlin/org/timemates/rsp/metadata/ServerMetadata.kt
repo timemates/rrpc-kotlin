@@ -5,6 +5,7 @@ package org.timemates.rsp.metadata
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import kotlin.jvm.JvmField
 
 /**
  * Represents metadata information that sent from Server to Client.
@@ -12,12 +13,13 @@ import kotlinx.serialization.protobuf.ProtoNumber
  */
 @Serializable
 public data class ServerMetadata(
-    @ProtoNumber(0)
-    val schemaVersion: Int = RSPMetadata.CURRENT_SCHEMA_VERSION,
     @ProtoNumber(1)
+    val schemaVersion: Int = RSPMetadata.CURRENT_SCHEMA_VERSION,
+    @ProtoNumber(2)
     public override val extra: ExtraMetadata = ExtraMetadata.EMPTY,
 ) : RSPMetadata {
     public companion object {
+        @JvmField
         public val EMPTY: ServerMetadata = ServerMetadata()
     }
 
