@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.*
 import org.timemates.rsp.DataVariant
+import org.timemates.rsp.Single
+import org.timemates.rsp.Streaming
 import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
 import org.timemates.rsp.annotations.InternalRSProtoAPI
 import org.timemates.rsp.instances.CoroutineContextInstanceContainer
@@ -54,7 +56,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
             val method = service.procedure<ProcedureDescriptor.RequestResponse<Any, Any>>(metadata.procedureName)
                 ?: throwProcedureNotFound()
             val data =
-                DataVariant.Single(protobuf.decodeFromByteArray(method.inputSerializer, payload.data.readBytes()))
+                Single(protobuf.decodeFromByteArray(method.inputSerializer, payload.data.readBytes()))
 
             val startContext = module.interceptors.runInputInterceptors(
                 data = data,
@@ -65,16 +67,16 @@ public class RSPModuleHandler(private val module: RSPModule) {
 
             val result = method.execute(
                 context = startContext?.toRequestContext() ?: RequestContext(module, metadata, method.options),
-                input = ((startContext?.data ?: data) as DataVariant.Single).value,
+                input = ((startContext?.data ?: data) as Single).value,
             )
 
             return@requestResponse module.interceptors.runOutputInterceptors(
-                data = DataVariant.Single(result),
+                data = Single(result),
                 serverMetadata = serverMetadata,
                 options = method.options,
                 instanceContainer = startContext?.instances ?: module,
             ).let {
-                ((it?.data as? DataVariant.Single)?.value ?: result).toPayload(
+                ((it?.data as? Single)?.value ?: result).toPayload(
                     strategy = method.outputSerializer,
                     serverMetadata = it?.metadata ?: serverMetadata
                 )
@@ -90,7 +92,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
             val method = service.procedure<ProcedureDescriptor.RequestStream<Any, Any>>(metadata.procedureName)
                 ?: throwProcedureNotFound()
 
-            val data = DataVariant.Single(
+            val data = Single(
                 protobuf.decodeFromByteArray(method.inputSerializer, payload.data.readBytes())
             )
 
@@ -103,16 +105,16 @@ public class RSPModuleHandler(private val module: RSPModule) {
 
             val result = method.execute(
                 context = startContext?.toRequestContext() ?: RequestContext(module, metadata, method.options),
-                value = ((startContext?.data ?: data) as DataVariant.Single).value,
+                value = ((startContext?.data ?: data) as Single).value,
             )
 
             return@requestStream module.interceptors.runOutputInterceptors(
-                data = DataVariant.Streaming(result),
+                data = Streaming(result),
                 serverMetadata = serverMetadata,
                 options = startContext?.options ?: method.options,
                 instanceContainer = startContext?.instances ?: module,
             ).let { interceptorContext ->
-                ((interceptorContext?.data as? DataVariant.Streaming)?.flow ?: result)
+                ((interceptorContext?.data as? Streaming)?.flow ?: result)
                     .mapToPayload(serverMetadata, method.outputSerializer)
             }
         }
@@ -126,7 +128,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
             val method = service.procedure<ProcedureDescriptor.RequestChannel<Any, Any>>(metadata.procedureName)
                 ?: throwProcedureNotFound()
 
-            val data = DataVariant.Streaming(
+            val data = Streaming(
                 payloads.map {
                     protobuf.decodeFromByteArray(method.inputSerializer, it.data.readBytes())
                 }
@@ -141,16 +143,16 @@ public class RSPModuleHandler(private val module: RSPModule) {
 
             val result = method.execute(
                 context = startContext?.toRequestContext() ?: RequestContext(module, metadata, method.options),
-                flow = ((startContext?.data ?: data) as DataVariant.Streaming).flow,
+                flow = ((startContext?.data ?: data) as Streaming).flow,
             )
 
             return@requestChannel module.interceptors.runOutputInterceptors(
-                data = DataVariant.Streaming(result),
+                data = Streaming(result),
                 serverMetadata = serverMetadata,
                 options = method.options,
                 instanceContainer = startContext?.instances ?: module,
             ).let { interceptorContext ->
-                ((interceptorContext?.data as? DataVariant.Streaming)?.flow ?: result)
+                ((interceptorContext?.data as? Streaming)?.flow ?: result)
                     .mapToPayload(serverMetadata, method.outputSerializer)
             }
         }

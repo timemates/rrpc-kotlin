@@ -5,14 +5,10 @@ package org.timemates.rsp.interceptors
 import org.timemates.rsp.DataVariant
 import org.timemates.rsp.annotations.InternalRSProtoAPI
 import org.timemates.rsp.instances.InstanceContainer
-import org.timemates.rsp.instances.ProtobufInstance
 import org.timemates.rsp.instances.ProvidableInstance
-import org.timemates.rsp.isSingle
 import org.timemates.rsp.metadata.ExtraMetadata
 import org.timemates.rsp.metadata.RSPMetadata
-import org.timemates.rsp.onEach
 import org.timemates.rsp.options.Options
-import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmSynthetic
 
 /**

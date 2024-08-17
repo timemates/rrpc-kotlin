@@ -5,6 +5,7 @@ package org.timemates.rsp.common.test
 import io.mockk.every
 import io.mockk.mockk
 import org.timemates.rsp.DataVariant
+import org.timemates.rsp.Single
 import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
 import org.timemates.rsp.annotations.InternalRSProtoAPI
 import org.timemates.rsp.instances.InstanceContainer
@@ -25,7 +26,7 @@ class InterceptorsTest {
 
         assertNull(
             actual = interceptors.runInputInterceptors(
-                DataVariant.Single(""),
+                Single(""),
                 ClientMetadata(),
                 Options.EMPTY,
                 InstanceContainer(emptyMap()),
@@ -43,7 +44,7 @@ class InterceptorsTest {
 
         assertSame(
             actual = interceptors.runInputInterceptors(
-                DataVariant.Single(""),
+                Single(""),
                 ClientMetadata(),
                 Options.EMPTY,
                 InstanceContainer(emptyMap()),
@@ -58,7 +59,7 @@ class InterceptorsTest {
 
         assertNull(
             actual = interceptors.runOutputInterceptors(
-                DataVariant.Single(""),
+                Single(""),
                 ServerMetadata(),
                 Options.EMPTY,
                 InstanceContainer(emptyMap()),
@@ -76,7 +77,7 @@ class InterceptorsTest {
 
         assertSame(
             actual = interceptors.runOutputInterceptors(
-                DataVariant.Single(""),
+                Single(""),
                 ServerMetadata(),
                 Options.EMPTY,
                 InstanceContainer(emptyMap()),

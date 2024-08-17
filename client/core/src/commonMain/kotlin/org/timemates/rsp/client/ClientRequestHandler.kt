@@ -7,7 +7,7 @@ import io.ktor.utils.io.core.*
 import io.rsocket.kotlin.payload.Payload
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.*
-import org.timemates.rsp.DataVariant
+import org.timemates.rsp.*
 import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
 import org.timemates.rsp.annotations.InternalRSProtoAPI
 import org.timemates.rsp.client.config.RSPClientConfig
@@ -16,8 +16,6 @@ import org.timemates.rsp.interceptors.InterceptorContext
 import org.timemates.rsp.metadata.ClientMetadata
 import org.timemates.rsp.metadata.ServerMetadata
 import org.timemates.rsp.options.Options
-import org.timemates.rsp.requireSingle
-import org.timemates.rsp.requireStreaming
 
 /**
  * Handles client requests by managing metadata and data serialization, making the appropriate calls, and processing the responses.
@@ -50,7 +48,7 @@ public class ClientRequestHandler(
         deserializationStrategy: DeserializationStrategy<R>,
     ): R = with(config) {
         val requestContext = interceptors.runInputInterceptors(
-            DataVariant.Single(data),
+            Single(data),
             metadata,
             options,
             instances,
@@ -79,8 +77,8 @@ public class ClientRequestHandler(
             val result = interceptors.response.fold(
                 InterceptorContext(
                     data = when (response) {
-                        is Exception -> DataVariant.Failure(response)
-                        is Pair<*, *> -> DataVariant.Single(response.second as T)
+                        is Exception -> Failure(response)
+                        is Pair<*, *> -> Single(response.second as T)
                         else -> error("Should not reach here.")
                     },
                     metadata = (response as? Pair<*, *>)?.first as ServerMetadata,
@@ -91,8 +89,8 @@ public class ClientRequestHandler(
                 interceptor.intercept(acc)
             }
 
-            return if (result.data is DataVariant.Failure)
-                throw (result.data as DataVariant.Failure<*>).exception
+            return if (result.data is Failure)
+                throw (result.data as Failure<*>).exception
             else result.data.requireSingle() as R
         }
 
@@ -122,7 +120,7 @@ public class ClientRequestHandler(
         deserializationStrategy: DeserializationStrategy<R>,
     ): Flow<R> = with(config) {
         val requestContext = interceptors.runInputInterceptors(
-            DataVariant.Single(data),
+            Single(data),
             metadata,
             options,
             instances,
@@ -163,7 +161,7 @@ public class ClientRequestHandler(
         deserializationStrategy: DeserializationStrategy<R>,
     ): Flow<R> = with(config) {
         val requestContext = interceptors.runInputInterceptors(
-            DataVariant.Streaming(data),
+            Streaming(data),
             metadata,
             options,
             instances,
@@ -213,7 +211,7 @@ public class ClientRequestHandler(
             )
 
             val context = interceptors.runOutputInterceptors(
-                DataVariant.Streaming(
+                Streaming(
                     response.map {
                         protobuf.decodeFromByteArray(deserializationStrategy, it.data.readBytes())
                     }
