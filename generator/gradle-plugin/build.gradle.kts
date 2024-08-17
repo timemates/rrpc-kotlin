@@ -21,8 +21,8 @@ dependencies {
 }
 
 gradlePlugin {
-    website = "https://github.com/timemates/rsproto"
-    vcsUrl = "https://github.com/timemates/rsproto"
+    website = "https://github.com/rsproto"
+    vcsUrl = "https://github.com/rsproto"
 
     plugins {
         create("rsproto-plugin") {
@@ -32,6 +32,22 @@ gradlePlugin {
             tags = listOf("kotlin", "rsocket", "protobuf", "proto")
 
             implementationClass = "org.timemates.rsp.plugin.RSocketProtoGeneratorPlugin"
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            val isDev = version.toString().contains("dev")
+
+            name = if (isDev) "timeMatesDev" else "timeMatesReleases"
+            url = if (isDev) uri("https://maven.timemates.org/dev") else uri("https://maven.timemates.org/releases")
+
+            credentials {
+                username = System.getenv("REPOSILITE_USER")
+                password = System.getenv("REPOSILITE_SECRET")
+            }
         }
     }
 }

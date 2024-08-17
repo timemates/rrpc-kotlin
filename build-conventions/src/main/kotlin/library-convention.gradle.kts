@@ -39,9 +39,10 @@ mavenPublishing {
 publishing {
     repositories {
         maven {
-            name = "timeMatesReleases"
+            val isDev = version.toString().contains("dev")
 
-            url = uri("https://maven.timemates.org/releases")
+            name = if (isDev) "timeMatesDev" else "timeMatesReleases"
+            url = if (isDev) uri("https://maven.timemates.org/dev") else uri("https://maven.timemates.org/releases")
 
             credentials {
                 username = System.getenv("REPOSILITE_USER")
