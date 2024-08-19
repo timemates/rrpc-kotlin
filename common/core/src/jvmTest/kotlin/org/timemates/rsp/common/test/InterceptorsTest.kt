@@ -2,8 +2,10 @@
 
 package org.timemates.rsp.common.test
 
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.timemates.rsp.DataVariant
 import org.timemates.rsp.Single
 import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
@@ -21,7 +23,7 @@ import kotlin.test.assertSame
 
 class InterceptorsTest {
     @Test
-    fun `runInputInterceptors with no interceptors should return null`() {
+    fun `runInputInterceptors with no interceptors should return null`(): Unit = runBlocking {
         val interceptors = Interceptors(emptyList(), emptyList())
 
         assertNull(
@@ -35,10 +37,10 @@ class InterceptorsTest {
     }
 
     @Test
-    fun `runInputInterceptors with interceptors that change context should return actual context`() {
+    fun `runInputInterceptors with interceptors that change context should return actual context`(): Unit = runBlocking {
         val testInterceptor = mockk<Interceptor<ClientMetadata>>()
         val expectedContext = mockk<InterceptorContext<ClientMetadata>>()
-        every { testInterceptor.intercept(any()) } returns expectedContext
+        coEvery { testInterceptor.intercept(any()) } returns expectedContext
 
         val interceptors = Interceptors(listOf(testInterceptor), emptyList())
 
@@ -54,7 +56,7 @@ class InterceptorsTest {
     }
 
     @Test
-    fun `runOutputInterceptors with no interceptors should return the same context early`() {
+    fun `runOutputInterceptors with no interceptors should return the same context early`(): Unit = runBlocking {
         val interceptors = Interceptors(emptyList(), emptyList())
 
         assertNull(
@@ -68,10 +70,10 @@ class InterceptorsTest {
     }
 
     @Test
-    fun `runOutputInterceptors with interceptors that change context should return actual context`() {
+    fun `runOutputInterceptors with interceptors that change context should return actual context`(): Unit = runBlocking {
         val testInterceptor = mockk<Interceptor<ServerMetadata>>()
         val expectedContext = mockk<InterceptorContext<ServerMetadata>>()
-        every { testInterceptor.intercept(any()) } returns expectedContext
+        coEvery { testInterceptor.intercept(any()) } returns expectedContext
 
         val interceptors = Interceptors(emptyList(), listOf(testInterceptor))
 

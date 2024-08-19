@@ -21,13 +21,13 @@ public interface Interceptor<TMetadata : RSPMetadata> {
     /**
      * Intercepts and processes the given [context].
      *
-     * **Interceptors should never be blocking, ANY consumption of request input / output that is Flow should rely
+     * **ANY consumption of request input / output that is Flow should rely
      * on the functions like [kotlinx.coroutines.flow.onEach]. Otherwise, it will lead to data loss or performance problems.**
      *
      * @param context The context containing metadata to be processed by the interceptor.
      * @return The processed [InterceptorContext] with potentially modified metadata.
      */
-    public fun intercept(
+    public suspend fun intercept(
         context: InterceptorContext<TMetadata>,
     ): InterceptorContext<TMetadata>
 }
@@ -60,7 +60,7 @@ public data class Interceptors(
      * @return The result of the block execution.
      */
     @InternalRSProtoAPI
-    public inline fun runInputInterceptors(
+    public suspend inline fun runInputInterceptors(
         data: DataVariant<*>,
         clientMetadata: ClientMetadata,
         options: Options,
@@ -90,7 +90,7 @@ public data class Interceptors(
      * @return [InterceptorContext] or null if no interceptors were involved.
      */
     @InternalRSProtoAPI
-    public fun runOutputInterceptors(
+    public suspend fun runOutputInterceptors(
         data: DataVariant<*>,
         serverMetadata: ServerMetadata,
         options: Options,
