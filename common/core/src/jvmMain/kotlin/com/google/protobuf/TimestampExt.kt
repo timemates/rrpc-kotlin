@@ -5,11 +5,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-public fun Timestamp.toJavaInstant(): Instant =
+public fun ProtoTimestamp.toJavaInstant(): Instant =
     Instant.ofEpochSecond(seconds, nanos.toLong())
 
-public fun Timestamp.toJavaLocalDateTime(): LocalDateTime =
+public fun ProtoTimestamp.toJavaLocalDateTime(): LocalDateTime =
     LocalDateTime.ofInstant(toJavaInstant(), ZoneOffset.UTC)
 
-public fun Timestamp.toJavaLocalDate(): LocalDate =
+public fun ProtoTimestamp.toJavaLocalDate(): LocalDate =
     LocalDate.ofInstant(toJavaInstant(), ZoneOffset.UTC)

@@ -2,6 +2,7 @@ package org.timemates.rsp.codegen.generators.types.message
 
 import com.squareup.kotlinpoet.*
 import org.timemates.rsp.codegen.generators.types.TypeGenerator
+import org.timemates.rsp.codegen.typemodel.Types
 
 internal object MessageCompanionObjectGenerator {
     fun generateCompanionObject(
@@ -9,11 +10,20 @@ internal object MessageCompanionObjectGenerator {
         nested: List<TypeGenerator.Result>,
         oneOfs: List<OneOfGenerator.Result>,
         generateCreateFun: Boolean,
+        typeUrl: String,
     ): TypeSpec {
         return TypeSpec.companionObjectBuilder()
+            .addSuperinterface(Types.ProtoTypeDefinition(className))
             .addProperty(
                 PropertySpec.builder("Default", className)
+                    .addModifiers(KModifier.OVERRIDE)
                     .initializer("%T()", className)
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("typeUrl", STRING)
+                    .addModifiers(KModifier.OVERRIDE)
+                    .initializer("%S", typeUrl)
                     .build()
             )
             .addFunctions(nested.mapNotNull(TypeGenerator.Result::constructorFun))

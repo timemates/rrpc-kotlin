@@ -58,4 +58,9 @@ internal object Types {
     val Interceptors = ClassName("org.timemates.rsp.interceptors", "Interceptors")
 
     val RequestContext = ClassName("org.timemates.rsp.server", "RequestContext")
+
+    val ProtoType = ClassName("org.timemates.rsp", "ProtoType")
+
+    fun ProtoTypeDefinition(type: TypeName) = ProtoType.nestedClass("Definition")
+            .parameterizedBy(type)
 }

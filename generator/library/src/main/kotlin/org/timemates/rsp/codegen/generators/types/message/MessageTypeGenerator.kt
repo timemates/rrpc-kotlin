@@ -1,9 +1,6 @@
 package org.timemates.rsp.codegen.generators.types.message
 
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.LambdaTypeName
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.UNIT
+import com.squareup.kotlinpoet.*
 import com.squareup.wire.schema.MessageType
 import com.squareup.wire.schema.Schema
 import org.timemates.rsp.codegen.typemodel.Annotations
@@ -27,6 +24,7 @@ internal object MessageTypeGenerator {
         val generateCreateFun = incoming.fields.isNotEmpty() || incoming.oneOfs.isNotEmpty()
 
         val typeSpec = TypeSpec.classBuilder(className)
+            .addSuperinterface(Types.ProtoType)
             .addAnnotation(Annotations.OptIn(Types.ExperimentalSerializationApi))
             .addKdoc(incoming.documentation.replace("%", "%%"))
             .addAnnotation(Annotations.Serializable)
@@ -37,7 +35,11 @@ internal object MessageTypeGenerator {
                     oneOfs
                 )
             )
-            .addType(MessageCompanionObjectGenerator.generateCompanionObject(className, nested, oneOfs, generateCreateFun))
+            .addType(
+                MessageCompanionObjectGenerator.generateCompanionObject(
+                    className, nested, oneOfs, generateCreateFun, incoming.type.typeUrl!!,
+                )
+            )
             .addTypes(nested.map(TypeGenerator.Result::typeSpec))
             .apply {
                 if (generateCreateFun) {
@@ -52,6 +54,16 @@ internal object MessageTypeGenerator {
             }
             .addProperties(properties)
             .addProperties(oneOfProperties)
+            .addProperty(
+                PropertySpec.builder("definition", Types.ProtoTypeDefinition(ClassName("", incoming.name)))
+                    .addModifiers(KModifier.OVERRIDE)
+                    .getter(
+                        FunSpec.getterBuilder()
+                            .addCode("return Companion")
+                            .build()
+                    )
+                    .build()
+            )
             .addTypes(oneOfs.map(OneOfGenerator.Result::oneOfClass))
             .build()
 

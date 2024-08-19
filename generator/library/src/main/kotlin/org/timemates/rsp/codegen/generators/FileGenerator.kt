@@ -48,6 +48,10 @@ internal object FileGenerator {
 
             val types = protoFile.types.map { TypeGenerator.generateType(it, schema) }
 
+            if (types.isNotEmpty()) {
+                addImport(Types.ProtoType.packageName, Types.ProtoType.simpleName)
+            }
+
             types.mapNotNull(TypeGenerator.Result::constructorFun)
                 .forEach(::addFunction)
             addTypes(types.map { it.typeSpec })

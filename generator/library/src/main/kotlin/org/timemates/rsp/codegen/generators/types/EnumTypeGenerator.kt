@@ -1,8 +1,6 @@
 package org.timemates.rsp.codegen.generators.types
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.*
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Schema
 import org.timemates.rsp.codegen.typemodel.Annotations
@@ -28,9 +26,27 @@ internal object EnumTypeGenerator {
             .addTypes(nested.map(TypeGenerator.Result::typeSpec))
             .addType(
                 TypeSpec.companionObjectBuilder()
+                    .addSuperinterface(Types.ProtoTypeDefinition(ClassName("", incoming.name)))
                     .addProperty(
                         PropertySpec.builder("Default", ClassName("", incoming.name))
+                            .addModifiers(KModifier.OVERRIDE)
                             .initializer(incoming.constants.first { it.tag == 0 }.name)
+                            .build()
+                    )
+                    .addProperty(
+                        PropertySpec.builder("typeUrl", STRING)
+                            .addModifiers(KModifier.OVERRIDE)
+                            .initializer("%S", incoming.type.typeUrl)
+                            .build()
+                    )
+                    .addProperty(
+                        PropertySpec.builder("definition", Types.ProtoTypeDefinition(STAR))
+                            .addModifiers(KModifier.OVERRIDE)
+                            .getter(
+                                FunSpec.getterBuilder()
+                                    .addCode("return Companion")
+                                    .build()
+                            )
                             .build()
                     )
                     .addFunctions(nested.mapNotNull(TypeGenerator.Result::constructorFun))
