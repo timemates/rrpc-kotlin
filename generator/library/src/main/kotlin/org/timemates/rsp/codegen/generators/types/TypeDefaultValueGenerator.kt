@@ -27,9 +27,6 @@ internal object TypeDefaultValueGenerator {
             ProtoType.BYTES -> "byteArrayOf()"
             ProtoType.DOUBLE -> "0.0"
             ProtoType.FLOAT -> "0.0f"
-            ProtoType.STRUCT_LIST -> "emptyList()"
-            ProtoType.STRUCT_MAP -> "emptyMap()"
-            ProtoType.TIMESTAMP -> ""
             else -> "null"
         }
     }

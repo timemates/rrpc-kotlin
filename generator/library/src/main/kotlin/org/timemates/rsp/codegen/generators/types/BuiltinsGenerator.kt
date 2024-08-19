@@ -15,11 +15,7 @@ internal object BuiltinsGenerator {
             ProtoType.UINT32, ProtoType.UINT32_VALUE -> U_INT
             ProtoType.UINT64, ProtoType.UINT64_VALUE -> U_LONG
             ProtoType.DOUBLE, ProtoType.DOUBLE_VALUE -> DOUBLE
-            ProtoType.DURATION -> TODO("This type is not yet implemented.")
-            ProtoType.EMPTY -> UNIT
-            ProtoType.STRING, ProtoType.TIMESTAMP -> STRING
-            ProtoType.STRUCT_LIST ->
-                LIST.parameterizedBy(ClassName(incoming.enclosingTypeOrPackage ?: "", incoming.simpleName))
+            ProtoType.STRING -> STRING
             else -> error("Unsupported protobuf type $incoming")
         }
     }

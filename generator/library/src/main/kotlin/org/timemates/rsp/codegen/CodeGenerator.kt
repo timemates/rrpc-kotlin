@@ -28,6 +28,8 @@ public class CodeGenerator(
                     it.location.toString() != "google/protobuf/descriptor.proto" &&
                     // wrappers are ignored, because they're generated as usual kotlin types, but nullable
                     it.location.toString() != "google/protobuf/wrappers.proto"
+                    // this type already contains in the common-core
+                    && it.location.toString() != "google/protobuf/timestamp.proto"
             }
             .map { file ->
                 FileGenerator.generateFile(schema, file, clientGeneration, serverGeneration)
