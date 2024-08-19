@@ -7,21 +7,17 @@ import io.rsocket.kotlin.RSocketError
 import io.rsocket.kotlin.RSocketRequestHandlerBuilder
 import io.rsocket.kotlin.payload.Payload
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.*
-import org.timemates.rsp.DataVariant
 import org.timemates.rsp.Single
 import org.timemates.rsp.Streaming
 import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
 import org.timemates.rsp.annotations.InternalRSProtoAPI
-import org.timemates.rsp.instances.CoroutineContextInstanceContainer
 import org.timemates.rsp.instances.ProtobufInstance
 import org.timemates.rsp.metadata.ClientMetadata
 import org.timemates.rsp.metadata.ServerMetadata
-import org.timemates.rsp.requireStreaming
 import org.timemates.rsp.server.RequestContext
+import org.timemates.rsp.server.module.descriptors.ProcedureDescriptor
 import org.timemates.rsp.server.module.descriptors.ServiceDescriptor
-import org.timemates.rsp.server.module.descriptors.ServiceDescriptor.ProcedureDescriptor
 import org.timemates.rsp.server.module.descriptors.procedure
 import org.timemates.rsp.server.toRequestContext
 

@@ -10,7 +10,7 @@ internal object Types {
         ClassName("kotlinx.coroutines.flow", "Flow")
             .parameterizedBy(ofTypeName)
 
-    val ServiceDescriptor = ClassName("org.timemates.rsp.server.descriptors", "ServiceDescriptor")
+    val ServiceDescriptor = ClassName("org.timemates.rsp.server.module.descriptors", "ServiceDescriptor")
 
     val ByteReadPacket = ClassName("io.ktor.utils.io.core", "ByteReadPacket")
 
@@ -18,7 +18,7 @@ internal object Types {
 
     object ProcedureDescriptor {
         val base = ClassName(
-            "org.timemates.rsp.server.descriptors", "ProcedureDescriptor"
+            "org.timemates.rsp.server.module.descriptors", "ProcedureDescriptor"
         )
 
         val requestResponse = base.nestedClass("RequestResponse")
@@ -39,19 +39,23 @@ internal object Types {
 
     val ClientMetadata = ClassName("org.timemates.rsp.metadata", "ClientMetadata")
 
+    val ExtraMetadata = ClassName("org.timemates.rsp.metadata", "ExtraMetadata")
+
     val ProtoBuf = ClassName("kotlinx.serialization.protobuf", "ProtoBuf")
 
     val RSocket = ClassName("io.rsocket.kotlin", "RSocket")
 
     val RSPClientConfig = ClassName("org.timemates.rsp.client.config", "RSPClientConfig")
 
-    val RSPServerService = ClassName("org.timemates.rsp.server", "RSPService")
+    val RSPServerService = ClassName("org.timemates.rsp.server.module", "RSPService")
 
-    val RSPClientService = ClassName("org.timemates.rsp.client", "RSPServiceApi")
+    val RSPClientService = ClassName("org.timemates.rsp.client", "RSPServiceClient")
 
     val ExperimentalSerializationApi = ClassName("kotlinx.serialization", "ExperimentalSerializationApi")
 
     val KSerializer = ClassName("kotlinx.serialization", "KSerializer")
 
     val Interceptors = ClassName("org.timemates.rsp.interceptors", "Interceptors")
+
+    val RequestContext = ClassName("org.timemates.rsp.server", "RequestContext")
 }

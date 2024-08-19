@@ -5,6 +5,7 @@ import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
 import org.timemates.rsp.instances.InstanceContainer
 import org.timemates.rsp.instances.ProvidableInstance
 import org.timemates.rsp.interceptors.Interceptors
+import org.timemates.rsp.server.module.descriptors.ProcedureDescriptor
 import org.timemates.rsp.server.module.descriptors.ServiceDescriptor
 
 /**
@@ -39,10 +40,10 @@ public interface RSPModule : InstanceContainer, ServicesContainer {
  *
  * @return The list of known procedure descriptors.
  *
- * @see ServiceDescriptor.ProcedureDescriptor
+ * @see ProcedureDescriptor
  * @see RSPModule
  */
-public val RSPModule.knownProcedures: List<ServiceDescriptor.ProcedureDescriptor<*, *>>
+public val RSPModule.knownProcedures: List<ProcedureDescriptor<*, *>>
     get() = services.flatMap { it.procedures }
 
 /**

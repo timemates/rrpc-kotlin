@@ -16,11 +16,4 @@ public abstract class RSPService {
      * @see ProcedureDescriptor
      */
     public abstract val descriptor: ServiceDescriptor
-
-
-    @OptIn(InternalRSProtoAPI::class)
-    protected suspend fun instances(): InstanceContainer {
-        return coroutineContext[CoroutineContextInstanceContainer]?.container
-            ?: error("Call from the wrong context.")
-    }
 }
