@@ -23,22 +23,15 @@ public object ClientOptionsPropertyGenerator {
         val imports = mutableListOf<ImportRequirement>()
 
         val code = buildCodeBlock {
-            add("%T(", RPCS_OPTIONS_TYPE)
             if (optionsMap.isEmpty()) {
-                add("emptyMap()")
-                add(")")
+                add("RPCsOptions.EMPTY")
                 return@buildCodeBlock
             }
+            add("%T(", RPCS_OPTIONS_TYPE)
             indent()
 
-            optionsMap.forEach { rpc, options ->
+            optionsMap.filter { it.value.map.isNotEmpty() }.forEach { (rpc, options) ->
                 add("\n%S to %T(", rpc, Types.Options)
-
-                if (options.map.isEmpty()) {
-                    add("emptyMap()),")
-                    return@forEach
-                }
-
                 newline()
                 indent()
                 add("mapOf(")
@@ -61,7 +54,8 @@ public object ClientOptionsPropertyGenerator {
                 unindent()
                 add(")")
                 unindent()
-                newline("),")
+                newline()
+                add("),")
             }
             newline()
             unindent()

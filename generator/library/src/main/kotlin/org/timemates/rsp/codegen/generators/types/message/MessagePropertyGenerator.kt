@@ -10,7 +10,7 @@ internal object MessagePropertyGenerator {
         return incoming.declaredFields.mapIndexed { index, field ->
             PropertySpec.builder(field.name, parameterTypes[index])
                 .initializer(field.name)
-                .addKdoc(field.documentation)
+                .addKdoc(field.documentation.replace("%", "%%"))
                 .addAnnotation(Annotations.ProtoNumber(field.tag))
                 .apply {
                     if (field.isRepeated) addAnnotation(Annotations.ProtoPacked)

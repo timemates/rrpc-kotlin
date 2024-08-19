@@ -37,6 +37,7 @@ internal object FileGenerator {
 
             if(serverGeneration && protoFile.services.isNotEmpty()) {
                 addImport(Types.ServiceDescriptor.packageName, Types.ServiceDescriptor.simpleName)
+                addImport(Types.ServiceDescriptor.packageName, Types.ProcedureDescriptor.base.simpleName)
                 addTypes(protoFile.services.map { ServerServiceGenerator.generateService(it, schema) })
             }
 

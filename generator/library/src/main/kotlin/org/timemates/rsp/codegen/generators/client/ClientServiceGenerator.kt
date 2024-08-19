@@ -2,11 +2,11 @@ package org.timemates.rsp.codegen.generators.client
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.Import
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.Schema
 import com.squareup.wire.schema.Service
 import org.timemates.rsp.codegen.generators.options.ClientOptionsPropertyGenerator
+import org.timemates.rsp.codegen.typemodel.Annotations
 import org.timemates.rsp.codegen.typemodel.ImportRequirement
 import org.timemates.rsp.codegen.typemodel.Types
 
@@ -28,6 +28,9 @@ public object ClientServiceGenerator {
 
         return Result(
             typeSpec = TypeSpec.classBuilder(className)
+                .addAnnotation(
+                    Annotations.OptIn(Annotations.InternalRSProtoAPI)
+                )
                 .primaryConstructor(
                     FunSpec.constructorBuilder()
                         .addParameter("config", Types.RSPClientConfig)

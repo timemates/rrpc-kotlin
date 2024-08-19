@@ -25,7 +25,7 @@ internal object OneOfGenerator {
             .addTypes(oneof.fields.map { field ->
                 val defaultValue = TypeDefaultValueGenerator.generateTypeDefault(field)
                 val typeName = field.type!!.asClassName(schema)
-                val builder = typeName.nestedClass("Builder")
+                val builder = typeName.nestedClass("DSLBuilder")
 
                 val fieldName = field.name.capitalized()
 
@@ -77,7 +77,7 @@ internal object OneOfGenerator {
 
         val property = PropertySpec.builder(oneof.name, oneOfClassName.copy(nullable = true))
             .addAnnotation(Annotations.ProtoOneOf)
-            .addKdoc(oneof.documentation)
+            .addKdoc(oneof.documentation.replace("%", "%%"))
             .initializer(oneof.name)
             .build()
 

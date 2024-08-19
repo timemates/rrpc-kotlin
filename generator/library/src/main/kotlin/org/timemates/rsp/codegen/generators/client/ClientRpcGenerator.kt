@@ -34,9 +34,11 @@ public object ClientRpcGenerator {
                 Types.ClientMetadata,
                 serviceName,
                 rpcName,
+                Types.ExtraMetadata,
                 if (rpc.requestStreaming) "messages" else "message",
                 rpcRequestType,
                 rpcReturnType,
+                Types.Options,
             )
         )
 
@@ -76,11 +78,11 @@ private val REQUEST_CODE = """
                 %2T(
                     serviceName = %3S,
                     procedureName = %4S,
-                    extra = extra,
+                    extra = %5T(extra),
                 ),
-                data = %5S,
-                options = rpcsOptions[%4S],
-                serializationStrategy = %6T.serializer(),
-                deserializationStrategy = %7T.serializer(),
+                data = %6L,
+                options = rpcsOptions[%4S] ?: %9T.EMPTY,
+                serializationStrategy = %7T.serializer(),
+                deserializationStrategy = %8T.serializer(),
             )
         """.trimIndent()

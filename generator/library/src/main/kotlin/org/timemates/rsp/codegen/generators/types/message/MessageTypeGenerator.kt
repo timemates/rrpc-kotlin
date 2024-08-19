@@ -24,9 +24,11 @@ internal object MessageTypeGenerator {
         val className = incoming.type.asClassName(schema)
         val nested = MessageNestedTypeGenerator.generateNestedTypes(incoming, schema)
 
+        val generateCreateFun = incoming.fields.isNotEmpty() || incoming.oneOfs.isNotEmpty()
+
         val typeSpec = TypeSpec.classBuilder(className)
             .addAnnotation(Annotations.OptIn(Types.ExperimentalSerializationApi))
-            .addKdoc(incoming.documentation)
+            .addKdoc(incoming.documentation.replace("%", "%%"))
             .addAnnotation(Annotations.Serializable)
             .primaryConstructor(
                 MessageConstructorGenerator.generatePrimaryConstructor(
@@ -35,10 +37,10 @@ internal object MessageTypeGenerator {
                     oneOfs
                 )
             )
-            .addType(MessageCompanionObjectGenerator.generateCompanionObject(className, nested, oneOfs))
+            .addType(MessageCompanionObjectGenerator.generateCompanionObject(className, nested, oneOfs, generateCreateFun))
             .addTypes(nested.map(TypeGenerator.Result::typeSpec))
             .apply {
-                if (incoming.fields.isNotEmpty()) {
+                if (generateCreateFun) {
                     addType(
                         MessageDSLBuilderGenerator.generateMessageBuilder(
                             incoming.name,
@@ -53,7 +55,7 @@ internal object MessageTypeGenerator {
             .addTypes(oneOfs.map(OneOfGenerator.Result::oneOfClass))
             .build()
 
-        val constructorFun = if (incoming.fields.isNotEmpty()) {
+        val constructorFun = if (generateCreateFun) {
             FunSpec.builder(typeSpec.name!!)
                 .addParameter(
                     "builder",
