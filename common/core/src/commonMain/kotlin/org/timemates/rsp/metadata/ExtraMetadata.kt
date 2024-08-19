@@ -19,6 +19,8 @@ public value class ExtraMetadata(public val extra: Map<String, ByteArray>) : Pro
 
     override val key: ProvidableInstance.Key<*>
         get() = Companion
+
+    public operator fun get(key: String): ByteArray? = extra[key]
 }
 
 public val InstanceContainer.extraMetadata: ExtraMetadata
