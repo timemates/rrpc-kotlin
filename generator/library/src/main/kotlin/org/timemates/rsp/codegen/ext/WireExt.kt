@@ -4,13 +4,22 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.wire.schema.*
 
 internal fun ProtoType.asClassName(schema: Schema): ClassName {
-    val file = schema.protoFile(this) ?: return ClassName(enclosingTypeOrPackage ?: "", simpleName)
+    return when (this) {
+        ProtoType.ANY -> ClassName("com.google.protobuf", "ProtoAny")
+        ProtoType.TIMESTAMP -> ClassName("com.google.protobuf", "ProtoTimestamp")
+        ProtoType.DURATION -> ClassName("com.google.protobuf", "ProtoDuration")
+        ProtoType.STRUCT_MAP -> ClassName("com.google.protobuf", "ProtoStruct")
+        ProtoType.EMPTY -> ClassName("com.google.protobuf", "ProtoEmpty")
+        else -> {
+            val file = schema.protoFile(this) ?: return ClassName(enclosingTypeOrPackage ?: "", simpleName)
 
-    val packageName: String =  file.smartPackage() ?: ""
-    val enclosingName: String = (enclosingTypeOrPackage?.replace(file.packageName ?: "", "") ?: "")
-        .replace("..", ".")
+            val packageName: String =  file.smartPackage() ?: ""
+            val enclosingName: String = (enclosingTypeOrPackage?.replace(file.packageName ?: "", "") ?: "")
+                .replace("..", ".")
 
-    return ClassName(packageName + enclosingName, simpleName)
+            ClassName(packageName + enclosingName, simpleName)
+        }
+    }
 }
 
 internal fun ProtoFile.smartPackage(): String? {
