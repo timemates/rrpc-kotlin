@@ -5,14 +5,13 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.wire.Syntax
 import com.squareup.wire.schema.ProtoFile
 import com.squareup.wire.schema.Schema
-import org.timemates.rsp.codegen.typemodel.Annotations
 import org.timemates.rsp.codegen.Constant
 import org.timemates.rsp.codegen.ext.addImports
-import org.timemates.rsp.codegen.typemodel.Types
 import org.timemates.rsp.codegen.generators.client.ClientServiceGenerator
-import org.timemates.rsp.codegen.generators.options.ClientOptionsPropertyGenerator
 import org.timemates.rsp.codegen.generators.server.ServerServiceGenerator
 import org.timemates.rsp.codegen.generators.types.TypeGenerator
+import org.timemates.rsp.codegen.typemodel.Annotations
+import org.timemates.rsp.codegen.typemodel.Types
 
 internal object FileGenerator {
     fun generateFile(
@@ -32,7 +31,7 @@ internal object FileGenerator {
             addFileComment(Constant.GENERATED_COMMENT)
 
             protoFile.extendList.forEach {
-                ExtendGenerator.generateExtend(it).forEach(::addProperty)
+                ExtendGenerator.generateExtend(it, schema).forEach(::addProperty)
             }
 
             if(serverGeneration && protoFile.services.isNotEmpty()) {

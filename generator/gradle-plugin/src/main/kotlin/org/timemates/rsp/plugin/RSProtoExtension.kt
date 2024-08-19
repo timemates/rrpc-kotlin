@@ -2,9 +2,10 @@ package org.timemates.rsp.plugin
 
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.property
+import org.gradle.kotlin.dsl.setProperty
 import org.timemates.rsp.codegen.configuration.MessageBuilderType
-import org.timemates.rsp.plugin.RSPGradlePluginDsl
 
 /**
  * Class representing the extension for generating Protobuf code.
@@ -66,13 +67,16 @@ public open class RSProtoExtension(objects: ObjectFactory) {
          * Represent the flag indicating what builder types should be generated.
          * @see MessageBuilderType
          */
-        public val builderTypes: Property<Set<MessageBuilderType>> = objects.property<Set<MessageBuilderType>>()
+        public val builderTypes: SetProperty<MessageBuilderType> = objects.setProperty<MessageBuilderType>()
             .convention(setOf(MessageBuilderType.DSL))
 
         public var builderType: MessageBuilderType
             @Deprecated("Shouldn't be used.", level = DeprecationLevel.HIDDEN)
             get() = error("Shouldn't be read.")
             set(value) = builderTypes.set(setOf(value))
+
+        public val permitPackageCycles: Property<Boolean> = objects.property<Boolean>()
+            .convention(false)
     }
 
     @RSPGradlePluginDsl

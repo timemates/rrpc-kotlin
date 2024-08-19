@@ -8,4 +8,5 @@ public data class RSPGenConfiguration(
     public val clientGeneration: Boolean,
     public val serverGeneration: Boolean,
     public val builderTypes: Set<MessageBuilderType>,
+    public val permitPackageCycles: Boolean,
 )

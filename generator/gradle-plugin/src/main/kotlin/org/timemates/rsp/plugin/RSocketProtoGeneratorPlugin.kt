@@ -45,6 +45,7 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
                         clientGeneration = extension.profile.client.get(),
                         serverGeneration = extension.profile.server.get(),
                         builderTypes = extension.options.builderTypes.get(),
+                        permitPackageCycles = extension.options.permitPackageCycles.get(),
                     )
                 )
             }
