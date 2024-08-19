@@ -1,5 +1,7 @@
 package org.timemates.rsp.codegen.generators.types
 
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Schema
@@ -17,7 +19,7 @@ internal object EnumTypeGenerator {
                 incoming.constants.forEach { constant ->
                     addEnumConstant(
                         constant.name,
-                        TypeSpec.anonymousClassBuilder().addKdoc(constant.documentation)
+                        TypeSpec.anonymousClassBuilder().addKdoc(constant.documentation.replace("%", "%%"))
                             .addAnnotation(Annotations.ProtoNumber(constant.tag))
                             .build()
                     )
@@ -26,6 +28,11 @@ internal object EnumTypeGenerator {
             .addTypes(nested.map(TypeGenerator.Result::typeSpec))
             .addType(
                 TypeSpec.companionObjectBuilder()
+                    .addProperty(
+                        PropertySpec.builder("Default", ClassName("", incoming.name))
+                            .initializer(incoming.constants.first { it.tag == 0 }.name)
+                            .build()
+                    )
                     .addFunctions(nested.mapNotNull(TypeGenerator.Result::constructorFun))
                     .build()
             )
