@@ -5,12 +5,12 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Options
 import com.squareup.wire.schema.ProtoType
+import com.squareup.wire.schema.Schema
 import org.timemates.rsp.codegen.exception.GenerationException
 import org.timemates.rsp.codegen.typemodel.Types
-import org.timemates.rsp.codegen.ext.retention
 
 public object ExtendGenerator {
-    public fun generateExtend(extend: Extend): List<PropertySpec> {
+    public fun generateExtend(extend: Extend, schema: Schema): List<PropertySpec> {
         return when(extend.type) {
             // we don't support for now options generation for anything except methods, files and services.
             Options.FIELD_OPTIONS,
@@ -21,13 +21,12 @@ public object ExtendGenerator {
 
             Options.METHOD_OPTIONS,
             Options.FILE_OPTIONS,
-            Options.SERVICE_OPTIONS -> extend.fields.mapNotNull {
-                if (it.options.get(Options.retention) != "RETENTION_SOURCE")
-                    return@mapNotNull null
-
+            Options.SERVICE_OPTIONS,
+                -> extend.fields.mapNotNull {
                 OptionGenerator.generateOption(
                     field = it,
                     type = getClassNameFromExtendType(extend.type ?: return@mapNotNull null),
+                    schema = schema,
                 )
             }
             else -> throw GenerationException("Extending messages are not supported.")
