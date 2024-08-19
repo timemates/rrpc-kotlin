@@ -118,28 +118,30 @@ public class ClientRequestHandler(
         options: Options,
         serializationStrategy: SerializationStrategy<T>,
         deserializationStrategy: DeserializationStrategy<R>,
-    ): Flow<R> = with(config) {
-        val requestContext = interceptors.runInputInterceptors(
-            Single(data),
-            metadata,
-            options,
-            instances,
-        )
+    ): Flow<R> = flow {
+        with(config) {
+            val requestContext = interceptors.runInputInterceptors(
+                Single(data),
+                metadata,
+                options,
+                instances,
+            )
 
-        val finalMetadata = requestContext?.metadata ?: metadata
-        val finalData = (requestContext?.data?.requireSingle() as? T) ?: data
+            val finalMetadata = requestContext?.metadata ?: metadata
+            val finalData = (requestContext?.data?.requireSingle() as? T) ?: data
 
-        val request = Payload(
-            ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, value = finalData)),
-            ByteReadPacket(protobuf.encodeToByteArray(ClientMetadata.serializer(), finalMetadata)),
-        )
+            val request = Payload(
+                ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, value = finalData)),
+                ByteReadPacket(protobuf.encodeToByteArray(ClientMetadata.serializer(), finalMetadata)),
+            )
 
-        return@with handleStreamingResponse(
-            rsocket.requestStream(request),
-            options,
-            requestContext,
-            deserializationStrategy,
-        )
+            handleStreamingResponse(
+                rsocket.requestStream(request),
+                options,
+                requestContext,
+                deserializationStrategy,
+            )
+        }
     }
 
     /**
@@ -159,30 +161,36 @@ public class ClientRequestHandler(
         options: Options,
         serializationStrategy: SerializationStrategy<T>,
         deserializationStrategy: DeserializationStrategy<R>,
-    ): Flow<R> = with(config) {
-        val requestContext = interceptors.runInputInterceptors(
-            Streaming(data),
-            metadata,
-            options,
-            instances,
-        )
+    ): Flow<R> = flow {
+        with(config) {
+            val requestContext = interceptors.runInputInterceptors(
+                Streaming(data),
+                metadata,
+                options,
+                instances,
+            )
 
-        return@with handleStreamingResponse(
-            response = rsocket.requestChannel(
-                // in the initial payload, we put only metadata: it follows up the same logic
-                // how we treat responses (the first chunk contains only metadata) and
-                // makes it more idiomatic from the ProtoBuf RPC definition side.
-                initPayload = Payload(
-                    data = ByteReadPacket.Empty,
-                    metadata = ByteReadPacket(protobuf.encodeToByteArray<ClientMetadata>(metadata))
+            handleStreamingResponse(
+                response = rsocket.requestChannel(
+                    // in the initial payload, we put only metadata: it follows up the same logic
+                    // how we treat responses (the first chunk contains only metadata) and
+                    // makes it more idiomatic from the ProtoBuf RPC definition side.
+                    initPayload = Payload(
+                        data = ByteReadPacket.Empty,
+                        metadata = ByteReadPacket(
+                            protobuf.encodeToByteArray<ClientMetadata>(
+                                requestContext?.metadata ?: metadata
+                            )
+                        )
+                    ),
+                    payloads = (requestContext?.data?.requireStreaming() ?: data)
+                        .map { Payload(ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, it as T))) },
                 ),
-                payloads = (requestContext?.data?.requireStreaming() ?: data)
-                    .map { Payload(ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, it as T))) },
-            ),
-            options = options,
-            requestContext = requestContext,
-            deserializationStrategy = deserializationStrategy
-        )
+                options = requestContext?.options ?: options,
+                requestContext = requestContext,
+                deserializationStrategy = deserializationStrategy
+            )
+        }
     }
 
     /**
@@ -194,17 +202,15 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return A flow of the response data.
      */
-    private fun <R : Any> handleStreamingResponse(
+    private suspend fun <R : Any> FlowCollector<R>.handleStreamingResponse(
         response: Flow<Payload>,
         options: Options,
         requestContext: InterceptorContext<ClientMetadata>?,
         deserializationStrategy: DeserializationStrategy<R>,
-    ): Flow<R> = with(config) {
+    ): Unit = with(config) {
         if (interceptors.response.isEmpty()) {
-            return response.drop(1).map { protobuf.decodeFromByteArray(deserializationStrategy, it.data.readBytes()) }
+            return emitAll(response.drop(1).map { protobuf.decodeFromByteArray(deserializationStrategy, it.data.readBytes()) })
         }
-
-        return flow {
             // the first element is always metadata-only
             val serverMetadata: ServerMetadata = protobuf.decodeFromByteArray(
                 response.first().metadata?.readBytes() ?: noMetadataError()
@@ -222,7 +228,6 @@ public class ClientRequestHandler(
             )
 
             emitAll(context!!.data.requireStreaming() as Flow<R>)
-        }
     }
 
     /**
