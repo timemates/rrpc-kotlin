@@ -1,6 +1,8 @@
 package org.timemates.rsp.server
 
 import org.timemates.rsp.instances.ProvidableInstance
+import org.timemates.rsp.interceptors.InterceptorContext
+import org.timemates.rsp.metadata.ClientMetadata
 import org.timemates.rsp.server.module.descriptors.ServiceDescriptor
 
 public interface ServicesContainer : ProvidableInstance {
@@ -20,3 +22,14 @@ public interface ServicesContainer : ProvidableInstance {
      */
     public fun service(name: String): ServiceDescriptor?
 }
+
+/**
+ * Resolves service by incoming metadata and instance container.
+ */
+public val InterceptorContext<ClientMetadata>.service: ServiceDescriptor
+    get() = instances.getInstance(ServicesContainer)?.service(metadata.serviceName)
+        ?: error(
+            "Unable to resolve the service: InstanceContainer is not including needed ServiceContainer or it's different" +
+                " instance without origin service. The only reason why it may happen: some of the interceptors " +
+                "replaced with a new InstanceContainer without taking in count ServiceContainer."
+        )
