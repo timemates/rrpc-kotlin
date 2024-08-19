@@ -3,7 +3,6 @@ package org.timemates.rsp.codegen
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaLoader
 import okio.FileSystem
-import okio.Path
 import org.timemates.rsp.codegen.configuration.RSPGenConfiguration
 import org.timemates.rsp.codegen.generators.FileGenerator
 import kotlin.io.path.absolutePathString
@@ -17,6 +16,7 @@ public class CodeGenerator(
         fileSystem.createDirectories(outputPath)
 
         val schemaLoader = SchemaLoader(fileSystem)
+        schemaLoader.permitPackageCycles = configuration.permitPackageCycles
 
         schemaLoader.initRoots(listOf(Location.get(rootPath.toNioPath().absolutePathString())))
 
