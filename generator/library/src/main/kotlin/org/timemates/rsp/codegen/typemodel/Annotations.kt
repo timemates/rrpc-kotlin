@@ -30,4 +30,6 @@ internal object Annotations {
 
     val ProtoPacked = AnnotationSpec.builder(ClassName("kotlinx.serialization.protobuf", "ProtoPacked")).build()
     val ProtoOneOf = AnnotationSpec.builder(ClassName("kotlinx.serialization.protobuf", "ProtoOneOf")).build()
+
+    val InternalRSProtoAPI = ClassName("org.timemates.rsp.annotations", "InternalRSProtoAPI")
 }
