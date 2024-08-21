@@ -65,16 +65,15 @@ public class RSPModuleHandler(private val module: RSPModule) {
             }
 
             // Run input interceptors and handle exceptions
-            val startContext = try {
-                module.interceptors.runInputInterceptors(
-                    data = data,
-                    clientMetadata = metadata,
-                    options = options,
-                    module,
-                )
-            } catch (e: Exception) {
-                handleException(e, method)
-            }
+            val startContext = module.interceptors.runInputInterceptors(
+                data = data,
+                clientMetadata = metadata,
+                options = options,
+                module,
+            )
+
+            if (startContext?.data is Failure) throw (startContext.data as Failure).exception
+
 
             // Execute the method and handle exceptions
             val result = try {
@@ -87,23 +86,17 @@ public class RSPModuleHandler(private val module: RSPModule) {
             }
 
             // Run output interceptors and handle exceptions
-            val finalContext = try {
-                module.interceptors.runOutputInterceptors(
-                    data = Single(result),
-                    serverMetadata = serverMetadata,
-                    options = startContext?.options ?: options,
-                    instanceContainer = startContext?.instances ?: module,
-                )
-            } catch (e: Exception) {
-                handleException(e, method, startContext)
-            }
+            val finalContext = module.interceptors.runOutputInterceptors(
+                data = Single(result),
+                serverMetadata = serverMetadata,
+                options = startContext?.options ?: options,
+                instanceContainer = startContext?.instances ?: module,
+            )
 
-            if (finalContext?.data is Failure)
-                throw (finalContext.data as Failure).exception
+            if (finalContext?.data is Failure) throw (finalContext.data as Failure).exception
 
             ((finalContext?.data as? Single)?.value ?: result).toPayload(
-                strategy = method.outputSerializer,
-                serverMetadata = serverMetadata
+                strategy = method.outputSerializer, serverMetadata = serverMetadata
             )
         }
     }
@@ -125,16 +118,15 @@ public class RSPModuleHandler(private val module: RSPModule) {
             }
 
             // Run input interceptors and handle exceptions
-            val startContext = try {
-                module.interceptors.runInputInterceptors(
-                    data = data,
-                    clientMetadata = metadata,
-                    options = options,
-                    module,
-                )
-            } catch (e: Exception) {
-                handleException(e, method)
-            }
+            val startContext = module.interceptors.runInputInterceptors(
+                data = data,
+                clientMetadata = metadata,
+                options = options,
+                module,
+            )
+
+            if (startContext?.data is Failure)
+                throw (startContext.data as Failure).exception
 
             // Execute the method and handle exceptions
             val result = try {
@@ -146,23 +138,17 @@ public class RSPModuleHandler(private val module: RSPModule) {
                 handleException(e, method, startContext)
             }
 
-            val finalContext = try {
-                module.interceptors.runOutputInterceptors(
-                    data = Streaming(result),
-                    serverMetadata = serverMetadata,
-                    options = startContext?.options ?: options,
-                    instanceContainer = startContext?.instances ?: module,
-                )
-            } catch (e: Exception) {
-                handleException(e, method, startContext)
-            }
+            val finalContext = module.interceptors.runOutputInterceptors(
+                data = Streaming(result),
+                serverMetadata = serverMetadata,
+                options = startContext?.options ?: options,
+                instanceContainer = startContext?.instances ?: module,
+            )
 
-            if (finalContext?.data is Failure)
-                throw (finalContext.data as Failure).exception
+            if (finalContext?.data is Failure) throw (finalContext.data as Failure).exception
 
             ((finalContext?.data as? Streaming)?.flow ?: result).mapToPayload(
-                serverMetadata = serverMetadata,
-                strategy = method.outputSerializer
+                serverMetadata = serverMetadata, strategy = method.outputSerializer
             )
         }
     }
@@ -179,26 +165,23 @@ public class RSPModuleHandler(private val module: RSPModule) {
 
             // Decode the input data
             val data = try {
-                Streaming(
-                    payloads.map {
-                        protobuf.decodeFromByteArray(method.inputSerializer, it.data.readBytes())
-                    }
-                )
+                Streaming(payloads.map {
+                    protobuf.decodeFromByteArray(method.inputSerializer, it.data.readBytes())
+                })
             } catch (e: Exception) {
                 handleException(e, method)
             }
 
             // Run input interceptors and handle exceptions
-            val startContext = try {
+            val startContext =
                 module.interceptors.runInputInterceptors(
                     data = data,
                     clientMetadata = metadata,
                     options = options,
                     module,
                 )
-            } catch (e: Exception) {
-                handleException(e, method)
-            }
+
+            if (startContext?.data is Failure) throw (startContext.data as Failure).exception
 
             // Execute the method and handle exceptions
             val result = try {
@@ -211,28 +194,23 @@ public class RSPModuleHandler(private val module: RSPModule) {
             }
 
             // Run output interceptors and handle exceptions
-            val finalContext = try {
-                module.interceptors.runOutputInterceptors(
-                    data = Streaming(result),
-                    serverMetadata = serverMetadata,
-                    options = startContext?.options ?: options,
-                    instanceContainer = startContext?.instances ?: module,
-                )
-            } catch (e: Exception) {
-                handleException(e, method, startContext)
-            }
+            val finalContext = module.interceptors.runOutputInterceptors(
+                data = Streaming(result),
+                serverMetadata = serverMetadata,
+                options = startContext?.options ?: options,
+                instanceContainer = startContext?.instances ?: module,
+            )
 
-            if (finalContext?.data is Failure)
-                throw (finalContext.data as Failure).exception
+            if (finalContext?.data is Failure) throw (finalContext.data as Failure).exception
 
             ((finalContext?.data as? Streaming)?.flow ?: result).mapToPayload(
-                serverMetadata = serverMetadata,
-                strategy = method.outputSerializer
+                serverMetadata = serverMetadata, strategy = method.outputSerializer
             )
         }
     }
 
 
+    @OptIn(InternalRSProtoAPI::class)
     private suspend fun handleException(
         exception: Exception,
         method: ProcedureDescriptor<*, *>?,
@@ -290,7 +268,11 @@ public class RSPModuleHandler(private val module: RSPModule) {
         strategy: SerializationStrategy<T>,
     ): Flow<Payload> {
         return flow {
-            emit(Payload(ByteReadPacket.Empty, ByteReadPacket(protobuf.encodeToByteArray<ServerMetadata>(serverMetadata))))
+            emit(
+                Payload(
+                    ByteReadPacket.Empty, ByteReadPacket(protobuf.encodeToByteArray<ServerMetadata>(serverMetadata))
+                )
+            )
             collect {
                 emit(
                     Payload(

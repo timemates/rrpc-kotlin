@@ -3,6 +3,7 @@
 package org.timemates.rsp.interceptors
 
 import org.timemates.rsp.DataVariant
+import org.timemates.rsp.Failure
 import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
 import org.timemates.rsp.annotations.InternalRSProtoAPI
 import org.timemates.rsp.instances.InstanceContainer
@@ -69,7 +70,11 @@ public data class Interceptors(
         if (request.isNotEmpty()) {
             val initialContext = InterceptorContext(data, clientMetadata, options, instanceContainer)
             return request.fold(initialContext) { acc, interceptor ->
-                interceptor.intercept(acc)
+                try {
+                    interceptor.intercept(acc)
+                } catch (e: Exception) {
+                    interceptor.intercept(acc.copy(data = Failure(e)))
+                }
             }
         }
         
@@ -99,7 +104,11 @@ public data class Interceptors(
         return if (response.isNotEmpty()) {
             val initialContext = InterceptorContext(data, serverMetadata, options, instanceContainer)
             response.fold(initialContext) { acc, interceptor ->
-                interceptor.intercept(acc)
+                try {
+                    interceptor.intercept(acc)
+                } catch (e: Exception) {
+                    interceptor.intercept(acc.copy(data = Failure(e)))
+                }
             }
         } else null
     }
