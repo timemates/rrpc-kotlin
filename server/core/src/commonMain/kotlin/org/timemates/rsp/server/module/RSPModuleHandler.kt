@@ -33,7 +33,7 @@ import org.timemates.rsp.server.toRequestContext
 public class RSPModuleHandler(private val module: RSPModule) {
     private val services = module.services.associateBy { it.name }
     private val protobuf = module.getInstance(ProtobufInstance)!!.protobuf
-    private val serverMetadata = ServerMetadata()
+    private val serverMetadata = ServerMetadata.EMPTY
 
     /**
      * Sets up the RSocketRequestHandler with the necessary request handlers.
