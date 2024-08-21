@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import kotlin.jvm.JvmInline
 import kotlin.jvm.JvmSynthetic
 
 /**
@@ -12,7 +11,7 @@ import kotlin.jvm.JvmSynthetic
  *
  * @param T The type of the value.
  */
-public sealed interface DataVariant<T : Any> {
+public sealed interface DataVariant<out T : Any> {
 
     /**
      * Checks if the other [DataVariant] is of the same type as this one.
@@ -47,7 +46,7 @@ public data class Single<T : Any>(public val value: T) : DataVariant<T> {
  * @param T The type of the value that was expected.
  * @property exception The exception representing the failure.
  */
-public data class Failure<T : Any>(public val exception: Exception) : DataVariant<T> {
+public data class Failure(public val exception: Exception) : DataVariant<Nothing> {
     override fun isSameType(other: DataVariant<*>): Boolean {
         return other is Failure
     }
@@ -112,10 +111,10 @@ public inline fun <T : Any> DataVariant<T>.isStreaming(): Boolean {
  * @return `true` if the variant is a [Failure], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : Any> DataVariant<T>.isNotPresent(): Boolean {
+public inline fun <T : Any> DataVariant<T>.isFailure(): Boolean {
     contract {
-        returns(true) implies (this@isNotPresent is Failure)
-        returns(false) implies (this@isNotPresent !is Failure)
+        returns(true) implies (this@isFailure is Failure)
+        returns(false) implies (this@isFailure !is Failure)
     }
 
     return this is Failure
@@ -148,6 +147,21 @@ public inline fun <T : Any> DataVariant<T>.requireStreaming(): Flow<T> {
     }
     return if (isStreaming()) this.flow else error("Expected a streaming value, but was not.")
 }
+
+/**
+ * Requires that the [DataVariant] is a failure and returns it.
+ *
+ * @return [Failure]
+ * @throws IllegalStateException if the variant is not a [Single].
+ */
+@OptIn(ExperimentalContracts::class)
+public inline fun <T : Any> DataVariant<T>.requireFailure(): Exception {
+    contract {
+        returns() implies (this@requireFailure is Failure)
+    }
+    return if (isFailure()) this.exception else error("Expected a single value, but got: $this.")
+}
+
 
 public fun interface Transformer<T : Any, R : Any> {
     public fun transform(value: T): R

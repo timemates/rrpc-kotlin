@@ -8,13 +8,15 @@ import io.rsocket.kotlin.RSocketRequestHandlerBuilder
 import io.rsocket.kotlin.payload.Payload
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.*
-import org.timemates.rsp.Single
-import org.timemates.rsp.Streaming
+import org.timemates.rsp.*
 import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
 import org.timemates.rsp.annotations.InternalRSProtoAPI
+import org.timemates.rsp.exceptions.ProcedureNotFoundException
+import org.timemates.rsp.exceptions.ServiceNotFoundException
 import org.timemates.rsp.instances.ProtobufInstance
 import org.timemates.rsp.metadata.ClientMetadata
 import org.timemates.rsp.metadata.ServerMetadata
+import org.timemates.rsp.options.Options
 import org.timemates.rsp.server.RequestContext
 import org.timemates.rsp.server.module.descriptors.ProcedureDescriptor
 import org.timemates.rsp.server.module.descriptors.ServiceDescriptor
@@ -50,116 +52,216 @@ public class RSPModuleHandler(private val module: RSPModule) {
             val metadata = getClientMetadata(payload)
             val service = getService(metadata)
             val method = service.procedure<ProcedureDescriptor.RequestResponse<Any, Any>>(metadata.procedureName)
-                ?: throwProcedureNotFound()
-            val data =
+                ?: handleException(ProcedureNotFoundException(metadata), null)
+
+            val options = method.options
+
+            // Decode the input data
+            val data = try {
                 Single(protobuf.decodeFromByteArray(method.inputSerializer, payload.data.readBytes()))
-
-            val startContext = module.interceptors.runInputInterceptors(
-                data = data,
-                clientMetadata = metadata,
-                options = method.options,
-                module,
-            )
-
-            val result = method.execute(
-                context = startContext?.toRequestContext() ?: RequestContext(module, metadata, method.options),
-                input = ((startContext?.data ?: data) as Single).value,
-            )
-
-            return@requestResponse module.interceptors.runOutputInterceptors(
-                data = Single(result),
-                serverMetadata = serverMetadata,
-                options = method.options,
-                instanceContainer = startContext?.instances ?: module,
-            ).let {
-                ((it?.data as? Single)?.value ?: result).toPayload(
-                    strategy = method.outputSerializer,
-                    serverMetadata = it?.metadata ?: serverMetadata
-                )
+            } catch (e: Exception) {
+                handleException(e, method)
             }
+
+            // Run input interceptors and handle exceptions
+            val startContext = try {
+                module.interceptors.runInputInterceptors(
+                    data = data,
+                    clientMetadata = metadata,
+                    options = options,
+                    module,
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            // Execute the method and handle exceptions
+            val result = try {
+                method.execute(
+                    context = startContext?.toRequestContext() ?: RequestContext(module, metadata, options),
+                    input = (startContext?.data ?: data).requireSingle()
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            // Run output interceptors and handle exceptions
+            val finalContext = try {
+                module.interceptors.runOutputInterceptors(
+                    data = Single(result),
+                    serverMetadata = serverMetadata,
+                    options = startContext?.options ?: options,
+                    instanceContainer = startContext?.instances ?: module,
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            if (finalContext?.data is Failure)
+                throw (finalContext.data as Failure).exception
+
+            ((finalContext?.data as? Single)?.value ?: result).toPayload(
+                strategy = method.outputSerializer,
+                serverMetadata = serverMetadata
+            )
         }
     }
 
     private fun RSocketRequestHandlerBuilder.requestStreamHandler() {
         requestStream { payload ->
             val metadata = getClientMetadata(payload)
-
-            val service: ServiceDescriptor = getService(metadata)
+            val service = getService(metadata)
             val method = service.procedure<ProcedureDescriptor.RequestStream<Any, Any>>(metadata.procedureName)
-                ?: throwProcedureNotFound()
+                ?: handleException(ProcedureNotFoundException(metadata), null)
 
-            val data = Single(
-                protobuf.decodeFromByteArray(method.inputSerializer, payload.data.readBytes())
-            )
+            val options = method.options
 
-            val startContext = module.interceptors.runInputInterceptors(
-                data = data,
-                clientMetadata = metadata,
-                options = method.options,
-                module,
-            )
-
-            val result = method.execute(
-                context = startContext?.toRequestContext() ?: RequestContext(module, metadata, method.options),
-                value = ((startContext?.data ?: data) as Single).value,
-            )
-
-            return@requestStream module.interceptors.runOutputInterceptors(
-                data = Streaming(result),
-                serverMetadata = serverMetadata,
-                options = startContext?.options ?: method.options,
-                instanceContainer = startContext?.instances ?: module,
-            ).let { interceptorContext ->
-                ((interceptorContext?.data as? Streaming)?.flow ?: result)
-                    .mapToPayload(serverMetadata, method.outputSerializer)
+            // Decode the input data
+            val data = try {
+                Single(protobuf.decodeFromByteArray(method.inputSerializer, payload.data.readBytes()))
+            } catch (e: Exception) {
+                handleException(e, method)
             }
+
+            // Run input interceptors and handle exceptions
+            val startContext = try {
+                module.interceptors.runInputInterceptors(
+                    data = data,
+                    clientMetadata = metadata,
+                    options = options,
+                    module,
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            // Execute the method and handle exceptions
+            val result = try {
+                method.execute(
+                    context = startContext?.toRequestContext() ?: RequestContext(module, metadata, options),
+                    value = (startContext?.data ?: data).requireSingle()
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            val finalContext = try {
+                module.interceptors.runOutputInterceptors(
+                    data = Streaming(result),
+                    serverMetadata = serverMetadata,
+                    options = startContext?.options ?: options,
+                    instanceContainer = startContext?.instances ?: module,
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            if (finalContext?.data is Failure)
+                throw (finalContext.data as Failure).exception
+
+            ((finalContext?.data as? Streaming)?.flow ?: result).mapToPayload(
+                serverMetadata = serverMetadata,
+                strategy = method.outputSerializer
+            )
         }
     }
+
 
     private fun RSocketRequestHandlerBuilder.requestChannelHandler() {
         requestChannel { initial, payloads ->
             val metadata = getClientMetadata(initial)
-
-            val service: ServiceDescriptor = getService(metadata)
+            val service = getService(metadata)
             val method = service.procedure<ProcedureDescriptor.RequestChannel<Any, Any>>(metadata.procedureName)
-                ?: throwProcedureNotFound()
+                ?: handleException(ProcedureNotFoundException(metadata), null)
 
-            val data = Streaming(
-                payloads.map {
-                    protobuf.decodeFromByteArray(method.inputSerializer, it.data.readBytes())
-                }
-            )
+            val options = method.options
 
-            val startContext = module.interceptors.runInputInterceptors(
-                data = data,
-                clientMetadata = metadata,
-                options = method.options,
-                module,
-            )
-
-            val result = method.execute(
-                context = startContext?.toRequestContext() ?: RequestContext(module, metadata, method.options),
-                flow = ((startContext?.data ?: data) as Streaming).flow,
-            )
-
-            return@requestChannel module.interceptors.runOutputInterceptors(
-                data = Streaming(result),
-                serverMetadata = serverMetadata,
-                options = method.options,
-                instanceContainer = startContext?.instances ?: module,
-            ).let { interceptorContext ->
-                ((interceptorContext?.data as? Streaming)?.flow ?: result)
-                    .mapToPayload(serverMetadata, method.outputSerializer)
+            // Decode the input data
+            val data = try {
+                Streaming(
+                    payloads.map {
+                        protobuf.decodeFromByteArray(method.inputSerializer, it.data.readBytes())
+                    }
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
             }
+
+            // Run input interceptors and handle exceptions
+            val startContext = try {
+                module.interceptors.runInputInterceptors(
+                    data = data,
+                    clientMetadata = metadata,
+                    options = options,
+                    module,
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            // Execute the method and handle exceptions
+            val result = try {
+                method.execute(
+                    context = startContext?.toRequestContext() ?: RequestContext(module, metadata, options),
+                    flow = (startContext?.data ?: data).requireStreaming()
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            // Run output interceptors and handle exceptions
+            val finalContext = try {
+                module.interceptors.runOutputInterceptors(
+                    data = Streaming(result),
+                    serverMetadata = serverMetadata,
+                    options = startContext?.options ?: options,
+                    instanceContainer = startContext?.instances ?: module,
+                )
+            } catch (e: Exception) {
+                handleException(e, method)
+            }
+
+            if (finalContext?.data is Failure)
+                throw (finalContext.data as Failure).exception
+
+            ((finalContext?.data as? Streaming)?.flow ?: result).mapToPayload(
+                serverMetadata = serverMetadata,
+                strategy = method.outputSerializer
+            )
         }
     }
 
+
+    private suspend fun handleException(
+        exception: Exception,
+        method: ProcedureDescriptor<*, *>?,
+    ): Nothing {
+        val resultException = try {
+            module.interceptors.runOutputInterceptors(
+                data = Failure(exception),
+                serverMetadata = serverMetadata,
+                options = method?.options ?: Options.EMPTY,
+                instanceContainer = module,
+            )?.data?.requireFailure() ?: exception
+        } catch (e: Exception) {
+            // todo special logging
+            e
+        }
+
+        throw resultException
+    }
+
     private fun getClientMetadata(payload: Payload): ClientMetadata {
-        return protobuf.decodeFromByteArray(payload.metadataOrFailure())
+        return try {
+            protobuf.decodeFromByteArray(payload.metadataOrFailure())
+        } catch (e: Exception) {
+            // TODO logging the exception
+            throw RSocketError.Rejected("Unable to process incoming request, data is corrupted or invalid.")
+        }
     }
 
     private fun getService(metadata: ClientMetadata): ServiceDescriptor {
-        return services[metadata.serviceName] ?: throwServiceNotFound()
+        return services[metadata.serviceName] ?: throw ServiceNotFoundException(metadata.serviceName)
     }
 
     /**
@@ -201,6 +303,3 @@ public class RSPModuleHandler(private val module: RSPModule) {
 internal fun Payload.metadataOrFailure(): ByteArray {
     return metadata?.readBytes() ?: throw RSocketError.Invalid("Metadata with service and procedure is not specified.")
 }
-
-internal fun throwServiceNotFound(): Nothing = throw RSocketError.Invalid("Service is not found.")
-internal fun throwProcedureNotFound(): Nothing = throw RSocketError.Invalid("Procedure is not found.")
