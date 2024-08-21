@@ -1,7 +1,6 @@
 package org.timemates.rsp
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.jvm.JvmSynthetic
@@ -69,10 +68,6 @@ public class Streaming<T : Any>(
     override fun toString(): String {
         return "Streaming(flow=$flow)"
     }
-
-    public fun <R : Any> map(
-        transform: Transformer<T, R>,
-    ): Streaming<R> = Streaming(flow.map { transform.transform(it) })
 }
 
 /**
@@ -160,10 +155,5 @@ public inline fun <T : Any> DataVariant<T>.requireFailure(): Exception {
         returns() implies (this@requireFailure is Failure)
     }
     return if (isFailure()) this.exception else error("Expected a single value, but got: $this.")
-}
-
-
-public fun interface Transformer<T : Any, R : Any> {
-    public fun transform(value: T): R
 }
 

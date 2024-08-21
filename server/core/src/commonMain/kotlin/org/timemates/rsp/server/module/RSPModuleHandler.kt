@@ -14,6 +14,7 @@ import org.timemates.rsp.annotations.InternalRSProtoAPI
 import org.timemates.rsp.exceptions.ProcedureNotFoundException
 import org.timemates.rsp.exceptions.ServiceNotFoundException
 import org.timemates.rsp.instances.ProtobufInstance
+import org.timemates.rsp.interceptors.InterceptorContext
 import org.timemates.rsp.metadata.ClientMetadata
 import org.timemates.rsp.metadata.ServerMetadata
 import org.timemates.rsp.options.Options
@@ -82,7 +83,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
                     input = (startContext?.data ?: data).requireSingle()
                 )
             } catch (e: Exception) {
-                handleException(e, method)
+                handleException(e, method, startContext)
             }
 
             // Run output interceptors and handle exceptions
@@ -94,7 +95,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
                     instanceContainer = startContext?.instances ?: module,
                 )
             } catch (e: Exception) {
-                handleException(e, method)
+                handleException(e, method, startContext)
             }
 
             if (finalContext?.data is Failure)
@@ -142,7 +143,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
                     value = (startContext?.data ?: data).requireSingle()
                 )
             } catch (e: Exception) {
-                handleException(e, method)
+                handleException(e, method, startContext)
             }
 
             val finalContext = try {
@@ -153,7 +154,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
                     instanceContainer = startContext?.instances ?: module,
                 )
             } catch (e: Exception) {
-                handleException(e, method)
+                handleException(e, method, startContext)
             }
 
             if (finalContext?.data is Failure)
@@ -206,7 +207,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
                     flow = (startContext?.data ?: data).requireStreaming()
                 )
             } catch (e: Exception) {
-                handleException(e, method)
+                handleException(e, method, startContext)
             }
 
             // Run output interceptors and handle exceptions
@@ -218,7 +219,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
                     instanceContainer = startContext?.instances ?: module,
                 )
             } catch (e: Exception) {
-                handleException(e, method)
+                handleException(e, method, startContext)
             }
 
             if (finalContext?.data is Failure)
@@ -235,13 +236,14 @@ public class RSPModuleHandler(private val module: RSPModule) {
     private suspend fun handleException(
         exception: Exception,
         method: ProcedureDescriptor<*, *>?,
+        prevContext: InterceptorContext<ClientMetadata>? = null,
     ): Nothing {
         val resultException = try {
             module.interceptors.runOutputInterceptors(
                 data = Failure(exception),
                 serverMetadata = serverMetadata,
-                options = method?.options ?: Options.EMPTY,
-                instanceContainer = module,
+                options = prevContext?.options ?: method?.options ?: Options.EMPTY,
+                instanceContainer = prevContext?.instances ?: module,
             )?.data?.requireFailure() ?: exception
         } catch (e: Exception) {
             // todo special logging
