@@ -3,6 +3,7 @@ package org.timemates.rsp.codegen.generators.options
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.wire.schema.*
 import org.timemates.rsp.codegen.ext.asClassName
+import org.timemates.rsp.codegen.ext.protoByteStringToByteArray
 
 public object OptionValueGenerator {
     public fun generate(
@@ -26,15 +27,19 @@ public object OptionValueGenerator {
         return when (protoType) {
             ProtoType.STRING, ProtoType.STRING_VALUE -> "\"${value}\""
             ProtoType.BOOL -> "$value"
-            // we don't support special types such as fixed32, fixed64, sfixed32, sfixed64, sint32 and sint34,
-            // all they are represented as regular Int.
+            // We don't support special types such as fixed32, sfixed32 and sint32,
+            // because it makes no sense if not used in serialization.
+            // All they are represented as regular Int.
             ProtoType.INT32, ProtoType.FIXED32, ProtoType.SFIXED32, ProtoType.SINT32 -> "$value"
+            // We don't support special types such as fixed64, sfixed64 and sint64,
+            // because it makes no sense if not used in serialization.
+            // All they are represented as regular Long.
             ProtoType.INT64, ProtoType.FIXED64, ProtoType.SFIXED64, ProtoType.SINT64 -> "${value}L"
             ProtoType.FLOAT -> "${value}f"
             ProtoType.DOUBLE -> "${value}.toDouble()"
             ProtoType.UINT32 -> "${value}.toUInt()"
             ProtoType.UINT64 -> "${value}uL"
-            ProtoType.BYTES -> TODO("To be implemented")
+            ProtoType.BYTES -> byteArrayToSourceCode((value as String).protoByteStringToByteArray())
             else -> error("Unsupported type")
         }
     }
@@ -113,6 +118,12 @@ public object OptionValueGenerator {
             is EnumType -> CodeBlock.of("%T.%L", className, protoValue).toString()
             is EnclosingType -> "null"
             null -> error("Unable to resolve custom type for: $protoType.")
+        }
+    }
+
+    private fun byteArrayToSourceCode(byteArray: ByteArray): String {
+        return byteArray.joinToString(prefix = "byteArrayOf(", postfix = ")") { byte ->
+            "0x${byte.toUByte().toString(16).toUpperCase().padStart(2, '0')}"
         }
     }
 }
