@@ -1,22 +1,20 @@
-@file:OptIn(ExperimentalInterceptorsApi::class, InternalRSProtoAPI::class)
+@file:OptIn(ExperimentalInterceptorsApi::class, InternalRRpcrotoAPI::class)
 
-package org.timemates.rsp.common.test
+package org.timemates.rrpc.common.test
 
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.timemates.rsp.DataVariant
-import org.timemates.rsp.Single
-import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
-import org.timemates.rsp.annotations.InternalRSProtoAPI
-import org.timemates.rsp.instances.InstanceContainer
-import org.timemates.rsp.interceptors.Interceptor
-import org.timemates.rsp.interceptors.InterceptorContext
-import org.timemates.rsp.interceptors.Interceptors
-import org.timemates.rsp.metadata.ClientMetadata
-import org.timemates.rsp.metadata.ServerMetadata
-import org.timemates.rsp.options.Options
+import org.timemates.rrpc.Single
+import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.instances.InstanceContainer
+import org.timemates.rrpc.interceptors.Interceptor
+import org.timemates.rrpc.interceptors.InterceptorContext
+import org.timemates.rrpc.interceptors.Interceptors
+import org.timemates.rrpc.metadata.ClientMetadata
+import org.timemates.rrpc.metadata.ServerMetadata
+import org.timemates.rrpc.options.OptionsWithValue
 import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlin.test.assertSame
@@ -30,7 +28,7 @@ class InterceptorsTest {
             actual = interceptors.runInputInterceptors(
                 Single(""),
                 ClientMetadata(),
-                Options.EMPTY,
+                OptionsWithValue.EMPTY,
                 InstanceContainer(emptyMap()),
             )
         )
@@ -48,7 +46,7 @@ class InterceptorsTest {
             actual = interceptors.runInputInterceptors(
                 Single(""),
                 ClientMetadata(),
-                Options.EMPTY,
+                OptionsWithValue.EMPTY,
                 InstanceContainer(emptyMap()),
             ),
             expected = expectedContext,
@@ -63,7 +61,7 @@ class InterceptorsTest {
             actual = interceptors.runOutputInterceptors(
                 Single(""),
                 ServerMetadata(),
-                Options.EMPTY,
+                OptionsWithValue.EMPTY,
                 InstanceContainer(emptyMap()),
             )
         )
@@ -81,7 +79,7 @@ class InterceptorsTest {
             actual = interceptors.runOutputInterceptors(
                 Single(""),
                 ServerMetadata(),
-                Options.EMPTY,
+                OptionsWithValue.EMPTY,
                 InstanceContainer(emptyMap()),
             ),
             expected = expectedContext,

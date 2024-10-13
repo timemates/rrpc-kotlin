@@ -5,7 +5,7 @@ package com.google.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import org.timemates.rsp.ProtoType
+import org.timemates.rrpc.ProtoType
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds

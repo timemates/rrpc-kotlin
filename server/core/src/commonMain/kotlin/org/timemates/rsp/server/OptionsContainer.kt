@@ -1,7 +1,7 @@
-package org.timemates.rsp.server
+package org.timemates.rrpc.server
 
-import org.timemates.rsp.options.Option
-import org.timemates.rsp.options.Options
+import org.timemates.rrpc.options.Option
+import org.timemates.rrpc.options.OptionsWithValue
 
 /**
  * An interface representing a container that holds a list of options.
@@ -10,7 +10,7 @@ public interface OptionsContainer {
     /**
      * The list of options contained within this container.
      */
-    public val options: Options
+    public val options: OptionsWithValue
 
     /**
      * Checks if the specified option is present in the container.
@@ -55,12 +55,12 @@ public fun <T> OptionsContainer.getOptionOrElse(
 }
 
 internal fun optionsContainer(
-    map: Options,
+    map: OptionsWithValue,
 ): OptionsContainer = OptionsContainerImpl(map)
 
 @JvmInline
 internal value class OptionsContainerImpl(
-    override val options: Options
+    override val options: OptionsWithValue
 ) : OptionsContainer {
     override fun hasOption(option: Option<*>): Boolean = options[option] != null
 

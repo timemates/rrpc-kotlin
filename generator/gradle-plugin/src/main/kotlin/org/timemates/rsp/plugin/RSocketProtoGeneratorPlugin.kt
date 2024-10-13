@@ -1,4 +1,4 @@
-package org.timemates.rsp.plugin
+package org.timemates.rrpc.plugin
 
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
@@ -10,23 +10,26 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.timemates.rsp.codegen.CodeGenerator
-import org.timemates.rsp.codegen.configuration.RSPGenConfiguration
+import org.timemates.rrpc.codegen.CodeGenerator
+import org.timemates.rrpc.codegen.configuration.RMGlobalConfiguration
 import java.io.File
 
 public class RSocketProtoGeneratorPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val extension = target.extensions.create<RSProtoExtension>("rsp", target.objects)
+        val extension = target.extensions.create<RRpcExtension>("rrpc", target.objects)
         val generationOutputPath = target.layout.buildDirectory.file(extension.paths.generationOutput)
 
         val generateProto = target.tasks.create("generateCode") {
-            group = "rsp"
+            group = "rrpc"
 
             inputs.dir(extension.paths.protoSources)
             outputs.dir(generationOutputPath)
 
             doLast {
-                val codeGenerator = CodeGenerator(FileSystem.SYSTEM)
+                val codeGenerator = CodeGenerator.generate(
+                    FileSystem.SYSTEM,
+                    adapters = mapOf()
+                )
 
                 try {
                     generationOutputPath.get()
@@ -39,11 +42,11 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
                 }
 
                 codeGenerator.generate(
-                    configuration = RSPGenConfiguration(
-                        rootPath = target.file(extension.paths.protoSources.get()).toOkioPath(),
-                        outputPath = target.file(generationOutputPath).toOkioPath(),
-                        clientGeneration = extension.profile.client.get(),
-                        serverGeneration = extension.profile.server.get(),
+                    configuration = RMGlobalConfiguration(
+                        inputs = target.file(extension.paths.protoSources.get()).toOkioPath(),
+                        output = target.file(generationOutputPath).toOkioPath(),
+                        clientGeneration = extension.profiles.client.get(),
+                        serverGeneration = extension.profiles.server.get(),
                         builderTypes = extension.options.builderTypes.get(),
                         permitPackageCycles = extension.options.permitPackageCycles.get(),
                     )
@@ -74,4 +77,4 @@ public class RSocketProtoGeneratorPlugin : Plugin<Project> {
 }
 
 private const val SOURCE_SET_NOT_FOUND =
-    "Unable to obtain source set: you should have commonMain/main or custom one that is set up in the [rsp.targetSourceSet]"
+    "Unable to obtain source set: you should have commonMain/main or custom one that is set up in the [rrpc.targetSourceSet]"

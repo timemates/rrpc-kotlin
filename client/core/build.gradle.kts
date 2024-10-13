@@ -3,12 +3,12 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
-group = "org.timemates.rsp"
+group = "org.timemates.rrpc"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
     commonMainImplementation(libs.rsocket.client)
-    commonMainImplementation(projects.common.core)
+    commonMainApi(projects.common.core)
 
     jvmTestImplementation(libs.kotlin.test)
     jvmTestImplementation(libs.mockk)
@@ -26,13 +26,13 @@ kotlin {
 
 mavenPublishing {
     coordinates(
-        groupId = "org.timemates.rsp",
+        groupId = "org.timemates.rrpc",
         artifactId = "client-core",
         version = System.getenv("LIB_VERSION") ?: return@mavenPublishing,
     )
 
     pom {
-        name.set("RSProto Client Core")
-        description.set("Multiplatform Kotlin core library for RSProto clients.")
+        name.set("RRpcroto Client Core")
+        description.set("Multiplatform Kotlin core library for RRpcroto clients.")
     }
 }

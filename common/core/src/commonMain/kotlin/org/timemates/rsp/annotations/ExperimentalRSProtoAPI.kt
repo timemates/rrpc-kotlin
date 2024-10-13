@@ -1,4 +1,4 @@
-package org.timemates.rsp.annotations
+package org.timemates.rrpc.annotations
 
 @RequiresOptIn(message = "This API is considered as experimental.", level = RequiresOptIn.Level.WARNING)
-public annotation class ExperimentalRSProtoAPI
+public annotation class ExperimentalRRpcrotoAPI

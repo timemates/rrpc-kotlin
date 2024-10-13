@@ -23,13 +23,13 @@ kotlin {
 
 mavenPublishing {
     coordinates(
-        groupId = "org.timemates.rsp",
+        groupId = "org.timemates.rrpc",
         artifactId = "common-core",
         version = System.getenv("LIB_VERSION") ?: return@mavenPublishing,
     )
 
     pom {
-        name.set("RSProto Common Core")
-        description.set("Multiplatform Kotlin core library for RSProto servers and clients.")
+        name.set("RRpcroto Common Core")
+        description.set("Multiplatform Kotlin core library for RRpcroto servers and clients.")
     }
 }

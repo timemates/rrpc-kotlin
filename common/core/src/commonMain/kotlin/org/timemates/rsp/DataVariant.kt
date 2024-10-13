@@ -1,4 +1,4 @@
-package org.timemates.rsp
+package org.timemates.rrpc
 
 import kotlinx.coroutines.flow.Flow
 import kotlin.contracts.ExperimentalContracts
@@ -28,6 +28,14 @@ public sealed interface DataVariant<out T : Any> {
  * @property value The single value.
  */
 public data class Single<T : Any>(public val value: T) : DataVariant<T> {
+    public companion object {
+        /**
+         * Denotes that single has no value inside. Usually, it's applicable only
+         * to the Metadata Push requests.
+         */
+        public val EMPTY: Single<Unit> = Single(Unit)
+    }
+
     override fun isSameType(other: DataVariant<*>): Boolean {
         return other is Single
     }

@@ -1,17 +1,14 @@
-package org.timemates.rsp.plugin
+package org.timemates.rrpc.plugin
 
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.property
-import org.gradle.kotlin.dsl.setProperty
-import org.timemates.rsp.codegen.configuration.MessageBuilderType
 
 /**
  * Class representing the extension for generating Protobuf code.
  */
-@RSPGradlePluginDsl
-public open class RSProtoExtension(objects: ObjectFactory) {
+@RRpcGradlePluginDsl
+public open class RRpcExtension(objects: ObjectFactory) {
     /**
      * If you have custom project structure that does not have commonMain / main sourceSets,
      * you should specify your main source set in the [targetSourceSet].
@@ -22,11 +19,11 @@ public open class RSProtoExtension(objects: ObjectFactory) {
     /**
      * Settings for specifying the type of generation (Client / Server)
      */
-    public val profile: Profile = Profile(objects)
+    public val profiles: Profiles = Profiles(objects)
 
-    @RSPGradlePluginDsl
-    public fun profile(block: Profile.() -> Unit) {
-        profile.apply(block)
+    @RRpcGradlePluginDsl
+    public fun profiles(block: Profiles.() -> Unit) {
+        profiles.apply(block)
     }
 
     /**
@@ -34,9 +31,9 @@ public open class RSProtoExtension(objects: ObjectFactory) {
      */
     public val options: Options = Options(objects)
 
-    @RSPGradlePluginDsl
+    @RRpcGradlePluginDsl
     public fun options(block: Options.() -> Unit) {
-        options.apply(block)
+        profiles.global.options.apply(block)
     }
 
     /**
@@ -44,53 +41,118 @@ public open class RSProtoExtension(objects: ObjectFactory) {
      */
     public val paths: Paths = Paths(objects)
 
-    @RSPGradlePluginDsl
+    @RRpcGradlePluginDsl
     public fun paths(block: Paths.() -> Unit) {
-        paths.apply(block)
+        profiles.global.paths.apply(block)
     }
 
-    @RSPGradlePluginDsl
-    public class Profile(objects: ObjectFactory) {
+    @RRpcGradlePluginDsl
+    public class Profiles(objects: ObjectFactory) {
         /**
          * Represents the flag indicating whether the code generation for the client should be performed.
          */
-        public val client: Property<Boolean> = objects.property<Boolean>().convention(true)
+        public val client: ClientProfile = ClientProfile(objects)
+
+        public fun client(block: ClientProfile.() -> Unit) {
+            client.apply(block)
+        }
+
         /**
          * Represents the flag indicating whether the code generation for the server should be performed.
          */
-        public val server: Property<Boolean> = objects.property<Boolean>().convention(true)
+        public val server: ServerProfile = ServerProfile(objects)
+
+        public fun server(block: ServerProfile.() -> Unit) {
+            server.apply(block)
+        }
+
+        /**
+         * Global profile. Other profiles always have everything added here.
+         */
+        public val global: GlobalProfile = GlobalProfile(objects)
+
+        public fun global(block: GlobalProfile.() -> Unit) {
+            global.apply(block)
+        }
+
+        @RRpcGradlePluginDsl
+        public class GlobalProfile(objects: ObjectFactory) {
+            public val options: Options = Options(objects)
+            public val paths: Paths = Paths(objects)
+
+            public fun options(block: Options.() -> Unit) {
+                options.apply(block)
+            }
+
+            public fun paths(block: Paths.() -> Unit) {
+                paths.apply(block)
+            }
+        }
+
+        @RRpcGradlePluginDsl
+        public class ClientProfile(objects: ObjectFactory) {
+            public val enabled: Property<Boolean> = objects.property<Boolean>().convention(true)
+            public val options: Options = Options(objects)
+            public val paths: Paths = Paths(objects)
+
+            public fun options(block: Options.() -> Unit) {
+                options.apply(block)
+            }
+
+            public fun paths(block: Paths.() -> Unit) {
+                paths.apply(block)
+            }
+        }
+
+        @RRpcGradlePluginDsl
+        public class ServerProfile(objects: ObjectFactory) {
+            public val metadata: Metadata = Metadata(objects)
+            public val enabled: Property<Boolean> = objects.property<Boolean>().convention(true)
+
+            public val options: Options = Options(objects)
+            public val paths: Paths = Paths(objects)
+
+            public fun metadata(block: Metadata.() -> Unit) {
+                metadata.apply(block)
+            }
+
+            public fun options(block: Options.() -> Unit) {
+                options.apply(block)
+            }
+
+            public fun paths(block: Paths.() -> Unit) {
+                paths.apply(block)
+            }
+
+            @RRpcGradlePluginDsl
+            public class Metadata(objects: ObjectFactory) {
+                public val enabled: Property<Boolean> = objects.property<Boolean>().convention(false)
+                public val scoped: Property<Boolean> = objects.property<Boolean>().convention(false)
+                public val name: Property<String> = objects.property<String>().convention(null)
+            }
+        }
     }
 
-    @RSPGradlePluginDsl
+    @RRpcGradlePluginDsl
     public class Options(objects: ObjectFactory) {
-        /**
-         * Represent the flag indicating what builder types should be generated.
-         * @see MessageBuilderType
-         */
-        public val builderTypes: SetProperty<MessageBuilderType> = objects.setProperty<MessageBuilderType>()
-            .convention(setOf(MessageBuilderType.DSL))
-
-        public var builderType: MessageBuilderType
-            @Deprecated("Shouldn't be used.", level = DeprecationLevel.HIDDEN)
-            get() = error("Shouldn't be read.")
-            set(value) = builderTypes.set(setOf(value))
-
         public val permitPackageCycles: Property<Boolean> = objects.property<Boolean>()
             .convention(false)
     }
 
-    @RSPGradlePluginDsl
+    @RRpcGradlePluginDsl
     public class Paths(objects: ObjectFactory) {
         /**
          * Contains the path to the folder where the Proto definition files are located.
          */
-        public val protoSources: Property<String> =
-            objects.property<String>().convention("src/main/proto")
+        public val protoSources: Property<String?> =
+            objects.property<String?>().convention(null)
+            // objects.property<String>().convention("src/main/proto")
 
         /**
          * Contains the path to the folder where the generated code will be saved.
          */
-        public val generationOutput: Property<String> =
-            objects.property<String>().convention("generated/rsp/src/commonMain")
+        public val generationOutput: Property<String?> =
+            objects.property<String?>.convention(null)
+            // objects.property<String>().convention("generated/rrpc/src/commonMain")
     }
 }

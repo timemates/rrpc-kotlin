@@ -1,25 +1,25 @@
 @file:OptIn(ExperimentalInterceptorsApi::class)
 
-package org.timemates.rsp.client.config
+package org.timemates.rrpc.client.config
 
 import io.rsocket.kotlin.RSocket
 import kotlinx.serialization.ExperimentalSerializationApi
-import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
-import org.timemates.rsp.annotations.InternalRSProtoAPI
-import org.timemates.rsp.instances.*
-import org.timemates.rsp.interceptors.Interceptor
-import org.timemates.rsp.interceptors.Interceptors
-import org.timemates.rsp.metadata.ClientMetadata
-import org.timemates.rsp.metadata.ServerMetadata
+import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.instances.*
+import org.timemates.rrpc.interceptors.Interceptor
+import org.timemates.rrpc.interceptors.Interceptors
+import org.timemates.rrpc.metadata.ClientMetadata
+import org.timemates.rrpc.metadata.ServerMetadata
 import kotlin.properties.Delegates
 
-public data class RSPClientConfig @OptIn(ExperimentalInterceptorsApi::class) constructor(
+public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) constructor(
     public val rsocket: RSocket,
     public val interceptors: Interceptors,
     public val instances: InstanceContainer,
 ) {
     public companion object {
-        public fun create(block: Builder.() -> Unit): RSPClientConfig {
+        public fun create(block: Builder.() -> Unit): RRpcClientConfig {
             return Builder().apply {
                 @OptIn(ExperimentalSerializationApi::class)
                 // By default, Protobuf should always be present
@@ -122,7 +122,7 @@ public data class RSPClientConfig @OptIn(ExperimentalInterceptorsApi::class) con
         /**
          * Appends the provided in the [builder] instances to existing ones.
          */
-        @OptIn(InternalRSProtoAPI::class)
+        @OptIn(InternalRRpcrotoAPI::class)
         public fun instances(builder: InstancesBuilder.() -> Unit): Builder = apply {
             val instances = InstancesBuilder().apply(builder).build()
             instances(instances)
@@ -151,8 +151,8 @@ public data class RSPClientConfig @OptIn(ExperimentalInterceptorsApi::class) con
          * @return The built instance of [T].
          */
         @OptIn(ExperimentalInterceptorsApi::class)
-        public fun build(): RSPClientConfig {
-            return RSPClientConfig(
+        public fun build(): RRpcClientConfig {
+            return RRpcClientConfig(
                 rsocket,
                 Interceptors(requestInterceptors, responseInterceptors),
                 instancesContainer ?: InstanceContainer(emptyMap()),

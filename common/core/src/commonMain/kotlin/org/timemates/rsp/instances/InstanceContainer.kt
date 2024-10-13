@@ -1,8 +1,8 @@
-package org.timemates.rsp.instances
+package org.timemates.rrpc.instances
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
-import org.timemates.rsp.annotations.InternalRSProtoAPI
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -90,7 +90,7 @@ internal class InstanceContainerImpl(
 public val InstanceContainer.protobuf: ProtoBuf?
     get() = getInstance(ProtobufInstance)?.protobuf
 
-@InternalRSProtoAPI
+@InternalRRpcrotoAPI
 public class CoroutineContextInstanceContainer(
     public val container: InstanceContainer,
 ) : CoroutineContext.Element {

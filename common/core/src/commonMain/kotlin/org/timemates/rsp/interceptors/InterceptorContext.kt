@@ -1,14 +1,14 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package org.timemates.rsp.interceptors
+package org.timemates.rrpc.interceptors
 
-import org.timemates.rsp.DataVariant
-import org.timemates.rsp.annotations.InternalRSProtoAPI
-import org.timemates.rsp.instances.InstanceContainer
-import org.timemates.rsp.instances.ProvidableInstance
-import org.timemates.rsp.metadata.ExtraMetadata
-import org.timemates.rsp.metadata.RSPMetadata
-import org.timemates.rsp.options.Options
+import org.timemates.rrpc.DataVariant
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.instances.InstanceContainer
+import org.timemates.rrpc.instances.ProvidableInstance
+import org.timemates.rrpc.metadata.ExtraMetadata
+import org.timemates.rrpc.metadata.RRpcMetadata
+import org.timemates.rrpc.options.OptionsWithValue
 import kotlin.jvm.JvmSynthetic
 
 /**
@@ -21,11 +21,11 @@ import kotlin.jvm.JvmSynthetic
  * @property options Options linked to the request.
  * @property instances Container for instances available within the request pipeline.
  */
-@OptIn(InternalRSProtoAPI::class)
-public class InterceptorContext<TMetadata : RSPMetadata> @InternalRSProtoAPI constructor(
+@OptIn(InternalRRpcrotoAPI::class)
+public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcrotoAPI constructor(
     public val data: DataVariant<*>,
     public val metadata: TMetadata,
-    public val options: Options,
+    public val options: OptionsWithValue,
     public val instances: InstanceContainer,
 ) {
 
@@ -51,7 +51,7 @@ public class InterceptorContext<TMetadata : RSPMetadata> @InternalRSProtoAPI con
     public fun copy(
         data: DataVariant<*> = this.data,
         extra: ExtraMetadata = this.metadata.extra,
-        options: Options = this.options,
+        options: OptionsWithValue = this.options,
         instances: InstanceContainer = this.instances,
     ): InterceptorContext<TMetadata> {
         @Suppress("UNCHECKED_CAST")
@@ -63,11 +63,11 @@ public class InterceptorContext<TMetadata : RSPMetadata> @InternalRSProtoAPI con
     /**
      * Builder class for modifying an immutable [InterceptorContext].
      */
-    public class Builder<TMetadata : RSPMetadata>(
+    public class Builder<TMetadata : RRpcMetadata>(
         private var instances: InstanceContainer,
         private var metadata: TMetadata,
         private var data: DataVariant<*>,
-        private var options: Options,
+        private var options: OptionsWithValue,
     ) {
         /**
          * Adds local instances to the given request pipeline. These instances do not affect
@@ -123,7 +123,7 @@ public class InterceptorContext<TMetadata : RSPMetadata> @InternalRSProtoAPI con
          *
          * @param options The new options for the request.
          */
-        public fun options(options: Options): Builder<TMetadata> {
+        public fun options(options: OptionsWithValue): Builder<TMetadata> {
             this.options = options
             return this
         }
@@ -147,7 +147,7 @@ public class InterceptorContext<TMetadata : RSPMetadata> @InternalRSProtoAPI con
  * @param instances The vararg list of instances to add to the builder.
  * @return The [InterceptorContext.Builder] instance with added local instances.
  */
-public fun <T : RSPMetadata> InterceptorContext.Builder<T>.addLocalInstances(
+public fun <T : RRpcMetadata> InterceptorContext.Builder<T>.addLocalInstances(
     vararg instances: ProvidableInstance
 ): InterceptorContext.Builder<T> {
     return addLocalInstances(instances.toList())
@@ -159,7 +159,7 @@ public fun <T : RSPMetadata> InterceptorContext.Builder<T>.addLocalInstances(
  * @param block The configuration block to modify the [InterceptorContext.Builder].
  * @return The modified [InterceptorContext] instance.
  */
-public inline fun <T : RSPMetadata> InterceptorContext<T>.modify(
+public inline fun <T : RRpcMetadata> InterceptorContext<T>.modify(
     block: InterceptorContext.Builder<T>.() -> Unit
 ): InterceptorContext<T> {
     return builder().apply(block).build()

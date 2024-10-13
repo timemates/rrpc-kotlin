@@ -1,6 +1,6 @@
-package org.timemates.rsp.exceptions
+package org.timemates.rrpc.exceptions
 
-import org.timemates.rsp.metadata.ClientMetadata
+import org.timemates.rrpc.metadata.ClientMetadata
 
 public class ProcedureNotFoundException(
     metadata: ClientMetadata

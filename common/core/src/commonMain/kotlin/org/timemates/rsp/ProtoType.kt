@@ -1,4 +1,4 @@
-package org.timemates.rsp
+package org.timemates.rrpc
 
 /**
  * Interface representing a type that can be serialized and deserialized using ProtoBuf.

@@ -1,21 +1,21 @@
-package org.timemates.rsp.instances
+package org.timemates.rrpc.instances
 
-import org.timemates.rsp.annotations.InternalRSProtoAPI
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
 
-public class InstancesBuilder @InternalRSProtoAPI constructor() {
+public class InstancesBuilder @InternalRRpcrotoAPI constructor() {
     private val instances: MutableList<ProvidableInstance> = mutableListOf()
 
     public fun register(instance: ProvidableInstance) {
         instances += instance
     }
 
-    @InternalRSProtoAPI
+    @InternalRRpcrotoAPI
     public fun build(): List<ProvidableInstance> {
         return instances.toList()
     }
 }
 
 public fun instances(block: InstancesBuilder.() -> Unit): List<ProvidableInstance> {
-    @OptIn(InternalRSProtoAPI::class)
+    @OptIn(InternalRRpcrotoAPI::class)
     return InstancesBuilder().also(block).build()
 }

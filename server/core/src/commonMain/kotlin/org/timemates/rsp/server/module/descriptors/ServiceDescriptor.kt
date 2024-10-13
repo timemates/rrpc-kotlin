@@ -1,14 +1,8 @@
-package org.timemates.rsp.server.module.descriptors
+package org.timemates.rrpc.server.module.descriptors
 
-import io.ktor.utils.io.core.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerializationStrategy
-import org.timemates.rsp.server.OptionsContainer
-import org.timemates.rsp.options.Options
-import org.timemates.rsp.server.RequestContext
-import org.timemates.rsp.server.optionsContainer
+import org.timemates.rrpc.server.OptionsContainer
+import org.timemates.rrpc.options.OptionsWithValue
+import org.timemates.rrpc.server.optionsContainer
 import kotlin.reflect.KClass
 
 /**
@@ -20,8 +14,8 @@ import kotlin.reflect.KClass
 @Suppress("UNCHECKED_CAST")
 public class ServiceDescriptor(
     public val name: String,
-    public val procedures: List<ProcedureDescriptor<*, *>>,
-    options: Options,
+    public val procedures: List<ProcedureDescriptor>,
+    options: OptionsWithValue,
 ) : OptionsContainer by optionsContainer(options) {
     /**
      * A map that associates procedure names with their corresponding descriptors.
@@ -38,7 +32,7 @@ public class ServiceDescriptor(
      * @return The ProcedureDescriptor object matching the given name and type, or null if not found.
      */
     @Suppress("UNCHECKED_CAST")
-    public fun <T : ProcedureDescriptor<*, *>> procedure(name: String, type: KClass<T>): T? {
+    public fun <T : ProcedureDescriptor> procedure(name: String, type: KClass<T>): T? {
         return proceduresMap[name to type.simpleName!!] as? T
     }
 }
@@ -49,6 +43,6 @@ public class ServiceDescriptor(
  * @param name The name of the procedure.
  * @return The ProcedureDescriptor object matching the given name, or null if not found.
  */
-public inline fun <reified T : ProcedureDescriptor<*, *>> ServiceDescriptor.procedure(name: String): T? {
+public inline fun <reified T : ProcedureDescriptor> ServiceDescriptor.procedure(name: String): T? {
     return procedure(name, T::class)
 }

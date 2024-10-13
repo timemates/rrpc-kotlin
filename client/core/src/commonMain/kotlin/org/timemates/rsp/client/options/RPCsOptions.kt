@@ -1,18 +1,18 @@
-package org.timemates.rsp.client.options
+package org.timemates.rrpc.client.options
 
-import org.timemates.rsp.options.Options
+import org.timemates.rrpc.options.OptionsWithValue
 
 @JvmInline
 public value class RPCsOptions(
-    private val map: Map<String, Options>
+    private val map: Map<String, OptionsWithValue>
 ) {
     public companion object {
         public val EMPTY: RPCsOptions = RPCsOptions(emptyMap())
     }
 
-    public constructor(vararg pairs: Pair<String, Options>) : this(mapOf(*pairs))
+    public constructor(vararg pairs: Pair<String, OptionsWithValue>) : this(mapOf(*pairs))
 
-    public operator fun get(name: String): Options? = map[name]
+    public operator fun get(name: String): OptionsWithValue? = map[name]
 }
 
-public fun RPCsOptions.getOrEmpty(name: String): Options = get(name) ?: Options.EMPTY
+public fun RPCsOptions.getOrEmpty(name: String): OptionsWithValue = get(name) ?: OptionsWithValue.EMPTY

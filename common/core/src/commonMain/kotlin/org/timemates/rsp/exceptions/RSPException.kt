@@ -1,3 +1,3 @@
-package org.timemates.rsp.exceptions
+package org.timemates.rrpc.exceptions
 
-public abstract class RSPException(message: String) : RuntimeException(message)
+public abstract class RRpcException(message: String) : RuntimeException(message)

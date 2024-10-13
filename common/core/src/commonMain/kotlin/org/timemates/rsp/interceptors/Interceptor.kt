@@ -1,16 +1,16 @@
-@file:OptIn(InternalRSProtoAPI::class)
+@file:OptIn(InternalRRpcrotoAPI::class)
 
-package org.timemates.rsp.interceptors
+package org.timemates.rrpc.interceptors
 
-import org.timemates.rsp.DataVariant
-import org.timemates.rsp.Failure
-import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
-import org.timemates.rsp.annotations.InternalRSProtoAPI
-import org.timemates.rsp.instances.InstanceContainer
-import org.timemates.rsp.metadata.ClientMetadata
-import org.timemates.rsp.metadata.RSPMetadata
-import org.timemates.rsp.metadata.ServerMetadata
-import org.timemates.rsp.options.Options
+import org.timemates.rrpc.DataVariant
+import org.timemates.rrpc.Failure
+import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.instances.InstanceContainer
+import org.timemates.rrpc.metadata.ClientMetadata
+import org.timemates.rrpc.metadata.RRpcMetadata
+import org.timemates.rrpc.metadata.ServerMetadata
+import org.timemates.rrpc.options.OptionsWithValue
 
 /**
  * Represents an interceptor that processes metadata of type [TMetadata].
@@ -18,7 +18,7 @@ import org.timemates.rsp.options.Options
  * @param TMetadata The type of metadata that the interceptor processes.
  */
 @ExperimentalInterceptorsApi
-public interface Interceptor<TMetadata : RSPMetadata> {
+public interface Interceptor<TMetadata : RRpcMetadata> {
     /**
      * Intercepts and processes the given [context].
      *
@@ -60,11 +60,11 @@ public data class Interceptors(
      * @param block The block of code to execute after running the interceptors.
      * @return The result of the block execution.
      */
-    @InternalRSProtoAPI
+    @InternalRRpcrotoAPI
     public suspend inline fun runInputInterceptors(
         data: DataVariant<*>,
         clientMetadata: ClientMetadata,
-        options: Options,
+        options: OptionsWithValue,
         instanceContainer: InstanceContainer,
     ): InterceptorContext<ClientMetadata>? {
         if (request.isNotEmpty()) {
@@ -94,11 +94,11 @@ public data class Interceptors(
      *
      * @return [InterceptorContext] or null if no interceptors were involved.
      */
-    @InternalRSProtoAPI
+    @InternalRRpcrotoAPI
     public suspend fun runOutputInterceptors(
         data: DataVariant<*>,
         serverMetadata: ServerMetadata,
-        options: Options,
+        options: OptionsWithValue,
         instanceContainer: InstanceContainer
     ): InterceptorContext<ServerMetadata>? {
         return if (response.isNotEmpty()) {

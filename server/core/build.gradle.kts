@@ -3,13 +3,13 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
-group = "org.timemates.rsp"
+group = "org.timemates.rrpc"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
     commonMainImplementation(libs.rsocket.server)
     commonMainImplementation(libs.kotlinx.serialization.proto) 
-    commonMainImplementation(projects.common.core) 
+    commonMainApi(projects.common.core)
 
     commonMainImplementation(libs.ktor.server.websockets) 
 
@@ -18,13 +18,13 @@ dependencies {
 
 mavenPublishing {
     coordinates(
-        groupId = "org.timemates.rsp",
+        groupId = "org.timemates.rrpc",
         artifactId = "server-core",
         version = System.getenv("LIB_VERSION") ?: return@mavenPublishing,
     )
 
     pom {
-        name.set("RSProto Server Core")
-        description.set("Multiplatform Kotlin core library for RSProto servers.")
+        name.set("RRpcroto Server Core")
+        description.set("Multiplatform Kotlin core library for RRpcroto servers.")
     }
 }

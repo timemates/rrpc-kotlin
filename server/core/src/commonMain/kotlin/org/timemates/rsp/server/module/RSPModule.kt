@@ -1,12 +1,12 @@
-package org.timemates.rsp.server.module
+package org.timemates.rrpc.server.module
 
-import org.timemates.rsp.server.ServicesContainer
-import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
-import org.timemates.rsp.instances.InstanceContainer
-import org.timemates.rsp.instances.ProvidableInstance
-import org.timemates.rsp.interceptors.Interceptors
-import org.timemates.rsp.server.module.descriptors.ProcedureDescriptor
-import org.timemates.rsp.server.module.descriptors.ServiceDescriptor
+import org.timemates.rrpc.server.ServicesContainer
+import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
+import org.timemates.rrpc.instances.InstanceContainer
+import org.timemates.rrpc.instances.ProvidableInstance
+import org.timemates.rrpc.interceptors.Interceptors
+import org.timemates.rrpc.server.module.descriptors.ProcedureDescriptor
+import org.timemates.rrpc.server.module.descriptors.ServiceDescriptor
 
 /**
  * Represents a Proto server that can handle remote method calls.
@@ -14,7 +14,7 @@ import org.timemates.rsp.server.module.descriptors.ServiceDescriptor
  * @property services The list of service descriptors for the server.
  * @property interceptors The list of interceptors for the server.
  */
-public interface RSPModule : InstanceContainer, ServicesContainer {
+public interface RRpcModule : InstanceContainer, ServicesContainer {
     /**
      * Contains the list of interceptors for the RSocketProtoServer.
      *
@@ -22,9 +22,9 @@ public interface RSPModule : InstanceContainer, ServicesContainer {
      * They are applied before the method is executed and can be used to perform actions such as authentication, logging,
      * or modifying the payload of the incoming request.
      *
-     * Interceptors are instances of the [org.timemates.rsp.interceptors.Interceptor] interface.
+     * Interceptors are instances of the [org.timemates.rrpc.interceptors.Interceptor] interface.
      *
-     * @see [org.timemates.rsp.interceptors.Interceptor]
+     * @see [org.timemates.rrpc.interceptors.Interceptor]
      */
     @ExperimentalInterceptorsApi
     public val interceptors: Interceptors
@@ -41,24 +41,24 @@ public interface RSPModule : InstanceContainer, ServicesContainer {
  * @return The list of known procedure descriptors.
  *
  * @see ProcedureDescriptor
- * @see RSPModule
+ * @see RRpcModule
  */
-public val RSPModule.knownProcedures: List<ProcedureDescriptor<*, *>>
+public val RRpcModule.knownProcedures: List<ProcedureDescriptor<*, *>>
     get() = services.flatMap { it.procedures }
 
 /**
- * Internal implementation of the RSPModule interface.
+ * Internal implementation of the RRpcModule interface.
  *
  * @property services The list of service descriptors for the server.
  * @property interceptors The list of interceptors for the server.
  * @param instanceContainer The instance container.
  */
 @OptIn(ExperimentalInterceptorsApi::class)
-internal class RSPModuleImpl(
+internal class RRpcModuleImpl(
     override val services: List<ServiceDescriptor>,
     override val interceptors: Interceptors,
     instanceContainer: InstanceContainer
-) : RSPModule, InstanceContainer {
+) : RRpcModule, InstanceContainer {
     private val servicesMap = services.associateBy { it.name }
     private val instanceContainer = instanceContainer + this as ServicesContainer
 

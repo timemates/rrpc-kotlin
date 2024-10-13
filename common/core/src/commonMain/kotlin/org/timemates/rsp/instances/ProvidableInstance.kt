@@ -1,4 +1,4 @@
-package org.timemates.rsp.instances
+package org.timemates.rrpc.instances
 
 /**
  * A contract for classes that can provide instances based on a specified key.

@@ -5,7 +5,7 @@ package com.google.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import org.timemates.rsp.ProtoType
+import org.timemates.rrpc.ProtoType
 
 /**
  * Constructs a [ProtoTimestamp] using a builder.

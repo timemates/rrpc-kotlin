@@ -1,4 +1,4 @@
-package org.timemates.rsp.plugin
+package org.timemates.rrpc.plugin
 
 @DslMarker
-public annotation class RSPGradlePluginDsl
+public annotation class RRpcGradlePluginDsl

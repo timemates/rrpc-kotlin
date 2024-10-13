@@ -6,7 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
 import kotlinx.serialization.protobuf.ProtoOneOf
-import org.timemates.rsp.ProtoType
+import org.timemates.rrpc.ProtoType
 import kotlin.jvm.JvmInline
 
 /**
@@ -81,10 +81,9 @@ public sealed class ProtoStructValueKind {
 
 @Suppress("ClassName")
 @Serializable
-private enum class _NullValue : ProtoType {
+private enum class _NullValue {
     @ProtoNumber(0)
     NULL_VALUE;
-
-    override val definition: ProtoType.Definition<*>
-        get() = TODO("Not yet implemented")
 }
+
+internal suspend inline infix operator fun Boolean.div(other: Int) {}

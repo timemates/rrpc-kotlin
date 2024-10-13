@@ -1,6 +1,6 @@
-@file:OptIn(ExperimentalSerializationApi::class, ExperimentalInterceptorsApi::class, InternalRSProtoAPI::class)
+@file:OptIn(ExperimentalSerializationApi::class, ExperimentalInterceptorsApi::class, InternalRRpcrotoAPI::class)
 
-package org.timemates.rsp.server.module
+package org.timemates.rrpc.server.module
 
 import io.ktor.utils.io.core.*
 import io.rsocket.kotlin.RSocketError
@@ -8,29 +8,29 @@ import io.rsocket.kotlin.RSocketRequestHandlerBuilder
 import io.rsocket.kotlin.payload.Payload
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.*
-import org.timemates.rsp.*
-import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
-import org.timemates.rsp.annotations.InternalRSProtoAPI
-import org.timemates.rsp.exceptions.ProcedureNotFoundException
-import org.timemates.rsp.exceptions.ServiceNotFoundException
-import org.timemates.rsp.instances.ProtobufInstance
-import org.timemates.rsp.interceptors.InterceptorContext
-import org.timemates.rsp.metadata.ClientMetadata
-import org.timemates.rsp.metadata.ServerMetadata
-import org.timemates.rsp.options.Options
-import org.timemates.rsp.server.RequestContext
-import org.timemates.rsp.server.module.descriptors.ProcedureDescriptor
-import org.timemates.rsp.server.module.descriptors.ServiceDescriptor
-import org.timemates.rsp.server.module.descriptors.procedure
-import org.timemates.rsp.server.toRequestContext
+import org.timemates.rrpc.*
+import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.exceptions.ProcedureNotFoundException
+import org.timemates.rrpc.exceptions.ServiceNotFoundException
+import org.timemates.rrpc.instances.ProtobufInstance
+import org.timemates.rrpc.interceptors.InterceptorContext
+import org.timemates.rrpc.metadata.ClientMetadata
+import org.timemates.rrpc.metadata.ServerMetadata
+import org.timemates.rrpc.options.OptionsWithValue
+import org.timemates.rrpc.server.RequestContext
+import org.timemates.rrpc.server.module.descriptors.ProcedureDescriptor
+import org.timemates.rrpc.server.module.descriptors.ServiceDescriptor
+import org.timemates.rrpc.server.module.descriptors.procedure
+import org.timemates.rrpc.server.toRequestContext
 
 /**
  * Handler class for setting up RSocket request handlers.
  *
- * @param module The RSPModule instance to handle requests.
+ * @param module The RRpcModule instance to handle requests.
  */
 @Suppress("DuplicatedCode")
-public class RSPModuleHandler(private val module: RSPModule) {
+public class RRpcModuleHandler(private val module: RRpcModule) {
     private val services = module.services.associateBy { it.name }
     private val protobuf = module.getInstance(ProtobufInstance)!!.protobuf
     private val serverMetadata = ServerMetadata.EMPTY
@@ -45,12 +45,13 @@ public class RSPModuleHandler(private val module: RSPModule) {
             requestResponseHandler()
             requestStreamHandler()
             requestChannelHandler()
+            fireAndForgetHandler()
         }
     }
 
     private fun RSocketRequestHandlerBuilder.requestResponseHandler() {
         requestResponse { payload ->
-            val metadata = getClientMetadata(payload)
+            val metadata = getClientMetadata(payload.metadataOrFailure())
             val service = getService(metadata)
             val method = service.procedure<ProcedureDescriptor.RequestResponse<Any, Any>>(metadata.procedureName)
                 ?: handleException(ProcedureNotFoundException(metadata), null)
@@ -103,7 +104,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
 
     private fun RSocketRequestHandlerBuilder.requestStreamHandler() {
         requestStream { payload ->
-            val metadata = getClientMetadata(payload)
+            val metadata = getClientMetadata(payload.metadataOrFailure())
             val service = getService(metadata)
             val method = service.procedure<ProcedureDescriptor.RequestStream<Any, Any>>(metadata.procedureName)
                 ?: handleException(ProcedureNotFoundException(metadata), null)
@@ -156,7 +157,7 @@ public class RSPModuleHandler(private val module: RSPModule) {
 
     private fun RSocketRequestHandlerBuilder.requestChannelHandler() {
         requestChannel { initial, payloads ->
-            val metadata = getClientMetadata(initial)
+            val metadata = getClientMetadata(initial.metadataOrFailure())
             val service = getService(metadata)
             val method = service.procedure<ProcedureDescriptor.RequestChannel<Any, Any>>(metadata.procedureName)
                 ?: handleException(ProcedureNotFoundException(metadata), null)
@@ -209,18 +210,103 @@ public class RSPModuleHandler(private val module: RSPModule) {
         }
     }
 
+    private fun RSocketRequestHandlerBuilder.fireAndForgetHandler(): Unit = fireAndForget { payload ->
+        val metadata = getClientMetadata(payload.metadataOrFailure())
+        val service = getService(metadata)
+        val method = service.procedure<ProcedureDescriptor.FireAndForget<Any>>(metadata.procedureName)
+            ?: handleException(ProcedureNotFoundException(metadata), null)
 
-    @OptIn(InternalRSProtoAPI::class)
+        val options = method.options
+
+        // Decode the input data
+        val data = try {
+            Single(protobuf.decodeFromByteArray(method.inputSerializer, payload.data.readBytes()))
+        } catch (e: Exception) {
+            handleException(e, method)
+        }
+
+        // Run input interceptors and handle exceptions
+        val startContext = module.interceptors.runInputInterceptors(
+            data = data,
+            clientMetadata = metadata,
+            options = options,
+            module,
+        )
+
+        if (startContext?.data is Failure) throw (startContext.data as Failure).exception
+
+
+        // Execute the method and handle exceptions
+        val result = try {
+            method.execute(
+                context = startContext?.toRequestContext() ?: RequestContext(module, metadata, options),
+                input = (startContext?.data ?: data).requireSingle()
+            )
+        } catch (e: Exception) {
+            handleException(e, method, startContext)
+        }
+
+        // Run output interceptors and handle exceptions
+        val finalContext = module.interceptors.runOutputInterceptors(
+            data = Single(result),
+            serverMetadata = serverMetadata,
+            options = startContext?.options ?: options,
+            instanceContainer = startContext?.instances ?: module,
+        )
+
+        // is not propagated to the client
+        if (finalContext?.data is Failure) throw (finalContext.data as Failure).exception
+    }
+
+    private fun RSocketRequestHandlerBuilder.metadataPushHandler(): Unit = metadataPush { metadataBytes ->
+        val metadata = getClientMetadata(metadataBytes.readBytes())
+        val service = getService(metadata)
+        val method = service.procedure<ProcedureDescriptor.MetadataPush>(metadata.procedureName)
+            ?: handleException(ProcedureNotFoundException(metadata), null)
+
+        val options = method.options
+
+        val startContext = module.interceptors.runInputInterceptors(
+            data = Single.EMPTY,
+            clientMetadata = metadata,
+            options = options,
+            module,
+        )
+
+        if (startContext?.data is Failure) throw (startContext.data as Failure).exception
+
+
+        try {
+            method.execute(
+                context = startContext?.toRequestContext() ?: RequestContext(module, metadata, options),
+            )
+        } catch (e: Exception) {
+            handleException(e, method, startContext)
+        }
+
+        // Run output interceptors and handle exceptions
+        val finalContext = module.interceptors.runOutputInterceptors(
+            data = Single.EMPTY,
+            serverMetadata = serverMetadata,
+            options = startContext?.options ?: options,
+            instanceContainer = startContext?.instances ?: module,
+        )
+
+        // is not propagated to the client
+        if (finalContext?.data is Failure) throw (finalContext.data as Failure).exception
+    }
+
+    @OptIn(InternalRRpcrotoAPI::class)
     private suspend fun handleException(
         exception: Exception,
-        method: ProcedureDescriptor<*, *>?,
+        method: ProcedureDescriptor?,
         prevContext: InterceptorContext<ClientMetadata>? = null,
     ): Nothing {
         val resultException = try {
             module.interceptors.runOutputInterceptors(
                 data = Failure(exception),
                 serverMetadata = serverMetadata,
-                options = prevContext?.options ?: method?.options ?: Options.EMPTY,
+                options = prevContext?.options ?: method?.options ?: OptionsWithValue.EMPTY,
                 instanceContainer = prevContext?.instances ?: module,
             )?.data?.requireFailure() ?: exception
         } catch (e: Exception) {
@@ -231,9 +317,9 @@ public class RSPModuleHandler(private val module: RSPModule) {
         throw resultException
     }
 
-    private fun getClientMetadata(payload: Payload): ClientMetadata {
+    private fun getClientMetadata(metadata: ByteArray): ClientMetadata {
         return try {
-            protobuf.decodeFromByteArray(payload.metadataOrFailure())
+            protobuf.decodeFromByteArray(metadata)
         } catch (e: Exception) {
             // TODO logging the exception
             throw RSocketError.Rejected("Unable to process incoming request, data is corrupted or invalid.")

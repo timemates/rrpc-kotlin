@@ -1,25 +1,25 @@
-package org.timemates.rsp.server.module
+package org.timemates.rrpc.server.module
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
-import org.timemates.rsp.annotations.InternalRSProtoAPI
-import org.timemates.rsp.instances.InstanceContainer
-import org.timemates.rsp.instances.InstancesBuilder
-import org.timemates.rsp.instances.ProvidableInstance
-import org.timemates.rsp.instances.protobuf
-import org.timemates.rsp.interceptors.Interceptors
-import org.timemates.rsp.interceptors.RequestInterceptor
-import org.timemates.rsp.interceptors.ResponseInterceptor
+import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.instances.InstanceContainer
+import org.timemates.rrpc.instances.InstancesBuilder
+import org.timemates.rrpc.instances.ProvidableInstance
+import org.timemates.rrpc.instances.protobuf
+import org.timemates.rrpc.interceptors.Interceptors
+import org.timemates.rrpc.interceptors.RequestInterceptor
+import org.timemates.rrpc.interceptors.ResponseInterceptor
 
 /**
- * Creates an [RSPModule] using the provided [block] to configure its builder.
+ * Creates an [RRpcModule] using the provided [block] to configure its builder.
  *
- * @param block A lambda with receiver of type [RSPModuleBuilder] used to configure the module.
- * @return A configured [RSPModule].
+ * @param block A lambda with receiver of type [RRpcModuleBuilder] used to configure the module.
+ * @return A configured [RRpcModule].
  */
 @OptIn(ExperimentalSerializationApi::class)
-public fun RSPModule(block: RSPModuleBuilder.() -> Unit): RSPModule {
-    return RSPModuleBuilder().apply {
+public fun RRpcModule(block: RRpcModuleBuilder.() -> Unit): RRpcModule {
+    return RRpcModuleBuilder().apply {
         instances {
             protobuf {
                 encodeDefaults = true
@@ -29,21 +29,21 @@ public fun RSPModule(block: RSPModuleBuilder.() -> Unit): RSPModule {
 }
 
 /**
- * Builder class for constructing an [RSPModule].
+ * Builder class for constructing an [RRpcModule].
  */
-@OptIn(InternalRSProtoAPI::class)
-public class RSPModuleBuilder internal constructor() {
+@OptIn(InternalRRpcrotoAPI::class)
+public class RRpcModuleBuilder internal constructor() {
     private val instances: MutableList<ProvidableInstance> = mutableListOf()
-    private val services: MutableList<RSPService> = mutableListOf()
+    private val services: MutableList<RRpcService> = mutableListOf()
     private val requestInterceptors: MutableList<RequestInterceptor> = mutableListOf()
     private val responseInterceptors: MutableList<ResponseInterceptor> = mutableListOf()
 
     /**
      * Adds a service to the module.
      *
-     * @param service The [RSPService] to add.
+     * @param service The [RRpcService] to add.
      */
-    public fun service(service: RSPService) {
+    public fun service(service: RRpcService) {
         services += service
     }
 
@@ -77,12 +77,12 @@ public class RSPModuleBuilder internal constructor() {
     }
 
     /**
-     * Builds the [RSPModule] with the configured services, interceptors, and instances.
+     * Builds the [RRpcModule] with the configured services, interceptors, and instances.
      *
-     * @return A configured [RSPModule].
+     * @return A configured [RRpcModule].
      */
-    public fun build(): RSPModule {
-        return RSPModuleImpl(
+    public fun build(): RRpcModule {
+        return RRpcModuleImpl(
             services = services.map { it.descriptor },
             interceptors = Interceptors(requestInterceptors, responseInterceptors),
             instanceContainer = InstanceContainer(instances.associateBy { it.key }),
@@ -96,7 +96,7 @@ public class RSPModuleBuilder internal constructor() {
  * @param interceptors Vararg of [RequestInterceptor] to add.
  */
 @ExperimentalInterceptorsApi
-public fun RSPModuleBuilder.requestInterceptors(vararg interceptors: RequestInterceptor) {
+public fun RRpcModuleBuilder.requestInterceptors(vararg interceptors: RequestInterceptor) {
     interceptors.forEach { requestInterceptor(it) }
 }
 
@@ -106,6 +106,6 @@ public fun RSPModuleBuilder.requestInterceptors(vararg interceptors: RequestInte
  * @param interceptors Vararg of [ResponseInterceptor] to add.
  */
 @ExperimentalInterceptorsApi
-public fun RSPModuleBuilder.responseInterceptors(vararg interceptors: ResponseInterceptor) {
+public fun RRpcModuleBuilder.responseInterceptors(vararg interceptors: ResponseInterceptor) {
     interceptors.forEach { responseInterceptor(it) }
 }

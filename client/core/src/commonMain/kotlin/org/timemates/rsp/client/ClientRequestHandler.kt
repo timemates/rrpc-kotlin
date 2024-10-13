@@ -1,31 +1,31 @@
 @file:OptIn(ExperimentalSerializationApi::class, ExperimentalInterceptorsApi::class)
 @file:Suppress("UNCHECKED_CAST")
 
-package org.timemates.rsp.client
+package org.timemates.rrpc.client
 
 import io.ktor.utils.io.core.*
 import io.rsocket.kotlin.payload.Payload
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.*
-import org.timemates.rsp.*
-import org.timemates.rsp.annotations.ExperimentalInterceptorsApi
-import org.timemates.rsp.annotations.InternalRSProtoAPI
-import org.timemates.rsp.client.config.RSPClientConfig
-import org.timemates.rsp.instances.protobuf
-import org.timemates.rsp.interceptors.InterceptorContext
-import org.timemates.rsp.metadata.ClientMetadata
-import org.timemates.rsp.metadata.ServerMetadata
-import org.timemates.rsp.options.Options
+import org.timemates.rrpc.*
+import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
+import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.client.config.RRpcClientConfig
+import org.timemates.rrpc.instances.protobuf
+import org.timemates.rrpc.interceptors.InterceptorContext
+import org.timemates.rrpc.metadata.ClientMetadata
+import org.timemates.rrpc.metadata.ServerMetadata
+import org.timemates.rrpc.options.OptionsWithValue
 
 /**
  * Handles client requests by managing metadata and data serialization, making the appropriate calls, and processing the responses.
  * Utilizes interceptors to modify request and response data.
  *
- * @property config The configuration for the RSP client.
+ * @property config The configuration for the RRpc client.
  */
-@InternalRSProtoAPI
+@InternalRRpcrotoAPI
 public class ClientRequestHandler(
-    private val config: RSPClientConfig,
+    private val config: RRpcClientConfig,
 ) {
     private val protobuf get() = config.instances.protobuf ?: error("Protobuf instance should always be present.")
 
@@ -39,11 +39,11 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return The response data.
      */
-    @OptIn(InternalRSProtoAPI::class)
+    @OptIn(InternalRRpcrotoAPI::class)
     public suspend fun <T : Any, R : Any> requestResponse(
         metadata: ClientMetadata,
         data: T,
-        options: Options,
+        options: OptionsWithValue,
         serializationStrategy: SerializationStrategy<T>,
         deserializationStrategy: DeserializationStrategy<R>,
     ): R = with(config) {
@@ -90,7 +90,7 @@ public class ClientRequestHandler(
             }
 
             return if (result.data is Failure)
-                throw (result.data as Failure<*>).exception
+                throw (result.data as Failure).exception
             else result.data.requireSingle() as R
         }
 
@@ -111,11 +111,11 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return A flow of the response data.
      */
-    @OptIn(InternalRSProtoAPI::class)
+    @OptIn(InternalRRpcrotoAPI::class)
     public fun <T : Any, R : Any> requestStream(
         metadata: ClientMetadata,
         data: T,
-        options: Options,
+        options: OptionsWithValue,
         serializationStrategy: SerializationStrategy<T>,
         deserializationStrategy: DeserializationStrategy<R>,
     ): Flow<R> = flow {
@@ -154,11 +154,11 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return A flow of the response data.
      */
-    @OptIn(InternalRSProtoAPI::class)
+    @OptIn(InternalRRpcrotoAPI::class)
     public fun <T : Any, R : Any> requestChannel(
         metadata: ClientMetadata,
         data: Flow<T>,
-        options: Options,
+        options: OptionsWithValue,
         serializationStrategy: SerializationStrategy<T>,
         deserializationStrategy: DeserializationStrategy<R>,
     ): Flow<R> = flow {
@@ -188,9 +188,25 @@ public class ClientRequestHandler(
                 ),
                 options = requestContext?.options ?: options,
                 requestContext = requestContext,
-                deserializationStrategy = deserializationStrategy
+                deserializationStrategy = deserializationStrategy,
             )
         }
+    }
+
+    public suspend fun <T : Any> fireAndForget(
+        metadata: ClientMetadata,
+        data: T,
+        options: OptionsWithValue,
+        serializationStrategy: SerializationStrategy<T>,
+    ): Unit = with(config) {
+        TODO()
+    }
+
+    public suspend fun <T : Any> metadataPush(
+        metadata: ClientMetadata,
+        options: OptionsWithValue,
+    ): Unit = with(config) {
+        TODO()
     }
 
     /**
@@ -204,7 +220,7 @@ public class ClientRequestHandler(
      */
     private suspend fun <R : Any> FlowCollector<R>.handleStreamingResponse(
         response: Flow<Payload>,
-        options: Options,
+        options: OptionsWithValue,
         requestContext: InterceptorContext<ClientMetadata>?,
         deserializationStrategy: DeserializationStrategy<R>,
     ): Unit = with(config) {

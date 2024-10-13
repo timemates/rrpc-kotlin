@@ -1,9 +1,9 @@
-package org.timemates.rsp.server
+package org.timemates.rrpc.server
 
-import org.timemates.rsp.instances.ProvidableInstance
-import org.timemates.rsp.interceptors.InterceptorContext
-import org.timemates.rsp.metadata.ClientMetadata
-import org.timemates.rsp.server.module.descriptors.ServiceDescriptor
+import org.timemates.rrpc.instances.ProvidableInstance
+import org.timemates.rrpc.interceptors.InterceptorContext
+import org.timemates.rrpc.metadata.ClientMetadata
+import org.timemates.rrpc.server.module.descriptors.ServiceDescriptor
 
 public interface ServicesContainer : ProvidableInstance {
     public companion object Key : ProvidableInstance.Key<ServicesContainer>

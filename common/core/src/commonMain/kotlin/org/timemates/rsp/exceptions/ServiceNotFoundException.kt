@@ -1,5 +1,5 @@
-package org.timemates.rsp.exceptions
+package org.timemates.rrpc.exceptions
 
 public class ServiceNotFoundException(
     serviceName: String,
-) : RSPException("Service '$serviceName' is not found.")
+) : RRpcException("Service '$serviceName' is not found.")

@@ -1,8 +1,8 @@
-package org.timemates.rsp.metadata
+package org.timemates.rrpc.metadata
 
 import kotlinx.serialization.Serializable
-import org.timemates.rsp.instances.InstanceContainer
-import org.timemates.rsp.instances.ProvidableInstance
+import org.timemates.rrpc.instances.InstanceContainer
+import org.timemates.rrpc.instances.ProvidableInstance
 import kotlin.jvm.JvmInline
 
 /**

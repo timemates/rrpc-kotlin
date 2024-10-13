@@ -1,15 +1,14 @@
-package org.timemates.rsp.server
+package org.timemates.rrpc.server
 
-import org.timemates.rsp.instances.InstanceContainer
-import org.timemates.rsp.interceptors.InterceptorContext
-import org.timemates.rsp.metadata.ClientMetadata
-import org.timemates.rsp.metadata.RSPMetadata
-import org.timemates.rsp.options.Options
+import org.timemates.rrpc.instances.InstanceContainer
+import org.timemates.rrpc.interceptors.InterceptorContext
+import org.timemates.rrpc.metadata.ClientMetadata
+import org.timemates.rrpc.options.OptionsWithValue
 
 public data class RequestContext(
     public val instances: InstanceContainer,
     public val metadata: ClientMetadata,
-    public val options: Options,
+    public val options: OptionsWithValue,
 )
 
 internal fun InterceptorContext<ClientMetadata>.toRequestContext(): RequestContext {
