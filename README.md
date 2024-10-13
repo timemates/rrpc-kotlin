@@ -2,9 +2,9 @@
 ![GitHub issues](https://img.shields.io/github/issues/timemates/rrpcroto)
 ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/timemates/rrpcroto)
 ![GitHub License](https://img.shields.io/github/license/timemates/rrpcroto)
-# RRpc Kotlin
+# rRpc Kotlin
 
-RRpc is a framework designed to provide an ability to expose your API as RPC Services.
+rRpc is a framework designed to provide an ability to expose your API as RPC Services.
 It facilitates the creation of gRPC-like services from .proto files through code generation.
 The framework also provides essential core components for both server and client.
 

@@ -1,10 +1,10 @@
-package org.timemates.rsp.generator.kotlin
+package org.timemates.rrpc.generator.kotlin
 
 import org.timemates.rrpc.codegen.adapters.SchemaAdapter
 import org.timemates.rrpc.codegen.exception.GenerationException
 import org.timemates.rrpc.common.metadata.RMResolver
 import org.timemates.rrpc.common.metadata.annotations.NonPlatformSpecificAccess
-import org.timemates.rsp.generator.kotlin.metadata.CombinedFilesMetadataGenerator
+import org.timemates.rrpc.generator.kotlin.metadata.CombinedFilesMetadataGenerator
 
 public object KotlinMetadataSchemaAdapter : SchemaAdapter {
     @OptIn(NonPlatformSpecificAccess::class)

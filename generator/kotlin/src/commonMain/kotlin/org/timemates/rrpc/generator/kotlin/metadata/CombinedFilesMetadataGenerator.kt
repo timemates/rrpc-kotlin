@@ -1,4 +1,4 @@
-package org.timemates.rsp.generator.kotlin.metadata
+package org.timemates.rrpc.generator.kotlin.metadata
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -23,7 +23,7 @@ public object CombinedFilesMetadataGenerator {
         // assign random value if name wasn't provided
         val name = name ?: "MetadataLookupGroup${Random.nextInt(0, 999999)}"
 
-        return FileSpec.builder(ClassName("org.timemates.rsp.generated", name))
+        return FileSpec.builder(ClassName("org.timemates.rrpc.generated", name))
             .addType(
                 TypeSpec.objectBuilder(name)
                     .addSuperinterface(

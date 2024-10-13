@@ -1,4 +1,4 @@
-package org.timemates.rsp.generator.kotlin.metadata
+package org.timemates.rrpc.generator.kotlin.metadata
 
 import com.squareup.kotlinpoet.CodeBlock
 

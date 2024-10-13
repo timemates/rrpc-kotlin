@@ -6,9 +6,9 @@ import org.timemates.rrpc.codegen.typemodel.Types
 import org.timemates.rrpc.common.metadata.RMFile
 import org.timemates.rrpc.common.metadata.annotations.NonPlatformSpecificAccess
 import org.timemates.rrpc.generator.kotlin.ext.newline
-import org.timemates.rsp.generator.kotlin.metadata.ExtendMetadataGenerator
-import org.timemates.rsp.generator.kotlin.metadata.OptionsMetadataGenerator
-import org.timemates.rsp.generator.kotlin.metadata.ServiceMetadataGenerator
+import org.timemates.rrpc.generator.kotlin.metadata.ExtendMetadataGenerator
+import org.timemates.rrpc.generator.kotlin.metadata.OptionsMetadataGenerator
+import org.timemates.rrpc.generator.kotlin.metadata.ServiceMetadataGenerator
 
 internal object FileMetadataGenerator {
     fun generate(file: RMFile): CodeBlock {
