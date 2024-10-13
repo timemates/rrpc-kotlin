@@ -1,7 +1,7 @@
-![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.timemates.org%2Freleases%2Forg%2Ftimemates%2Frrpcroto%2Fclient-core%2Fmaven-metadata.xml)
-![GitHub issues](https://img.shields.io/github/issues/timemates/rrpcroto)
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/timemates/rrpcroto)
-![GitHub License](https://img.shields.io/github/license/timemates/rrpcroto)
+![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.timemates.org%2Freleases%2Forg%2Ftimemates%2Frrpc-kotlin%2Fclient-core%2Fmaven-metadata.xml)
+![GitHub issues](https://img.shields.io/github/issues/timemates/rrpc-kotlin)
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/timemates/rrpc-kotlin)
+![GitHub License](https://img.shields.io/github/license/timemates/rrpc-kotlin)
 # rRpc Kotlin
 
 rRpc is a framework designed to provide an ability to expose your API as RPC Services.
@@ -9,7 +9,7 @@ It facilitates the creation of gRPC-like services from .proto files through code
 The framework also provides essential core components for both server and client.
 
 > **Warning** <br>
-> This project is at the final stage of prototyping, be ready for possible changes.
+Under prototyping, currently unavailable to use.
 
 ## Features
 - **Gradle Plugin**: `.proto` to RSocket code generator (both client and server).
