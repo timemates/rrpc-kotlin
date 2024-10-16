@@ -7,6 +7,9 @@ dependencies {
     // -- Serialization --
     commonMainApi(libs.kotlinx.serialization.proto)
 
+    // -- Coroutines --
+    commonMainImplementation(libs.kotlinx.coroutines)
+
     // -- Test --
     jvmTestImplementation(libs.kotlin.test)
     jvmTestImplementation(libs.mockk)
