@@ -5,7 +5,7 @@ package org.timemates.rrpc.client.config
 import io.rsocket.kotlin.RSocket
 import kotlinx.serialization.ExperimentalSerializationApi
 import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
-import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.instances.*
 import org.timemates.rrpc.interceptors.Interceptor
 import org.timemates.rrpc.interceptors.Interceptors
@@ -122,7 +122,7 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
         /**
          * Appends the provided in the [builder] instances to existing ones.
          */
-        @OptIn(InternalRRpcrotoAPI::class)
+        @OptIn(InternalRRpcAPI::class)
         public fun instances(builder: InstancesBuilder.() -> Unit): Builder = apply {
             val instances = InstancesBuilder().apply(builder).build()
             instances(instances)

@@ -4,9 +4,9 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import org.timemates.rrpc.codegen.typemodel.Annotations
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMFile
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.kotlinPackage
+import org.timemates.rrpc.common.schema.RMFile
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.kotlinPackage
 import org.timemates.rrpc.generator.kotlin.client.ClientServiceGenerator
 import org.timemates.rrpc.generator.kotlin.ext.addImports
 import org.timemates.rrpc.generator.kotlin.server.ServerServiceGenerator

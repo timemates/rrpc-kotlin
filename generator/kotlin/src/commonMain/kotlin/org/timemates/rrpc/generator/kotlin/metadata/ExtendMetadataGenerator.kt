@@ -4,11 +4,12 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.withIndent
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMExtend
+import org.timemates.rrpc.common.schema.RMExtend
+import org.timemates.rrpc.common.schema.RMResolver
 import org.timemates.rrpc.generator.kotlin.ext.newline
 
 internal object ExtendMetadataGenerator {
-    fun generate(extend: RMExtend): CodeBlock {
+    fun generate(extend: RMExtend, resolver: RMResolver): CodeBlock {
         return buildCodeBlock {
             addStatement("%T(", Types.RM.Extend)
             withIndent {
@@ -22,7 +23,7 @@ internal object ExtendMetadataGenerator {
                 withIndent {
                     extend.fields.forEach { field ->
                         newline()
-                        add(FieldMetadataGenerator.generate(field))
+                        add(FieldMetadataGenerator.generate(field, resolver))
                         add(",")
                     }
                 }

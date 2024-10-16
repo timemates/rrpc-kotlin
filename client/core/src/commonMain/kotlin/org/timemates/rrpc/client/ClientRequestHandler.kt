@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.serialization.*
 import org.timemates.rrpc.*
 import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
-import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.client.config.RRpcClientConfig
 import org.timemates.rrpc.instances.protobuf
 import org.timemates.rrpc.interceptors.InterceptorContext
@@ -23,7 +23,7 @@ import org.timemates.rrpc.options.OptionsWithValue
  *
  * @property config The configuration for the RRpc client.
  */
-@InternalRRpcrotoAPI
+@InternalRRpcAPI
 public class ClientRequestHandler(
     private val config: RRpcClientConfig,
 ) {
@@ -39,7 +39,7 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return The response data.
      */
-    @OptIn(InternalRRpcrotoAPI::class)
+    @OptIn(InternalRRpcAPI::class)
     public suspend fun <T : Any, R : Any> requestResponse(
         metadata: ClientMetadata,
         data: T,
@@ -111,7 +111,7 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return A flow of the response data.
      */
-    @OptIn(InternalRRpcrotoAPI::class)
+    @OptIn(InternalRRpcAPI::class)
     public fun <T : Any, R : Any> requestStream(
         metadata: ClientMetadata,
         data: T,
@@ -154,7 +154,7 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return A flow of the response data.
      */
-    @OptIn(InternalRRpcrotoAPI::class)
+    @OptIn(InternalRRpcAPI::class)
     public fun <T : Any, R : Any> requestChannel(
         metadata: ClientMetadata,
         data: Flow<T>,

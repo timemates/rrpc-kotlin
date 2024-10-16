@@ -4,18 +4,21 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.withIndent
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMOption
-import org.timemates.rrpc.common.metadata.RMOptions
+import org.timemates.rrpc.common.schema.RMOption
+import org.timemates.rrpc.common.schema.RMOptions
+import org.timemates.rrpc.common.schema.RMResolver
 import org.timemates.rrpc.generator.kotlin.ext.newline
 
 internal object OptionsMetadataGenerator {
-    fun generate(options: RMOptions): CodeBlock {
+    fun generate(options: RMOptions, resolver: RMResolver): CodeBlock {
         return buildCodeBlock {
             add("%T(", Types.RM.Options)
             newline()
             indent()
             add("listOf(")
             options.list.forEach { option ->
+                val field = resolver.resolveField(option.fieldUrl)!!
+
                 withIndent {
                     newline()
                     add("%T(", Types.RM.Option)
@@ -23,7 +26,7 @@ internal object OptionsMetadataGenerator {
                     withIndent {
                         add("name = %S,", option.name)
                         newline()
-                        add("tag = %L,", option.tag)
+                        add("tag = %L,", field.tag)
                         newline()
                         add("fieldUrl = %1T(", Types.RM.TypeMemberUrl, option.fieldUrl.typeUrl)
                         newline()

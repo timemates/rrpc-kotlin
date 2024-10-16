@@ -3,20 +3,20 @@ package org.timemates.rrpc.generator.kotlin.ext
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.Language
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.StreamableRMTypeUrl
-import org.timemates.rrpc.common.metadata.annotations.NonPlatformSpecificAccess
-import org.timemates.rrpc.common.metadata.value.RMTypeUrl
+import org.timemates.rrpc.common.schema.Language
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.StreamableRMTypeUrl
+import org.timemates.rrpc.common.schema.annotations.NonPlatformSpecificAccess
+import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
 
 @OptIn(NonPlatformSpecificAccess::class)
-internal fun RMTypeUrl.asClassName(resolver: RMResolver): ClassName {
+internal fun RMDeclarationUrl.asClassName(resolver: RMResolver): ClassName {
     return when (this) {
-        RMTypeUrl.ANY -> ClassName("com.google.protobuf", "ProtoAny")
-        RMTypeUrl.TIMESTAMP -> ClassName("com.google.protobuf", "ProtoTimestamp")
-        RMTypeUrl.DURATION -> ClassName("com.google.protobuf", "ProtoDuration")
-        RMTypeUrl.STRUCT_MAP -> ClassName("com.google.protobuf", "ProtoStruct")
-        RMTypeUrl.EMPTY -> ClassName("com.google.protobuf", "ProtoEmpty")
+        RMDeclarationUrl.ANY -> ClassName("com.google.protobuf", "ProtoAny")
+        RMDeclarationUrl.TIMESTAMP -> ClassName("com.google.protobuf", "ProtoTimestamp")
+        RMDeclarationUrl.DURATION -> ClassName("com.google.protobuf", "ProtoDuration")
+        RMDeclarationUrl.STRUCT_MAP -> ClassName("com.google.protobuf", "ProtoStruct")
+        RMDeclarationUrl.EMPTY -> ClassName("com.google.protobuf", "ProtoEmpty")
         else -> {
             val file = resolver.resolveFileOf(this) ?: return ClassName(enclosingTypeOrPackage ?: "", simpleName)
 
@@ -37,7 +37,7 @@ internal fun StreamableRMTypeUrl.asClassName(resolver: RMResolver): TypeName {
 }
 
 @OptIn(NonPlatformSpecificAccess::class)
-internal fun RMTypeUrl.qualifiedName(resolver: RMResolver): String {
+internal fun RMDeclarationUrl.qualifiedName(resolver: RMResolver): String {
     val packageName = resolver.resolveFileOf(this)?.packageName?.value?.plus(".") ?: ""
 
     return packageName + simpleName

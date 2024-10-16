@@ -4,7 +4,7 @@ import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaLoader
 import org.timemates.rrpc.codegen.adapters.SchemaAdapter
 import org.timemates.rrpc.codegen.configuration.RMGlobalConfiguration
-import org.timemates.rrpc.common.metadata.RMResolver
+import org.timemates.rrpc.common.schema.RMResolver
 import kotlin.io.path.absolutePathString
 
 public object CodeGenerator {

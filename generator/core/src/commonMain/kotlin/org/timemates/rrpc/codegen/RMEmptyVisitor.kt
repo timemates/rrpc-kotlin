@@ -1,6 +1,6 @@
 package org.timemates.rrpc.codegen
 
-import org.timemates.rrpc.common.metadata.*
+import org.timemates.rrpc.common.schema.*
 
 public abstract class RMEmptyVisitor<D, R> : RMVisitor<D, R> {
     public abstract fun defaultHandler(node: RMNode, data: D): R

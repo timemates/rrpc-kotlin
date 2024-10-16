@@ -1,6 +1,6 @@
 package org.timemates.rrpc.codegen
 
-import org.timemates.rrpc.common.metadata.*
+import org.timemates.rrpc.common.schema.*
 
 public abstract class RMDefaultVisitor<D, R> : RMEmptyVisitor<D, R>() {
     override fun visitFile(file: RMFile, data: D): R {

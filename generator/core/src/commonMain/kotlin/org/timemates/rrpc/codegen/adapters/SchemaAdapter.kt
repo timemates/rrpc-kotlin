@@ -2,7 +2,7 @@ package org.timemates.rrpc.codegen.adapters
 
 import okio.FileSystem
 import okio.Path
-import org.timemates.rrpc.common.metadata.RMResolver
+import org.timemates.rrpc.common.schema.RMResolver
 
 public interface SchemaAdapter {
     public data class Config(

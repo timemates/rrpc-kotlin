@@ -4,10 +4,11 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.withIndent
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMField
+import org.timemates.rrpc.common.schema.RMField
+import org.timemates.rrpc.common.schema.RMResolver
 
 internal object FieldMetadataGenerator {
-    fun generate(field: RMField): CodeBlock {
+    fun generate(field: RMField, resolver: RMResolver): CodeBlock {
         return buildCodeBlock {
             addStatement("%T(")
             withIndent {
@@ -15,7 +16,7 @@ internal object FieldMetadataGenerator {
                 addStatement("name = %S,", field.name)
                 addStatement(
                     format = "options = %P,",
-                    OptionsMetadataGenerator.generate(field.options)
+                    OptionsMetadataGenerator.generate(field.options, resolver)
                 )
                 addStatement(
                     "documentation = %L,",

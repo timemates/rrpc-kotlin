@@ -2,49 +2,49 @@ package org.timemates.rrpc.codegen
 
 import com.squareup.wire.schema.*
 import org.timemates.rrpc.codegen.exception.GenerationException
-import org.timemates.rrpc.common.metadata.*
-import org.timemates.rrpc.common.metadata.value.RMPackageName
-import org.timemates.rrpc.common.metadata.value.RMTypeUrl
+import org.timemates.rrpc.common.schema.*
+import org.timemates.rrpc.common.schema.value.RMPackageName
+import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
 
-internal fun ProtoType.asRMTypeUrl(): RMTypeUrl {
+internal fun ProtoType.asRMTypeUrl(): RMDeclarationUrl {
     return when {
-        isMap -> RMTypeUrl("map<${keyType!!.asRMTypeUrl()}, ${valueType!!.asRMTypeUrl()}>")
+        isMap -> RMDeclarationUrl("map<${keyType!!.asRMTypeUrl()}, ${valueType!!.asRMTypeUrl()}>")
         isScalar -> when (this) {
-            ProtoType.BOOL -> RMTypeUrl.BOOL
-            ProtoType.BYTES -> RMTypeUrl.BYTES
-            ProtoType.DOUBLE -> RMTypeUrl.DOUBLE
-            ProtoType.FLOAT -> RMTypeUrl.FLOAT
-            ProtoType.FIXED32 -> RMTypeUrl.FIXED32
-            ProtoType.FIXED64 -> RMTypeUrl.FIXED64
-            ProtoType.INT32 -> RMTypeUrl.INT32
-            ProtoType.INT64 -> RMTypeUrl.INT64
-            ProtoType.SFIXED32 -> RMTypeUrl.SFIXED32
-            ProtoType.SFIXED64 -> RMTypeUrl.SFIXED64
-            ProtoType.SINT32 -> RMTypeUrl.SINT32
-            ProtoType.SINT64 -> RMTypeUrl.SINT64
-            ProtoType.STRING -> RMTypeUrl.STRING
-            ProtoType.UINT32 -> RMTypeUrl.UINT32
-            ProtoType.UINT64 -> RMTypeUrl.UINT64
-            ProtoType.ANY -> RMTypeUrl.ANY
-            ProtoType.DURATION -> RMTypeUrl.DURATION
-            ProtoType.TIMESTAMP -> RMTypeUrl.TIMESTAMP
-            ProtoType.EMPTY -> RMTypeUrl.EMPTY
-            ProtoType.STRUCT_MAP -> RMTypeUrl.STRUCT_MAP
-            ProtoType.STRUCT_LIST -> RMTypeUrl.STRUCT_LIST
-            ProtoType.STRUCT_VALUE -> RMTypeUrl.STRUCT_VALUE
-            ProtoType.STRUCT_NULL -> RMTypeUrl.STRUCT_NULL
-            ProtoType.DOUBLE_VALUE -> RMTypeUrl.DOUBLE_VALUE
-            ProtoType.FLOAT_VALUE -> RMTypeUrl.FLOAT_VALUE
-            ProtoType.INT32_VALUE -> RMTypeUrl.INT32_VALUE
-            ProtoType.INT64_VALUE -> RMTypeUrl.INT64_VALUE
-            ProtoType.UINT32_VALUE -> RMTypeUrl.UINT32_VALUE
-            ProtoType.UINT64_VALUE -> RMTypeUrl.UINT64_VALUE
-            ProtoType.BOOL_VALUE -> RMTypeUrl.BOOL_VALUE
-            ProtoType.BYTES_VALUE -> RMTypeUrl.BYTES_VALUE
+            ProtoType.BOOL -> RMDeclarationUrl.BOOL
+            ProtoType.BYTES -> RMDeclarationUrl.BYTES
+            ProtoType.DOUBLE -> RMDeclarationUrl.DOUBLE
+            ProtoType.FLOAT -> RMDeclarationUrl.FLOAT
+            ProtoType.FIXED32 -> RMDeclarationUrl.FIXED32
+            ProtoType.FIXED64 -> RMDeclarationUrl.FIXED64
+            ProtoType.INT32 -> RMDeclarationUrl.INT32
+            ProtoType.INT64 -> RMDeclarationUrl.INT64
+            ProtoType.SFIXED32 -> RMDeclarationUrl.SFIXED32
+            ProtoType.SFIXED64 -> RMDeclarationUrl.SFIXED64
+            ProtoType.SINT32 -> RMDeclarationUrl.SINT32
+            ProtoType.SINT64 -> RMDeclarationUrl.SINT64
+            ProtoType.STRING -> RMDeclarationUrl.STRING
+            ProtoType.UINT32 -> RMDeclarationUrl.UINT32
+            ProtoType.UINT64 -> RMDeclarationUrl.UINT64
+            ProtoType.ANY -> RMDeclarationUrl.ANY
+            ProtoType.DURATION -> RMDeclarationUrl.DURATION
+            ProtoType.TIMESTAMP -> RMDeclarationUrl.TIMESTAMP
+            ProtoType.EMPTY -> RMDeclarationUrl.EMPTY
+            ProtoType.STRUCT_MAP -> RMDeclarationUrl.STRUCT_MAP
+            ProtoType.STRUCT_LIST -> RMDeclarationUrl.STRUCT_LIST
+            ProtoType.STRUCT_VALUE -> RMDeclarationUrl.STRUCT_VALUE
+            ProtoType.STRUCT_NULL -> RMDeclarationUrl.STRUCT_NULL
+            ProtoType.DOUBLE_VALUE -> RMDeclarationUrl.DOUBLE_VALUE
+            ProtoType.FLOAT_VALUE -> RMDeclarationUrl.FLOAT_VALUE
+            ProtoType.INT32_VALUE -> RMDeclarationUrl.INT32_VALUE
+            ProtoType.INT64_VALUE -> RMDeclarationUrl.INT64_VALUE
+            ProtoType.UINT32_VALUE -> RMDeclarationUrl.UINT32_VALUE
+            ProtoType.UINT64_VALUE -> RMDeclarationUrl.UINT64_VALUE
+            ProtoType.BOOL_VALUE -> RMDeclarationUrl.BOOL_VALUE
+            ProtoType.BYTES_VALUE -> RMDeclarationUrl.BYTES_VALUE
             else -> throw GenerationException("Unable to convert scalar type '$this'.")
         }
 
-        else -> RMTypeUrl(typeUrl!!)
+        else -> RMDeclarationUrl(typeUrl!!)
     }
 }
 

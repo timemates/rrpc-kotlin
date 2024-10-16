@@ -4,10 +4,10 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.PropertySpec
 import org.timemates.rrpc.codegen.exception.GenerationException
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMExtend
-import org.timemates.rrpc.common.metadata.RMOptions
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.value.RMTypeUrl
+import org.timemates.rrpc.common.schema.RMExtend
+import org.timemates.rrpc.common.schema.RMOptions
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
 
 public object ExtendGenerator {
     public fun generateExtend(extend: RMExtend, resolver: RMResolver): List<PropertySpec> {
@@ -35,7 +35,7 @@ public object ExtendGenerator {
         }
     }
 
-    private fun getClassNameFromExtendType(type: RMTypeUrl): ClassName {
+    private fun getClassNameFromExtendType(type: RMDeclarationUrl): ClassName {
         return when (type) {
             RMOptions.METHOD_OPTIONS -> Types.Option.RPC
             RMOptions.SERVICE_OPTIONS -> Types.Option.Service

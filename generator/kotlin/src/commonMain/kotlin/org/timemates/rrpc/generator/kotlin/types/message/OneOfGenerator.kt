@@ -2,9 +2,9 @@ package org.timemates.rrpc.generator.kotlin.types.message
 
 import com.squareup.kotlinpoet.*
 import org.timemates.rrpc.codegen.typemodel.Annotations
-import org.timemates.rrpc.common.metadata.RMOneOf
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.RMType
+import org.timemates.rrpc.common.schema.RMOneOf
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.RMType
 import org.timemates.rrpc.generator.kotlin.ext.asClassName
 import org.timemates.rrpc.generator.kotlin.ext.capitalized
 import org.timemates.rrpc.generator.kotlin.types.TypeDefaultValueGenerator
@@ -36,7 +36,7 @@ internal object OneOfGenerator {
                     .primaryConstructor(
                         FunSpec.constructorBuilder()
                             .addParameter(
-                                ParameteRRpcec.builder("value", typeName)
+                                ParameterSpec.builder("value", typeName)
                                     .defaultValue(
                                         defaultValue.takeUnless { it == "null" } ?: "%T.Default", typeName,
                                     )

@@ -7,14 +7,22 @@ group = "org.timemates.rrpc"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
-    commonMainImplementation(libs.rsocket.client)
-    commonMainApi(projects.common.core)
+    dependencies {
+        // -- Project --
+        commonMainImplementation(projects.common.core)
 
-    jvmTestImplementation(libs.kotlin.test)
-    jvmTestImplementation(libs.mockk)
+        // -- RSocket --
+        commonMainApi(libs.rsocket.client)
+
+        // -- Test --
+        jvmTestImplementation(libs.kotlin.test)
+        jvmTestImplementation(libs.mockk)
+    }
+
 }
 
 kotlin {
+    jvm()
 //    js(IR) {
 //        browser()
 //        nodejs()
@@ -32,7 +40,7 @@ mavenPublishing {
     )
 
     pom {
-        name.set("RRpcroto Client Core")
-        description.set("Multiplatform Kotlin core library for RRpcroto clients.")
+        name.set("RRpc Client Core")
+        description.set("Multiplatform Kotlin core library for RRpc clients.")
     }
 }

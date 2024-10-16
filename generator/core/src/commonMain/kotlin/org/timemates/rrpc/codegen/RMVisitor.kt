@@ -1,6 +1,6 @@
 package org.timemates.rrpc.codegen
 
-import org.timemates.rrpc.common.metadata.*
+import org.timemates.rrpc.common.schema.*
 
 /**
  * Visitor interface for traversing RRpc schema objects.

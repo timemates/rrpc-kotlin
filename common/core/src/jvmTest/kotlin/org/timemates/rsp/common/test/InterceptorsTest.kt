@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalInterceptorsApi::class, InternalRRpcrotoAPI::class)
+@file:OptIn(ExperimentalInterceptorsApi::class, InternalRRpcAPI::class)
 
 package org.timemates.rrpc.common.test
 
@@ -7,7 +7,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.timemates.rrpc.Single
 import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
-import org.timemates.rrpc.annotations.InternalRRpcrotoAPI
+import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.instances.InstanceContainer
 import org.timemates.rrpc.interceptors.Interceptor
 import org.timemates.rrpc.interceptors.InterceptorContext

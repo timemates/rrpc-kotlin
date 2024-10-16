@@ -1,7 +1,7 @@
 package org.timemates.rrpc.generator.kotlin.types.message
 
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.RMType
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.RMType
 import org.timemates.rrpc.generator.kotlin.types.TypeGenerator
 
 internal object MessageNestedTypeGenerator {

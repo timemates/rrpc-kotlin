@@ -4,21 +4,23 @@ plugins {
 }
 
 dependencies {
-    commonMainApi(libs.kotlinx.serialization.proto) 
-    commonMainApi(libs.rsocket.core)
+    // -- Serialization --
+    commonMainApi(libs.kotlinx.serialization.proto)
 
+    // -- Test --
     jvmTestImplementation(libs.kotlin.test)
     jvmTestImplementation(libs.mockk)
 }
 
+
 kotlin {
-    js(IR) {
-        browser()
-        nodejs()
-    }
-    iosArm64()
-    iosX64()
-    iosSimulatorArm64()
+//    js(IR) {
+//        browser()
+//        nodejs()
+//    }
+//    iosArm64()
+//    iosX64()
+//    iosSimulatorArm64()
 }
 
 mavenPublishing {
@@ -29,7 +31,7 @@ mavenPublishing {
     )
 
     pom {
-        name.set("RRpcroto Common Core")
-        description.set("Multiplatform Kotlin core library for RRpcroto servers and clients.")
+        name.set("RRpc Common Core")
+        description.set("Multiplatform Kotlin core library for RRpc servers and clients.")
     }
 }

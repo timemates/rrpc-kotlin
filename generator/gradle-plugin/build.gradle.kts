@@ -14,21 +14,25 @@ dependencies {
     constraints {
         api("org.timemates.rrpc.generator:kotlin:$version")
     }
-    api(projects.generator.core)
-    api(projects.generator.kotlin)
 
+    // -- Project --
+    implementation(projects.generator.core)
+    implementation(projects.generator.kotlin)
+
+    // -- Libraries --
     implementation(libs.kotlin.plugin)
     implementation(libs.squareup.okio)
 }
 
+
 gradlePlugin {
-    website = "https://github.com/rrpcroto"
-    vcsUrl = "https://github.com/rrpcroto"
+    website = "https://github.com/RRpc"
+    vcsUrl = "https://github.com/RRpc"
 
     plugins {
-        create("rrpcroto-plugin") {
+        create("RRpc-plugin") {
             id = "org.timemates.rrpc"
-            displayName = "RRpcroto Code Generator"
+            displayName = "RRpc Code Generator"
             description = "Code Generator from .proto files to Kotlin code."
             tags = listOf("kotlin", "rsocket", "protobuf", "proto")
 

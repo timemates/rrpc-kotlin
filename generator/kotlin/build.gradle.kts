@@ -10,12 +10,15 @@ group = "org.timemates.rrpc"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
-    commonMainImplementation(libs.squareup.kotlinpoet)
-    commonMainImplementation(libs.squareup.okio)
-
+    // -- Project --
     commonMainImplementation(projects.common.core)
     commonMainImplementation(projects.generator.core)
+
+    // -- SquareUp --
+    commonMainImplementation(libs.squareup.kotlinpoet)
+    commonMainImplementation(libs.squareup.okio)
 }
+
 
 mavenPublishing {
     coordinates(
@@ -25,7 +28,7 @@ mavenPublishing {
     )
 
     pom {
-        name.set("RRpcroto Kotlin Code Generator")
-        description.set("Code-generation library for RRpcroto servers and clients.")
+        name.set("RRpc Kotlin Code Generator")
+        description.set("Code-generation library for RRpc servers and clients.")
     }
 }

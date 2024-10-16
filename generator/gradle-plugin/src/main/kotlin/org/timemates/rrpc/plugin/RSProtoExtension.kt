@@ -151,8 +151,8 @@ public open class RRpcExtension(objects: ObjectFactory) {
         /**
          * Contains the path to the folder where the generated code will be saved.
          */
-        public val generationOutput: Property<String?> =
-            objects.property<String?>.convention(null)
-            // objects.property<String>().convention("generated/rrpc/src/commonMain")
+//        public val generationOutput: Property<String?> =
+//            objects.property<String?>.convention(null)
+//            // objects.property<String>().convention("generated/rrpc/src/commonMain")
     }
 }

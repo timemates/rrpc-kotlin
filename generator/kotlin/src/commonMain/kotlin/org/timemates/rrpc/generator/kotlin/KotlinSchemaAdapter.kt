@@ -1,8 +1,8 @@
 package org.timemates.rrpc.generator.kotlin
 
 import org.timemates.rrpc.codegen.adapters.SchemaAdapter
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.annotations.NonPlatformSpecificAccess
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.annotations.NonPlatformSpecificAccess
 
 public object KotlinSchemaAdapter : SchemaAdapter {
     @OptIn(NonPlatformSpecificAccess::class)
@@ -23,8 +23,8 @@ public object KotlinSchemaAdapter : SchemaAdapter {
         }.forEach { spec ->
             config.output.forEach { output ->
                 when (output) {
-                    is SchemaAdapter.Config.Custom -> {}
-                    is SchemaAdapter.Config.FS -> {
+                    is SchemaAdapter.Config.Output.Custom -> {}
+                    is SchemaAdapter.Config.Output.FS -> {
                         spec.writeTo(output.path.toNioPath())
                     }
                 }

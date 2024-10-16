@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import org.timemates.rrpc.common.metadata.RMField
+import org.timemates.rrpc.common.schema.RMField
 import org.timemates.rrpc.generator.kotlin.types.TypeDefaultValueGenerator
 
 internal object MessageDSLBuilderGenerator {

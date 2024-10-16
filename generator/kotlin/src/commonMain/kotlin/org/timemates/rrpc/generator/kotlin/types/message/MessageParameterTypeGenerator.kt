@@ -3,8 +3,8 @@ package org.timemates.rrpc.generator.kotlin.types.message
 import com.squareup.kotlinpoet.LIST
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.RMType
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.RMType
 import org.timemates.rrpc.generator.kotlin.ext.asClassName
 import org.timemates.rrpc.generator.kotlin.types.BuiltinsGenerator
 

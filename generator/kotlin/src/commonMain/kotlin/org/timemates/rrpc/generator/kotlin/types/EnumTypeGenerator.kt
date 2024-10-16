@@ -3,8 +3,8 @@ package org.timemates.rrpc.generator.kotlin.types
 import com.squareup.kotlinpoet.*
 import org.timemates.rrpc.codegen.typemodel.Annotations
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.RMType
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.RMType
 
 internal object EnumTypeGenerator {
     fun generateEnum(incoming: RMType.Enum, schema: RMResolver): TypeSpec {

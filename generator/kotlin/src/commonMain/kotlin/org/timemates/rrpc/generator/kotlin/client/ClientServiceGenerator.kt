@@ -5,8 +5,8 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
 import org.timemates.rrpc.codegen.typemodel.Annotations
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.RMService
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.RMService
 import org.timemates.rrpc.generator.kotlin.options.ClientOptionsPropertyGenerator
 import org.timemates.rrpc.generator.kotlin.typemodel.ImportRequirement
 
@@ -32,7 +32,7 @@ public object ClientServiceGenerator {
         return Result(
             typeSpec = TypeSpec.classBuilder(className)
                 .addAnnotation(
-                    Annotations.OptIn(Annotations.InternalRRpcrotoAPI)
+                    Annotations.OptIn(Annotations.InternalRRpcAPI)
                 )
                 .primaryConstructor(
                     FunSpec.constructorBuilder()

@@ -25,11 +25,23 @@ includeBuild("build-conventions")
 
 include(
     ":common:core",
-    ":common:metadata",
+    ":common:schema",
 )
 
-include(":server:core", ":server:metadata")
+include(
+    ":server:core",
+    ":server:schema",
+)
 
-include(":client:core")
+include(
+    ":client:core",
+    ":client:schema",
+)
 
-include(":generator:core", ":generator:kotlin", ":generator:gradle-plugin")
+include(
+    ":generator:core",
+    ":generator:kotlin",
+    ":generator:gradle-plugin",
+)
+
+include(":integration-tests")

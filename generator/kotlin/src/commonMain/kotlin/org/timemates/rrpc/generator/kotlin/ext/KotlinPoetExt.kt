@@ -2,6 +2,7 @@ package org.timemates.rrpc.generator.kotlin.ext
 
 import com.squareup.kotlinpoet.*
 import org.timemates.rrpc.codegen.typemodel.Annotations
+import org.timemates.rrpc.common.schema.value.RMPackageName
 import org.timemates.rrpc.generator.kotlin.typemodel.ImportRequirement
 
 /**
@@ -18,7 +19,7 @@ internal fun FileSpec.Builder.addTypes(types: List<TypeSpec>): FileSpec.Builder 
 
 internal fun FileSpec.Builder.addImports(imports: List<ImportRequirement>): FileSpec.Builder = apply {
     imports.forEach {
-        addImport(it.packageName, it.simpleNames)
+        addImport(it.packageName.value, it.simpleNames)
     }
 }
 
@@ -46,7 +47,7 @@ internal fun FunSpec.Builder.deprecated(deprecated: Boolean = true): FunSpec.Bui
 }
 
 internal fun ClassName.asImportRequirement(): ImportRequirement = ImportRequirement(
-    packageName,
+    RMPackageName(packageName),
     simpleNames,
 )
 

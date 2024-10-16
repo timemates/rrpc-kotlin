@@ -2,26 +2,28 @@ package org.timemates.rrpc.generator.kotlin.client
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.wire.schema.ProtoType
-import com.squareup.wire.schema.Rpc
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.codegen.ext.*
 import org.timemates.rrpc.codegen.typemodel.Types
+import org.timemates.rrpc.common.schema.*
+import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
+import org.timemates.rrpc.generator.kotlin.ext.asClassName
+import org.timemates.rrpc.generator.kotlin.ext.deprecated
 
 public object ClientRpcGenerator {
-    public fun generateRpc(serviceName: String, rpc: Rpc, schema: RMResolver): FunSpec {
+    public fun generateRpc(serviceName: String, rpc: RMRpc, schema: RMResolver): FunSpec {
         when {
-            rpc.requestType == ProtoType.ACK && rpc.requestStreaming ->
+            rpc.requestType.type == RMDeclarationUrl.ACK && rpc.requestType.isStreaming ->
                 error("Ack type cannot be used as streaming type.")
-            rpc.responseType == ProtoType.ACK && rpc.responseStreaming ->
+
+            rpc.responseType.type == RMDeclarationUrl.ACK && rpc.responseType.isStreaming ->
                 error("Ack type cannot be used as streaming type.")
-            rpc.requestStreaming && !rpc.responseStreaming ->
+
+            rpc.requestType.isStreaming && !rpc.responseType.isStreaming ->
                 error("Client-only streaming is not supported.")
         }
 
-        val rpcName = rpc.name.decapitalized()
-        val rpcRequestType = rpc.requestType!!.asClassName(schema)
-        val rpcReturnType = rpc.responseType!!.asClassName(schema)
+        val rpcName = rpc.kotlinName()
+        val rpcRequestType = rpc.requestType.type.asClassName(schema)
+        val rpcReturnType = rpc.responseType.type.asClassName(schema)
 
         val code = when {
             rpc.isFireAndForget -> CodeBlock.of(
@@ -33,6 +35,7 @@ public object ClientRpcGenerator {
                 rpcRequestType,
                 Types.Options,
             )
+
             rpc.isMetadataPush -> CodeBlock.of(
                 METADATA_PUSH_CODE,
                 Types.ClientMetadata,
@@ -41,6 +44,7 @@ public object ClientRpcGenerator {
                 Types.ExtraMetadata,
                 Types.Options,
             )
+
             else -> CodeBlock.of(
                 format = BASIC_REQUEST_CODE,
                 args = arrayOf(
@@ -54,7 +58,7 @@ public object ClientRpcGenerator {
                     serviceName,
                     rpcName,
                     Types.ExtraMetadata,
-                    if (rpc.requestStreaming) "messages" else "message",
+                    if (rpc.requestType.isStreaming) "messages" else "message",
                     rpcRequestType,
                     rpcReturnType,
                     Types.Options,
@@ -62,10 +66,10 @@ public object ClientRpcGenerator {
             )
         }
 
-        return FunSpec.builder(rpc.name.decapitalized())
+        return FunSpec.builder(rpc.kotlinName())
             .deprecated(rpc.options.isDeprecated)
             .apply {
-                if (rpc.requestStreaming) {
+                if (rpc.requestType.isStreaming) {
                     addParameter(
                         name = "messages",
                         type = Types.Flow(rpcRequestType)
@@ -78,17 +82,17 @@ public object ClientRpcGenerator {
                 }
             }
             .addParameter(
-                ParameteRRpcec.builder("extra", MAP.parameterizedBy(STRING, BYTE_ARRAY))
+                ParameterSpec.builder("extra", MAP.parameterizedBy(STRING, BYTE_ARRAY))
                     .defaultValue("emptyMap()")
                     .build()
             )
             .apply {
-                if (!rpc.requestStreaming && !rpc.responseStreaming) {
+                if (rpc.isRequestResponse || rpc.isFireAndForget || rpc.isMetadataPush) {
                     addModifiers(KModifier.SUSPEND)
                 }
             }
             .addCode(code)
-            .returns(rpcReturnType.let { if (rpc.responseStreaming) Types.Flow(it) else it })
+            .returns(rpcReturnType.let { if (rpc.responseType.isStreaming) Types.Flow(it) else it })
             .build()
     }
 }

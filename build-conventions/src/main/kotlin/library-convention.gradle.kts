@@ -4,7 +4,7 @@ plugins {
 
 mavenPublishing {
     pom {
-        url.set("https://github.com/rrpcroto/rrpc-kotlin")
+        url.set("https://github.com/RRpc/rrpc-kotlin")
         inceptionYear.set("2023")
 
         licenses {
@@ -24,14 +24,14 @@ mavenPublishing {
         }
 
         scm {
-            url.set("https://github.com/rrpcroto/rrpc-kotlin")
-            connection.set("scm:git:git://github.com/rrpcroto/rrpc-kotlin.git")
-            developerConnection.set("scm:git:ssh://git@github.com/rrpcroto/rrpc-kotlin.git")
+            url.set("https://github.com/RRpc/rrpc-kotlin")
+            connection.set("scm:git:git://github.com/RRpc/rrpc-kotlin.git")
+            developerConnection.set("scm:git:ssh://git@github.com/RRpc/rrpc-kotlin.git")
         }
 
         issueManagement {
             system.set("GitHub Issues")
-            url.set("https://github.com/rrpcroto/rrpc-kotlin/issues")
+            url.set("https://github.com/RRpc/rrpc-kotlin/issues")
         }
     }
 }

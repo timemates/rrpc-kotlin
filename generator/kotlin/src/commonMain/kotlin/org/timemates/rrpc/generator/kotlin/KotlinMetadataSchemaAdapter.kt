@@ -2,8 +2,8 @@ package org.timemates.rrpc.generator.kotlin
 
 import org.timemates.rrpc.codegen.adapters.SchemaAdapter
 import org.timemates.rrpc.codegen.exception.GenerationException
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.annotations.NonPlatformSpecificAccess
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.annotations.NonPlatformSpecificAccess
 import org.timemates.rrpc.generator.kotlin.metadata.CombinedFilesMetadataGenerator
 
 public object KotlinMetadataSchemaAdapter : SchemaAdapter {

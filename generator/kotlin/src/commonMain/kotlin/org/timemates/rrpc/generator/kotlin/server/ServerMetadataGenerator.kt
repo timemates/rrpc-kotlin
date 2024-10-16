@@ -3,11 +3,9 @@ package org.timemates.rrpc.generator.kotlin.server
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.buildCodeBlock
-import com.squareup.wire.schema.Options
-import org.timemates.rrpc.codegen.ext.*
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.*
-import org.timemates.rrpc.common.metadata.annotations.NonPlatformSpecificAccess
+import org.timemates.rrpc.common.schema.*
+import org.timemates.rrpc.common.schema.annotations.NonPlatformSpecificAccess
 import org.timemates.rrpc.generator.kotlin.ext.asClassName
 import org.timemates.rrpc.generator.kotlin.ext.newline
 import org.timemates.rrpc.generator.kotlin.options.RawOptionsCodeGeneration
@@ -55,7 +53,7 @@ public object ServerMetadataGenerator {
                         newline(",")
                         add(
                             "options = %L",
-                            RawOptionsCodeGeneration.generate(rpc.options, resolver, Options.METHOD_OPTIONS)
+                            RawOptionsCodeGeneration.generate(rpc.options, resolver, RMOptions.METHOD_OPTIONS)
                         )
                         newline(before = ",")
                         unindent()
@@ -67,7 +65,7 @@ public object ServerMetadataGenerator {
                     newline()
                     add(
                         "options = %L",
-                        RawOptionsCodeGeneration.generate(service.options, resolver, Options.SERVICE_OPTIONS)
+                        RawOptionsCodeGeneration.generate(service.options, resolver, RMOptions.SERVICE_OPTIONS)
                     )
                     newline()
                     unindent()

@@ -4,20 +4,21 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.withIndent
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMExtend
-import org.timemates.rrpc.common.metadata.RMType
+import org.timemates.rrpc.common.schema.RMExtend
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.RMType
 import org.timemates.rrpc.generator.kotlin.ext.newline
 
 internal object TypeMetadataGenerator {
-    fun generate(type: RMType): CodeBlock {
+    fun generate(type: RMType, resolver: RMResolver): CodeBlock {
         return when (type) {
-            is RMType.Enclosing -> generateEnclosing(type)
-            is RMType.Enum -> generateEnum(type)
-            is RMType.Message -> generateMessage(type)
+            is RMType.Enclosing -> generateEnclosing(type, resolver)
+            is RMType.Enum -> generateEnum(type, resolver)
+            is RMType.Message -> generateMessage(type, resolver)
         }
     }
 
-    private fun generateMessage(message: RMType.Message): CodeBlock {
+    private fun generateMessage(message: RMType.Message, resolver: RMResolver): CodeBlock {
         return buildCodeBlock {
             add("%T(", Types.RM.Enum)
             withIndent {
@@ -27,7 +28,7 @@ internal object TypeMetadataGenerator {
                 withIndent {
                     message.fields.forEach { field ->
                         newline()
-                        add(FieldMetadataGenerator.generate(field))
+                        add(FieldMetadataGenerator.generate(field, resolver))
                         add(",")
                     }
                 }
@@ -36,34 +37,34 @@ internal object TypeMetadataGenerator {
                 withIndent {
                     message.oneOfs.forEach { oneOf ->
                         newline()
-                        add(OneOfMetadataGenerator.generate(oneOf))
+                        add(OneOfMetadataGenerator.generate(oneOf, resolver))
                     }
                 }
                 addStatement("),")
-                addStatement("options = %P", OptionsMetadataGenerator.generate(message.options))
+                addStatement("options = %P", OptionsMetadataGenerator.generate(message.options, resolver))
                 addStatement("typeUrl = %T(%S)", Types.RM.Value.TypeUrl, message.typeUrl)
-                addNestedTypes(message.nestedTypes)
-                addNestedExtends(message.nestedExtends)
+                addNestedTypes(message.nestedTypes, resolver)
+                addNestedExtends(message.nestedExtends, resolver)
             }
             addStatement(")")
         }
     }
 
-    private fun generateEnclosing(enclosing: RMType.Enclosing): CodeBlock {
+    private fun generateEnclosing(enclosing: RMType.Enclosing, resolver: RMResolver): CodeBlock {
         return buildCodeBlock {
             add("%T(", Types.RM.Enum)
             withIndent {
                 addStatement("name = %S,", enclosing.name)
                 addDocumentation(enclosing.documentation)
                 addStatement("typeUrl = %T(%S),", Types.RM.Value.TypeUrl, enclosing.typeUrl)
-                addNestedTypes(enclosing.nestedTypes)
-                addNestedExtends(enclosing.nestedExtends)
+                addNestedTypes(enclosing.nestedTypes, resolver)
+                addNestedExtends(enclosing.nestedExtends, resolver)
             }
             add(")")
         }
     }
 
-    private fun generateEnum(enum: RMType.Enum): CodeBlock {
+    private fun generateEnum(enum: RMType.Enum, resolver: RMResolver): CodeBlock {
         return buildCodeBlock {
             add("%T(", Types.RM.Enum)
             withIndent {
@@ -76,7 +77,7 @@ internal object TypeMetadataGenerator {
                         withIndent {
                             addStatement("name = %S,", constant.name)
                             addStatement("tag = %L,", constant.tag)
-                            addStatement("options = %P,", OptionsMetadataGenerator.generate(constant.options))
+                            addStatement("options = %P,", OptionsMetadataGenerator.generate(constant.options, resolver))
                             addStatement(
                                 format = "documentation = %L,",
                                 if (constant.documentation == null) "null" else "\"${constant.documentation}\""
@@ -87,9 +88,9 @@ internal object TypeMetadataGenerator {
                 }
                 add("),")
                 addDocumentation(enum.documentation)
-                addStatement("options = %P,", OptionsMetadataGenerator.generate(enum.options))
-                addNestedTypes(enum.nestedTypes)
-                addNestedExtends(enum.nestedExtends)
+                addStatement("options = %P,", OptionsMetadataGenerator.generate(enum.options, resolver))
+                addNestedTypes(enum.nestedTypes, resolver)
+                addNestedExtends(enum.nestedExtends, resolver)
                 addStatement(
                     format = "typeUrl = %T(%S),",
                     Types.RM.Value.TypeUrl,
@@ -100,24 +101,24 @@ internal object TypeMetadataGenerator {
         }
     }
 
-    private fun CodeBlock.Builder.addNestedTypes(nestedTypes: List<RMType>) {
+    private fun CodeBlock.Builder.addNestedTypes(nestedTypes: List<RMType>, resolver: RMResolver) {
         addStatement("nestedTypes = listOf(")
         withIndent {
             nestedTypes.forEach { nestedType ->
                 newline()
-                add(generate(nestedType))
+                add(generate(nestedType, resolver))
                 add(",")
             }
         }
         add("),")
     }
 
-    private fun CodeBlock.Builder.addNestedExtends(nestedExtends: List<RMExtend>) {
+    private fun CodeBlock.Builder.addNestedExtends(nestedExtends: List<RMExtend>, resolver: RMResolver) {
         addStatement("nestedExtends = listOf(")
         withIndent {
             nestedExtends.forEach { nested ->
                 newline()
-                add(ExtendMetadataGenerator.generate(nested))
+                add(ExtendMetadataGenerator.generate(nested, resolver))
                 add(",")
             }
         }

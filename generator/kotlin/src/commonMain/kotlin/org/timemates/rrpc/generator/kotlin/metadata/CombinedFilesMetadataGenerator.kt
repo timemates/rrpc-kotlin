@@ -7,10 +7,8 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.withIndent
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMResolver
+import org.timemates.rrpc.common.schema.RMResolver
 import org.timemates.rrpc.generator.kotlin.ext.newline
-import org.timemates.rrpc.generator.kotlin.metadata.FileMetadataGenerator
-import java.util.UUID
 import kotlin.random.Random
 
 public object CombinedFilesMetadataGenerator {
@@ -33,7 +31,7 @@ public object CombinedFilesMetadataGenerator {
                             withIndent {
                                 resolver.resolveAvailableFiles().forEach { file ->
                                     newline()
-                                    add(FileMetadataGenerator.generate(file))
+                                    add(FileMetadataGenerator.generate(file, resolver))
                                     add(",")
                                 }
                             }

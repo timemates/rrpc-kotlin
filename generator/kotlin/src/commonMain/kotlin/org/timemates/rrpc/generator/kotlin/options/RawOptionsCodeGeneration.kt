@@ -3,11 +3,11 @@ package org.timemates.rrpc.generator.kotlin.options
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.buildCodeBlock
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMField
-import org.timemates.rrpc.common.metadata.RMOptions
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.kotlinPackage
-import org.timemates.rrpc.common.metadata.value.RMTypeUrl
+import org.timemates.rrpc.common.schema.RMField
+import org.timemates.rrpc.common.schema.RMOptions
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.kotlinPackage
+import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
 import org.timemates.rrpc.generator.kotlin.ext.newline
 import org.timemates.rrpc.generator.kotlin.typemodel.ImportRequirement
 
@@ -15,7 +15,7 @@ internal object RawOptionsCodeGeneration {
     fun generate(
         options: RMOptions,
         resolver: RMResolver,
-        optionsType: RMTypeUrl,
+        optionsType: RMDeclarationUrl,
     ): CodeBlock {
         val imports = mutableListOf<ImportRequirement>()
 

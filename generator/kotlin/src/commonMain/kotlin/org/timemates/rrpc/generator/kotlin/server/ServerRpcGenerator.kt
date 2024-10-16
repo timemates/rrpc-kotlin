@@ -4,8 +4,8 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.TypeName
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.*
-import org.timemates.rrpc.common.metadata.value.RMTypeUrl
+import org.timemates.rrpc.common.schema.*
+import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
 import org.timemates.rrpc.generator.kotlin.ext.asClassName
 import org.timemates.rrpc.generator.kotlin.ext.deprecated
 
@@ -25,13 +25,13 @@ public object ServerRpcGenerator {
                 if (rpc.isRequestResponse)
                     addModifiers(KModifier.SUSPEND)
 
-                if (rpc.requestType.type != RMTypeUrl.ACK)
+                if (rpc.requestType.type != RMDeclarationUrl.ACK)
                     addParameter(
                         "request",
                         requestType,
                     )
 
-                if (rpc.responseType.type != RMTypeUrl.ACK)
+                if (rpc.responseType.type != RMDeclarationUrl.ACK)
                     returns(returnType)
             }
             .build()

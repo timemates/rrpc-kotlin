@@ -7,14 +7,20 @@ group = "org.timemates.rrpc"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
+    // -- Project --
+    commonMainImplementation(projects.common.core)
+
+    // -- Ktor --
+    commonMainImplementation(libs.ktor.server.core)
+    commonMainImplementation(libs.ktor.server.websockets)
+
+    // -- RSocket --
     commonMainImplementation(libs.rsocket.server)
-    commonMainImplementation(libs.kotlinx.serialization.proto) 
-    commonMainApi(projects.common.core)
 
-    commonMainImplementation(libs.ktor.server.websockets) 
-
-    commonMainImplementation(libs.ktor.server.core) 
+    // -- Serialization --
+    commonMainImplementation(libs.kotlinx.serialization.proto)
 }
+
 
 mavenPublishing {
     coordinates(
@@ -24,7 +30,7 @@ mavenPublishing {
     )
 
     pom {
-        name.set("RRpcroto Server Core")
-        description.set("Multiplatform Kotlin core library for RRpcroto servers.")
+        name.set("RRpc Server Core")
+        description.set("Multiplatform Kotlin core library for RRpc servers.")
     }
 }

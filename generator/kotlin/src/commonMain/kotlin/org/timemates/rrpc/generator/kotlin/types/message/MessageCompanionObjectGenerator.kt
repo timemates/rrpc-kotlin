@@ -2,7 +2,7 @@ package org.timemates.rrpc.generator.kotlin.types.message
 
 import com.squareup.kotlinpoet.*
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.value.RMTypeUrl
+import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
 import org.timemates.rrpc.generator.kotlin.types.TypeGenerator
 
 internal object MessageCompanionObjectGenerator {
@@ -10,7 +10,7 @@ internal object MessageCompanionObjectGenerator {
         className: ClassName,
         nested: List<TypeGenerator.Result>,
         generateCreateFun: Boolean,
-        typeUrl: RMTypeUrl,
+        typeUrl: RMDeclarationUrl,
     ): TypeSpec {
         return TypeSpec.companionObjectBuilder()
             .addSuperinterface(Types.ProtoTypeDefinition(className))

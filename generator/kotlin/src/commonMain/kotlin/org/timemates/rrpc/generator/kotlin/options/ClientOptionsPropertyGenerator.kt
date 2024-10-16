@@ -5,9 +5,9 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.buildCodeBlock
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.RMOptions
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.kotlinPackage
+import org.timemates.rrpc.common.schema.RMOptions
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.kotlinPackage
 import org.timemates.rrpc.generator.kotlin.ext.newline
 import org.timemates.rrpc.generator.kotlin.typemodel.ImportRequirement
 

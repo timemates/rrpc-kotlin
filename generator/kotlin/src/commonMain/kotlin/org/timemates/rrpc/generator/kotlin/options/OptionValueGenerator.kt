@@ -1,23 +1,23 @@
 package org.timemates.rrpc.generator.kotlin.options
 
 import com.squareup.kotlinpoet.CodeBlock
-import org.timemates.rrpc.common.metadata.RMOption
-import org.timemates.rrpc.common.metadata.RMResolver
-import org.timemates.rrpc.common.metadata.RMType
-import org.timemates.rrpc.common.metadata.RMTypeMemberUrl
-import org.timemates.rrpc.common.metadata.value.RMTypeUrl
+import org.timemates.rrpc.common.schema.RMOption
+import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.RMType
+import org.timemates.rrpc.common.schema.RMTypeMemberUrl
+import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
 import org.timemates.rrpc.generator.kotlin.ext.asClassName
 import org.timemates.rrpc.generator.kotlin.ext.protoByteStringToByteArray
 
 public object OptionValueGenerator {
     public fun generate(
-        typeUrl: RMTypeUrl,
+        typeUrl: RMDeclarationUrl,
         value: RMOption.Value?,
         resolver: RMResolver,
     ): String {
         @Suppress("UNCHECKED_CAST")
         return when {
-            typeUrl.isScalar || typeUrl == RMTypeUrl.STRING || typeUrl == RMTypeUrl.STRING_VALUE -> generateScalarOrString(
+            typeUrl.isScalar || typeUrl == RMDeclarationUrl.STRING || typeUrl == RMDeclarationUrl.STRING_VALUE -> generateScalarOrString(
                 typeUrl,
                 value
             )
@@ -29,51 +29,51 @@ public object OptionValueGenerator {
     }
 
     private fun generateScalarOrString(
-        protoType: RMTypeUrl,
+        protoType: RMDeclarationUrl,
         value: Any?,
     ): String {
         return when (protoType) {
-            RMTypeUrl.STRING, RMTypeUrl.STRING_VALUE -> "\"${value}\""
-            RMTypeUrl.BOOL -> "$value"
+            RMDeclarationUrl.STRING, RMDeclarationUrl.STRING_VALUE -> "\"${value}\""
+            RMDeclarationUrl.BOOL -> "$value"
             // We don't support special types such as fixed32, sfixed32 and sint32,
             // because it makes no sense if not used in serialization.
             // All they are represented as regular Int.
-            RMTypeUrl.INT32, RMTypeUrl.FIXED32, RMTypeUrl.SFIXED32, RMTypeUrl.SINT32 -> "$value"
+            RMDeclarationUrl.INT32, RMDeclarationUrl.FIXED32, RMDeclarationUrl.SFIXED32, RMDeclarationUrl.SINT32 -> "$value"
             // We don't support special types such as fixed64, sfixed64 and sint64,
             // because it makes no sense if not used in serialization.
             // All they are represented as regular Long.
-            RMTypeUrl.INT64, RMTypeUrl.FIXED64, RMTypeUrl.SFIXED64, RMTypeUrl.SINT64 -> "${value}L"
-            RMTypeUrl.FLOAT -> "${value}f"
-            RMTypeUrl.DOUBLE -> "${value}.toDouble()"
-            RMTypeUrl.UINT32 -> "${value}.toUInt()"
-            RMTypeUrl.UINT64 -> "${value}uL"
-            RMTypeUrl.BYTES -> byteArrayToSourceCode((value as String).protoByteStringToByteArray())
+            RMDeclarationUrl.INT64, RMDeclarationUrl.FIXED64, RMDeclarationUrl.SFIXED64, RMDeclarationUrl.SINT64 -> "${value}L"
+            RMDeclarationUrl.FLOAT -> "${value}f"
+            RMDeclarationUrl.DOUBLE -> "${value}.toDouble()"
+            RMDeclarationUrl.UINT32 -> "${value}.toUInt()"
+            RMDeclarationUrl.UINT64 -> "${value}uL"
+            RMDeclarationUrl.BYTES -> byteArrayToSourceCode((value as String).protoByteStringToByteArray())
             else -> error("Unsupported type")
         }
     }
 
     private fun generateWrapperValue(
-        protoType: RMTypeUrl,
+        protoType: RMDeclarationUrl,
         value: Map<RMTypeMemberUrl, Any>,
     ): String {
         val element = value.values.first().toString()
 
         return when (protoType) {
-            RMTypeUrl.STRING_VALUE -> "\"${element}\""
-            RMTypeUrl.BOOL_VALUE -> element
-            RMTypeUrl.INT32_VALUE -> element
-            RMTypeUrl.INT64_VALUE -> "${element}L"
-            RMTypeUrl.FLOAT_VALUE -> "${element}f"
-            RMTypeUrl.DOUBLE -> "${element}.toDouble()"
-            RMTypeUrl.UINT32_VALUE -> "${element}u"
-            RMTypeUrl.UINT64_VALUE -> "${element}uL"
+            RMDeclarationUrl.STRING_VALUE -> "\"${element}\""
+            RMDeclarationUrl.BOOL_VALUE -> element
+            RMDeclarationUrl.INT32_VALUE -> element
+            RMDeclarationUrl.INT64_VALUE -> "${element}L"
+            RMDeclarationUrl.FLOAT_VALUE -> "${element}f"
+            RMDeclarationUrl.DOUBLE -> "${element}.toDouble()"
+            RMDeclarationUrl.UINT32_VALUE -> "${element}u"
+            RMDeclarationUrl.UINT64_VALUE -> "${element}uL"
             else -> TODO("Unsupported for now: $protoType")
         }
     }
 
     private fun generateMap(
-        typeUrl: RMTypeUrl,
-        value: Map<RMOption.Value, RMOption.Value>,
+        typeUrl: RMDeclarationUrl,
+        value: Map<RMOption.Value.Raw, RMOption.Value.Raw>,
         schema: RMResolver,
     ): String {
         requireNotNull(typeUrl.firstTypeArgument)
@@ -97,11 +97,11 @@ public object OptionValueGenerator {
     }
 
     private fun generateCustomType(
-        typeUrl: RMTypeUrl,
+        typeUrl: RMDeclarationUrl,
         value: RMOption.Value?,
         schema: RMResolver,
     ): String {
-        require(typeUrl != RMTypeUrl.ANY) { "google.protobuf.Any type is not supported." }
+        require(typeUrl != RMDeclarationUrl.ANY) { "google.protobuf.Any type is not supported." }
         val type = schema.resolveType(typeUrl)
         val className = typeUrl.asClassName(schema)
 

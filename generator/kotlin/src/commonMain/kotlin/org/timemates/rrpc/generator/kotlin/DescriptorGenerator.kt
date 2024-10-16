@@ -2,8 +2,8 @@ package org.timemates.rrpc.generator.kotlin
 
 import com.squareup.kotlinpoet.*
 import org.timemates.rrpc.codegen.typemodel.Types
-import org.timemates.rrpc.common.metadata.*
-import org.timemates.rrpc.common.metadata.annotations.NonPlatformSpecificAccess
+import org.timemates.rrpc.common.schema.*
+import org.timemates.rrpc.common.schema.annotations.NonPlatformSpecificAccess
 import org.timemates.rrpc.generator.kotlin.ext.addAllSeparated
 import org.timemates.rrpc.generator.kotlin.ext.asClassName
 import org.timemates.rrpc.generator.kotlin.ext.qualifiedName

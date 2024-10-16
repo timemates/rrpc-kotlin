@@ -31,5 +31,5 @@ internal object Annotations {
     val ProtoPacked = AnnotationSpec.builder(ClassName("kotlinx.serialization.protobuf", "ProtoPacked")).build()
     val ProtoOneOf = AnnotationSpec.builder(ClassName("kotlinx.serialization.protobuf", "ProtoOneOf")).build()
 
-    val InternalRRpcrotoAPI = ClassName("org.timemates.rrpc.annotations", "InternalRRpcrotoAPI")
+    val InternalRRpcAPI = ClassName("org.timemates.rrpc.annotations", "InternalRRpcAPI")
 }
