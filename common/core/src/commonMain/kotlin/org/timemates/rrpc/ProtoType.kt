@@ -35,7 +35,7 @@ public interface ProtoType {
          *
          * @return The type URL as a string.
          */
-        public val typeUrl: String
+        public val url: String
 
         /**
          * The default instance of the ProtoBuf type.
@@ -45,6 +45,7 @@ public interface ProtoType {
          *
          * @return A default instance of the ProtoBuf type.
          */
+        @Suppress("PropertyName")
         public val Default: T
     }
 }

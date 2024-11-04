@@ -8,6 +8,7 @@ exposed = "0.41.1"
 android-gradle-plugin = "7.3.1"
 okio = "3.9.1"
 rsocket = "0.16.0"
+compose = "1.7.0"
 
 [libraries]
 # kotlinx libraries
@@ -60,9 +61,12 @@ android-plugin = { module = "com.android.tools.build:gradle", version.ref = "and
 
 mockk = { group = "io.mockk", name = "mockk", version.require = "1.13.12" }
 
+# CLI
+jakewharton-mosaic = { module = "com.jakewharton.mosaic:mosaic-runtime", version.require = "0.14.0" }
+
 [plugins]
 # Build Conventions
-conventions-multiplatform = { id = "multiplatform-convention", version.require = "SNAPSHOT" }
+conventions-multiplatform-core = { id = "multiplatform-convention", version.require = "SNAPSHOT" }
 conventions-multiplatform-library = { id = "multiplatform-library-convention", version.require = "SNAPSHOT" }
 conventions-jvm-core = { id = "jvm-convention", version.require = "SNAPSHOT" }
 conventions-jvm-library = { id = "jvm-library-convention", version.require = "SNAPSHOT" }
@@ -82,3 +86,7 @@ android-application = { id = "com.android.library", version.ref = "android-gradl
 
 # Gradle
 gradle-publish = { id = "com.gradle.plugin-publish", version.require = "1.2.1" }
+
+# Jetbrains
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+jetbrains-compiler-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

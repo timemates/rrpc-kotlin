@@ -65,7 +65,7 @@ public class ProtoTimestamp private constructor(
             return Builder().apply(builder).build()
         }
 
-        override val typeUrl: String
+        override val url: String
             get() = "type.googleapis.com/google.protobuf.Timestamp"
 
         /**

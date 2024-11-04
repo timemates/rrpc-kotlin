@@ -23,7 +23,7 @@ public class ProtoStruct private constructor(
     public val fields: Map<String, ProtoStructValue> = emptyMap(),
 ) : ProtoType {
     public companion object : ProtoType.Definition<ProtoStruct> {
-        override val typeUrl: String
+        override val url: String
             get() = "type.googleapis.com/google.protobuf.Struct"
         override val Default: ProtoStruct = ProtoStruct()
 
@@ -85,5 +85,3 @@ private enum class _NullValue {
     @ProtoNumber(0)
     NULL_VALUE;
 }
-
-internal suspend inline infix operator fun Boolean.div(other: Int) {}

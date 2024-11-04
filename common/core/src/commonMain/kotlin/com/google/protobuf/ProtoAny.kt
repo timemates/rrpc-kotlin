@@ -58,13 +58,13 @@ public class ProtoAny private constructor(
             protoBuf: ProtoBuf = ProtoBuf,
         ): ProtoAny {
             val bytes = protoBuf.encodeToByteArray(serializer, value)
-            return ProtoAny(value.definition.typeUrl, bytes)
+            return ProtoAny(value.definition.url, bytes)
         }
 
         /**
          * Returns the type URL for the `ProtoAny` type.
          */
-        override val typeUrl: String
+        override val url: String
             get() = "type.googleapis.com/google.protobuf.Any"
 
         /**
@@ -86,7 +86,7 @@ public class ProtoAny private constructor(
      * @return `true` if the contained message is of the given type, `false` otherwise.
      */
     public fun typeOf(definition: ProtoType.Definition<*>): Boolean {
-        return typeName == definition.typeUrl
+        return typeName == definition.url
     }
 
     /**
@@ -112,6 +112,8 @@ public class ProtoAny private constructor(
         return "ProtoAny(typeName='$typeName', value=$value)"
     }
 }
+
+public val ProtoAny.isEmpty: Boolean get() = typeName.isEmpty() && value.isEmpty()
 
 /**
  * Packs a given `ProtoType` instance into a `ProtoAny`.

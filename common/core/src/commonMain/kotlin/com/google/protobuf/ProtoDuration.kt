@@ -45,7 +45,7 @@ public class ProtoDuration private constructor(
             return Builder().apply(builder).build()
         }
 
-        override val typeUrl: String
+        override val url: String
             get() = "type.googleapis.com/google.protobuf.Duration"
 
         override val Default: ProtoDuration = ProtoDuration()

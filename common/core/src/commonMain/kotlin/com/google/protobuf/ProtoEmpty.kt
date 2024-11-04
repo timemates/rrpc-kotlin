@@ -6,7 +6,7 @@ import org.timemates.rrpc.ProtoType
 @Serializable
 public class ProtoEmpty private constructor(): ProtoType {
     public companion object : ProtoType.Definition<ProtoEmpty> {
-        override val typeUrl: String
+        override val url: String
             get() = "type.googleapis.com/google.protobuf.Empty"
         override val Default: ProtoEmpty = ProtoEmpty()
     }
