@@ -1,5 +1,6 @@
 package com.google.protobuf
 
+import kotlinx.serialization.Serializable
 import org.timemates.rrpc.ProtoType
 
 /**
@@ -8,12 +9,13 @@ import org.timemates.rrpc.ProtoType
  *
  * @property value The encapsulated integer value, defaulting to 0.
  */
-public class Int32Wrapper(
+@Serializable
+public class ProtoInt32Wrapper(
     public val value: Int = 0,
 ) : ProtoType {
-    public companion object Definition : ProtoType.Definition<Int32Wrapper> {
+    public companion object Definition : ProtoType.Definition<ProtoInt32Wrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.Int32Value"
-        override val Default: Int32Wrapper = Int32Wrapper()
+        override val Default: ProtoInt32Wrapper = ProtoInt32Wrapper()
     }
 
     override val definition: ProtoType.Definition<*>
@@ -26,12 +28,13 @@ public class Int32Wrapper(
  *
  * @property value The encapsulated long integer value, defaulting to 0L.
  */
-public class Int64Wrapper(
+@Serializable
+public class ProtoInt64Wrapper(
     public val value: Long = 0L,
 ) : ProtoType {
-    public companion object Definition : ProtoType.Definition<Int64Wrapper> {
+    public companion object Definition : ProtoType.Definition<ProtoInt64Wrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.Int64Value"
-        override val Default: Int64Wrapper = Int64Wrapper()
+        override val Default: ProtoInt64Wrapper = ProtoInt64Wrapper()
     }
 
     override val definition: ProtoType.Definition<*>
@@ -44,12 +47,13 @@ public class Int64Wrapper(
  *
  * @property value The encapsulated float value, defaulting to 0.0F.
  */
-public class FloatWrapper(
+@Serializable
+public class ProtoFloatWrapper(
     public val value: Float = 0.0F,
 ) : ProtoType {
-    public companion object Definition : ProtoType.Definition<FloatWrapper> {
+    public companion object Definition : ProtoType.Definition<ProtoFloatWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.FloatValue"
-        override val Default: FloatWrapper = FloatWrapper()
+        override val Default: ProtoFloatWrapper = ProtoFloatWrapper()
     }
 
     override val definition: ProtoType.Definition<*>
@@ -62,12 +66,13 @@ public class FloatWrapper(
  *
  * @property value The encapsulated double value, defaulting to 0.0.
  */
-public class DoubleWrapper(
+@Serializable
+public class ProtoDoubleWrapper(
     public val value: Double = 0.0,
 ) : ProtoType {
-    public companion object Definition : ProtoType.Definition<DoubleWrapper> {
+    public companion object Definition : ProtoType.Definition<ProtoDoubleWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.DoubleValue"
-        override val Default: DoubleWrapper = DoubleWrapper()
+        override val Default: ProtoDoubleWrapper = ProtoDoubleWrapper()
     }
 
     override val definition: ProtoType.Definition<*>
@@ -80,12 +85,13 @@ public class DoubleWrapper(
  *
  * @property value The encapsulated boolean value, defaulting to `false`.
  */
-public class BoolWrapper(
+@Serializable
+public class ProtoBoolWrapper(
     public val value: Boolean = false,
 ) : ProtoType {
-    public companion object Definition : ProtoType.Definition<BoolWrapper> {
+    public companion object Definition : ProtoType.Definition<ProtoBoolWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.BoolValue"
-        override val Default: BoolWrapper = BoolWrapper()
+        override val Default: ProtoBoolWrapper = ProtoBoolWrapper()
     }
 
     override val definition: ProtoType.Definition<*>
@@ -98,13 +104,14 @@ public class BoolWrapper(
  *
  * @property value The encapsulated string value, defaulting to an empty string.
  */
-public class StringWrapper(
+@Serializable
+public class ProtoStringWrapper(
     public val value: String = "",
 ) : ProtoType {
 
-    public companion object Definition : ProtoType.Definition<StringWrapper> {
+    public companion object Definition : ProtoType.Definition<ProtoStringWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.StringValue"
-        override val Default: StringWrapper = StringWrapper()
+        override val Default: ProtoStringWrapper = ProtoStringWrapper()
     }
 
     override val definition: ProtoType.Definition<*>
@@ -117,12 +124,51 @@ public class StringWrapper(
  *
  * @property value The encapsulated byte array value, defaulting to an empty byte array.
  */
-public class BytesWrapper(
+@Serializable
+public class ProtoBytesWrapper(
     public val value: ByteArray = ByteArray(0),
 ) : ProtoType {
-    public companion object Definition : ProtoType.Definition<BytesWrapper> {
+    public companion object Definition : ProtoType.Definition<ProtoBytesWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.BytesValue"
-        override val Default: BytesWrapper = BytesWrapper()
+        override val Default: ProtoBytesWrapper = ProtoBytesWrapper()
+    }
+
+    override val definition: ProtoType.Definition<*>
+        get() = Definition
+}
+
+/**
+ * Wrapper for a 32-bit unsigned integer value based on the standard Protobuf `UInt32Value` type.
+ * For more information, see [Google's UInt32Value documentation](https://protobuf.dev/reference/protobuf/google.protobuf/#uint32-value).
+ *
+ * @property value The encapsulated unsigned integer value, defaulting to 0.
+ */
+@Serializable
+public class ProtoUInt32Wrapper(
+    public val value: UInt = 0u,
+) : ProtoType {
+    public companion object Definition : ProtoType.Definition<ProtoUInt32Wrapper> {
+        override val url: String = "type.googleapis.com/google.protobuf.UInt32Value"
+        override val Default: ProtoUInt32Wrapper = ProtoUInt32Wrapper()
+    }
+
+    override val definition: ProtoType.Definition<*>
+        get() = Definition
+}
+
+/**
+ * Wrapper for a 64-bit unsigned integer value based on the standard Protobuf `UInt64Value` type.
+ * For more information, see [Google's UInt64Value documentation](https://protobuf.dev/reference/protobuf/google.protobuf/#uint64-value).
+ *
+ * @property value The encapsulated unsigned long integer value, defaulting to 0u.
+ */
+@Serializable
+public class ProtoUInt64Wrapper(
+    public val value: ULong = 0uL,
+) : ProtoType {
+    public companion object Definition : ProtoType.Definition<ProtoUInt64Wrapper> {
+        override val url: String = "type.googleapis.com/google.protobuf.UInt64Value"
+        override val Default: ProtoUInt64Wrapper = ProtoUInt64Wrapper()
     }
 
     override val definition: ProtoType.Definition<*>

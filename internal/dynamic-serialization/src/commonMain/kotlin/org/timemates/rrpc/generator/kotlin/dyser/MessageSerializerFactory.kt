@@ -60,19 +60,29 @@ public class MessageSerializerFactory(
                 field to when (field.typeUrl) {
                     RMDeclarationUrl.STRING -> String.serializer().descriptor
                     RMDeclarationUrl.BYTES -> ByteArraySerializer().descriptor
-                    RMDeclarationUrl.ACK, RMDeclarationUrl.EMPTY -> ProtoAny.serializer().descriptor
                     RMDeclarationUrl.INT32 -> Int.serializer().descriptor
                     RMDeclarationUrl.INT64 -> Long.serializer().descriptor
                     RMDeclarationUrl.BOOL -> Boolean.serializer().descriptor
                     RMDeclarationUrl.DOUBLE -> Double.serializer().descriptor
                     RMDeclarationUrl.FLOAT -> Float.serializer().descriptor
-                    RMDeclarationUrl.STRUCT -> ProtoStruct.serializer().descriptor
-                    RMDeclarationUrl.STRUCT_VALUE -> ProtoStructValue.serializer().descriptor
-                    RMDeclarationUrl.STRUCT_MAP -> TODO()
-                    RMDeclarationUrl.DURATION -> ProtoDuration.serializer().descriptor
-                    RMDeclarationUrl.TIMESTAMP -> ProtoTimestamp.serializer().descriptor
                     RMDeclarationUrl.UINT32 -> UInt.serializer().descriptor
                     RMDeclarationUrl.UINT64 -> ULong.serializer().descriptor
+                    RMDeclarationUrl.INT32_VALUE -> ProtoInt32Wrapper.serializer().descriptor
+                    RMDeclarationUrl.INT64_VALUE -> ProtoInt64Wrapper.serializer().descriptor
+                    RMDeclarationUrl.UINT32_VALUE -> ProtoUInt32Wrapper.serializer().descriptor
+                    RMDeclarationUrl.UINT64_VALUE -> ProtoUInt64Wrapper.serializer().descriptor
+                    RMDeclarationUrl.BOOL_VALUE -> ProtoBoolWrapper.serializer().descriptor
+                    RMDeclarationUrl.FLOAT_VALUE -> ProtoFloatWrapper.serializer().descriptor
+                    RMDeclarationUrl.DOUBLE_VALUE -> ProtoDoubleWrapper.serializer().descriptor
+                    RMDeclarationUrl.STRING_VALUE -> ProtoStringWrapper.serializer().descriptor
+                    RMDeclarationUrl.TIMESTAMP -> ProtoTimestamp.serializer().descriptor
+                    RMDeclarationUrl.DURATION -> ProtoDuration.serializer().descriptor
+                    RMDeclarationUrl.ANY -> ProtoAny.serializer().descriptor
+                    RMDeclarationUrl.STRUCT, RMDeclarationUrl.STRUCT_MAP -> ProtoStruct.serializer().descriptor
+                    RMDeclarationUrl.STRUCT_VALUE -> ProtoStructValue.serializer().descriptor
+                    RMDeclarationUrl.STRUCT_LIST -> ProtoStructValueKind.ListValue.serializer().descriptor
+                    RMDeclarationUrl.STRUCT_NULL -> ProtoStructValueKind.NullValue.serializer().descriptor
+                    RMDeclarationUrl.ACK, RMDeclarationUrl.EMPTY -> ProtoEmpty.serializer().descriptor
                     else -> {
                         when (val type = resolver.resolveType(field.typeUrl)!!) {
                             is RSType.Enclosing -> ProtoEmpty.serializer().descriptor

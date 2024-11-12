@@ -1,6 +1,6 @@
 package org.timemates.rrpc.generator.kotlin.dyser
 
-import com.google.protobuf.ProtoEmpty
+import com.google.protobuf.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ByteArraySerializer
 import kotlinx.serialization.builtins.ListSerializer
@@ -146,6 +146,21 @@ private fun getSerializer(
         RMDeclarationUrl.BOOL -> Boolean.serializer()
         RMDeclarationUrl.FLOAT -> Float.serializer()
         RMDeclarationUrl.DOUBLE -> Double.serializer()
+        RMDeclarationUrl.INT32_VALUE -> ProtoInt32Wrapper.serializer()
+        RMDeclarationUrl.INT64_VALUE -> ProtoInt64Wrapper.serializer()
+        RMDeclarationUrl.UINT32_VALUE -> ProtoUInt32Wrapper.serializer()
+        RMDeclarationUrl.UINT64_VALUE -> ProtoUInt64Wrapper.serializer()
+        RMDeclarationUrl.BOOL_VALUE -> ProtoBoolWrapper.serializer()
+        RMDeclarationUrl.FLOAT_VALUE -> ProtoFloatWrapper.serializer()
+        RMDeclarationUrl.DOUBLE_VALUE -> ProtoDoubleWrapper.serializer()
+        RMDeclarationUrl.STRING_VALUE -> ProtoStringWrapper.serializer()
+        RMDeclarationUrl.TIMESTAMP -> ProtoTimestamp.serializer()
+        RMDeclarationUrl.DURATION -> ProtoDuration.serializer()
+        RMDeclarationUrl.ANY -> ProtoAny.serializer()
+        RMDeclarationUrl.STRUCT, RMDeclarationUrl.STRUCT_MAP -> ProtoStruct.serializer()
+        RMDeclarationUrl.STRUCT_VALUE -> ProtoStructValue.serializer()
+        RMDeclarationUrl.STRUCT_LIST -> ProtoStructValueKind.ListValue.serializer()
+        RMDeclarationUrl.STRUCT_NULL -> ProtoStructValueKind.NullValue.serializer()
         RMDeclarationUrl.ACK, RMDeclarationUrl.EMPTY -> ProtoEmpty.serializer()
         else -> {
             when (val type = resolver.resolveType(url)!!) {
