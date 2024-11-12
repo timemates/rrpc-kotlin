@@ -1,25 +1,25 @@
 package org.timemates.rrpc.server.schema
 
-import org.timemates.rrpc.common.schema.RMResolver
+import org.timemates.rrpc.common.schema.RSResolver
 
-public fun MetadataLookup(resolver: RMResolver): SchemaLookup = DelegatedSchemaLookupGroup(resolver)
+public fun SchemaLookup(resolver: RSResolver): SchemaLookup = DelegatedSchemaLookupGroup(resolver)
 
-public interface SchemaLookup : RMResolver {
+public interface SchemaLookup : RSResolver {
     public companion object Global : SchemaLookup by _resolver {
         /**
          * Register a [SchemaLookup] to the global scope that is used by default.
          */
         public fun register(group: SchemaLookup) {
-            _resolver = DelegatedSchemaLookupGroup(RMResolver(this, group))
+            _resolver = DelegatedSchemaLookupGroup(RSResolver(this, group))
         }
 
         /**
-         * Register a [RMResolver] to the global scope that is used by default.
+         * Register a [RSResolver] to the global scope that is used by default.
          */
-        public fun register(resolver: RMResolver): Unit = register(MetadataLookup(resolver))
+        public fun register(resolver: RSResolver): Unit = register(SchemaLookup(resolver))
     }
 }
 
-internal class DelegatedSchemaLookupGroup(resolver: RMResolver) : SchemaLookup, RMResolver by _resolver
+internal class DelegatedSchemaLookupGroup(resolver: RSResolver) : SchemaLookup, RSResolver by _resolver
 
-private var _resolver: SchemaLookup = DelegatedSchemaLookupGroup(RMResolver(emptyList()))
+private var _resolver: SchemaLookup = DelegatedSchemaLookupGroup(RSResolver(emptyList()))

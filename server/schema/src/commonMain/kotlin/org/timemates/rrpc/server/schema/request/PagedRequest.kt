@@ -15,13 +15,6 @@ public data class PagedRequest(
     public val cursor: String? = null,
     public val size: Int? = null,
 ) {
-    public companion object {
-        @OptIn(ExperimentalEncodingApi::class)
-        internal fun encoded(string: String): String {
-            return Base64.encode(string.toByteArray())
-        }
-    }
-
     /**
      * Response structure for paginated requests.
      * Contains the list of metadata nodes retrieved and a token for the next page.
@@ -33,7 +26,14 @@ public data class PagedRequest(
     public data class Response<T>(
         public val list: List<T>,
         public val nextCursor: String?,
-    )
+    ) {
+        public companion object {
+            @OptIn(ExperimentalEncodingApi::class)
+            internal fun <T> encoded(list: List<T>, nextCursor: String?): Response<T> {
+                return Response(list, nextCursor?.let { Base64.encode(it.toByteArray()) })
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalEncodingApi::class)

@@ -1,7 +1,7 @@
 package org.timemates.rrpc.server.schema.request
 
 import kotlinx.serialization.Serializable
-import org.timemates.rrpc.common.schema.RMNode
+import org.timemates.rrpc.common.schema.RSNode
 import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
 
 /**
@@ -18,5 +18,5 @@ public data class BatchedRequest(val urls: List<RMDeclarationUrl>) {
      * @param results A map where each RMDeclarationUrl is associated with the corresponding RMNode (or null if not found).
      */
     @Serializable
-    public data class Response<R : RMNode>(public val services: Map<RMDeclarationUrl, R?>)
+    public data class Response<R : RSNode>(public val services: Map<RMDeclarationUrl, R?>)
 }

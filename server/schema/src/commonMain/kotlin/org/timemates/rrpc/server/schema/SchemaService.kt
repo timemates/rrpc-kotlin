@@ -1,17 +1,17 @@
 package org.timemates.rrpc.server.schema
 
 import io.rsocket.kotlin.RSocketError
-import org.timemates.rrpc.common.schema.RMExtend
-import org.timemates.rrpc.common.schema.RMFile
-import org.timemates.rrpc.common.schema.RMService
-import org.timemates.rrpc.common.schema.RMType
+import org.timemates.rrpc.common.schema.RSFile
+import org.timemates.rrpc.common.schema.RSService
+import org.timemates.rrpc.common.schema.RSType
 import org.timemates.rrpc.options.OptionsWithValue
-import org.timemates.rrpc.server.schema.request.BatchedRequest
-import org.timemates.rrpc.server.schema.request.PagedRequest
-import org.timemates.rrpc.server.schema.request.decoded
 import org.timemates.rrpc.server.module.RRpcService
 import org.timemates.rrpc.server.module.descriptors.ProcedureDescriptor
 import org.timemates.rrpc.server.module.descriptors.ServiceDescriptor
+import org.timemates.rrpc.server.schema.request.BatchedRequest
+import org.timemates.rrpc.server.schema.request.PagedRequest
+import org.timemates.rrpc.server.schema.request.decoded
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * Handles metadata-related operations for the RSocket-based reflection service.
@@ -32,29 +32,22 @@ public class SchemaService(
             ProcedureDescriptor.RequestResponse(
                 name = "GetAvailableServices",
                 inputSerializer = PagedRequest.serializer(),
-                outputSerializer = PagedRequest.Response.serializer(RMService.serializer()),
+                outputSerializer = PagedRequest.Response.serializer(RSService.serializer()),
                 procedure = { _, request -> getAvailableServices(request) },
                 options = OptionsWithValue.EMPTY,
             ),
             ProcedureDescriptor.RequestResponse(
                 name = "GetAvailableFiles",
                 inputSerializer = PagedRequest.serializer(),
-                outputSerializer = PagedRequest.Response.serializer(RMFile.serializer()),
+                outputSerializer = PagedRequest.Response.serializer(RSFile.serializer()),
                 procedure = { _, request -> getAvailableFiles(request) },
                 options = OptionsWithValue.EMPTY,
             ),
             ProcedureDescriptor.RequestResponse(
                 name = "GetTypeDetailsBatch",
                 inputSerializer = BatchedRequest.serializer(),
-                outputSerializer = BatchedRequest.Response.serializer(RMType.serializer()),
+                outputSerializer = BatchedRequest.Response.serializer(RSType.serializer()),
                 procedure = { _, request -> getTypeDetailsBatch(request) },
-                options = OptionsWithValue.EMPTY,
-            ),
-            ProcedureDescriptor.RequestResponse(
-                name = "GetExtendDetailsBatch",
-                inputSerializer = BatchedRequest.serializer(),
-                outputSerializer = BatchedRequest.Response.serializer(RMExtend.serializer()),
-                procedure = { _, request -> getExtendDetailsBatch(request) },
                 options = OptionsWithValue.EMPTY,
             ),
         ),
@@ -67,13 +60,13 @@ public class SchemaService(
      * @param request The paged request containing the pagination token and size.
      * @return A paginated response containing a list of RMService objects.
      */
-    public fun getAvailableServices(request: PagedRequest): PagedRequest.Response<RMService> {
+    public fun getAvailableServices(request: PagedRequest): PagedRequest.Response<RSService> {
         val decoded = request.decoded()?.split(":")
         val index = decoded?.getOrElse(1) { invalidPageToken() }?.toInt() ?: -1
 
         val result = group.resolveAllServices().drop(index + 1).take(request.size ?: 20).toList()
 
-        return PagedRequest.Response(
+        return PagedRequest.Response.encoded(
             list = result,
             nextCursor = if (result.size == request.size) "c:${index + result.size}" else null
         )
@@ -85,15 +78,16 @@ public class SchemaService(
      * @param request The paged request containing pagination information.
      * @return A paged response containing a list of available RMFiles.
      */
-    public fun getAvailableFiles(request: PagedRequest): PagedRequest.Response<RMFile> {
+    @OptIn(ExperimentalEncodingApi::class)
+    public fun getAvailableFiles(request: PagedRequest): PagedRequest.Response<RSFile> {
         val decoded = request.decoded()?.split(":")
         val index = decoded?.getOrElse(1) { invalidPageToken() }?.toInt() ?: -1
 
         val result = group.resolveAvailableFiles().drop(index + 1).take(30).toList()
 
-        return PagedRequest.Response(
+        return PagedRequest.Response.encoded(
             list = result,
-            nextCursor = "c:${index + result.size}",
+            nextCursor = if (result.size == index) "c:${index + result.size}" else null,
         )
     }
 
@@ -105,22 +99,9 @@ public class SchemaService(
      * @param request The batched request containing a list of RMDeclarationUrl objects.
      * @return A response containing a map of RMDeclarationUrl to RMType (or null if not found).
      */
-    public fun getTypeDetailsBatch(request: BatchedRequest): BatchedRequest.Response<RMType> {
+    public fun getTypeDetailsBatch(request: BatchedRequest): BatchedRequest.Response<RSType> {
         val types = request.urls.associateWith { group.resolveType(it) }
         return BatchedRequest.Response(types)
-    }
-
-    /**
-     * Retrieves extension details based on a batch of requested URLs.
-     *
-     * Each RMDeclarationUrl is mapped to either the found RMExtend or null if no extension was found.
-     *
-     * @param request The batched request containing a list of RMDeclarationUrl objects.
-     * @return A response containing a map of RMDeclarationUrl to RMExtend (or null if not found).
-     */
-    public fun getExtendDetailsBatch(request: BatchedRequest): BatchedRequest.Response<RMExtend> {
-        val extensions = request.urls.associateWith { group.resolveExtend(it) }
-        return BatchedRequest.Response(extensions)
     }
 }
 

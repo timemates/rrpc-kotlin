@@ -2,46 +2,37 @@ package org.timemates.rrpc.codegen
 
 import com.squareup.wire.schema.Location
 import com.squareup.wire.schema.SchemaLoader
+import okio.FileSystem
 import org.timemates.rrpc.codegen.adapters.SchemaAdapter
-import org.timemates.rrpc.codegen.configuration.RMGlobalConfiguration
-import org.timemates.rrpc.common.schema.RMResolver
-import kotlin.io.path.absolutePathString
+import org.timemates.rrpc.codegen.configuration.GenerationOption
+import org.timemates.rrpc.codegen.configuration.GenerationOptions
+import org.timemates.rrpc.codegen.configuration.isPackageCyclesPermitted
+import org.timemates.rrpc.codegen.configuration.protoInputs
 
-public object CodeGenerator {
+public class CodeGenerator(private val fileSystem: FileSystem = FileSystem.SYSTEM) {
+    public companion object {
+        public val baseOptions: List<GenerationOption> = listOf(
+            GenerationOptions.PROTOS_INPUT,
+            GenerationOptions.PERMIT_PACKAGE_CYCLES,
+        )
+    }
+
     public fun generate(
-        configuration: RMGlobalConfiguration,
-        adapters: Map<SchemaAdapter.Config, SchemaAdapter>,
-    ): Unit = with(configuration) {
-        output.fs.createDirectories(output.path)
-
-        val schemaLoader = SchemaLoader(configuration.inputFs)
-        schemaLoader.permitPackageCycles = configuration.permitPackageCycles
+        options: GenerationOptions,
+        adapters: List<SchemaAdapter>,
+    ) {
+        val schemaLoader = SchemaLoader(fileSystem)
+        schemaLoader.permitPackageCycles = options.isPackageCyclesPermitted
 
         schemaLoader.initRoots(
-            sourcePaths.map { Location.get(it.toNioPath().absolutePathString()) }
+            options.protoInputs.map { Location.get(it.toString()) }
         )
 
         val schema = schemaLoader.loadSchema()
+        val resolver = schema.asRSResolver()
 
-        val resolver = schema.protoFiles
-            .filter {
-                it.packageName?.startsWith("wire") != true &&
-                    it.location.toString() != "google/protobuf/descriptor.proto" &&
-                    // wrappers are ignored, because they're generated as usual kotlin types, but nullable
-                    it.location.toString() != "google/protobuf/wrappers.proto"
-                    // the following types already in the common-core
-                    && it.location.toString() != "google/protobuf/timestamp.proto"
-                    && it.location.toString() != "google/protobuf/duration.proto"
-                    && it.location.toString() != "google/protobuf/any.proto"
-                    && it.location.toString() != "google/protobuf/struct.proto"
-                    && it.location.toString() != "google/protobuf/empty.proto"
-            }
-            .map { file ->
-                file.asRMFile()
-            }.let { files -> RMResolver(files) }
-
-        adapters.forEach { (cfg, adapter) ->
-            adapter.process(cfg, resolver)
+        return adapters.forEach { adapter ->
+            adapter.process(options, resolver)
         }
     }
 }

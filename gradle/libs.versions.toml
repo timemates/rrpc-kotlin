@@ -9,6 +9,9 @@ android-gradle-plugin = "7.3.1"
 okio = "3.9.1"
 rsocket = "0.16.0"
 compose = "1.7.0"
+decompose = "3.2.1"
+flowmvi = "3.1.0-beta02"
+clikt = "5.0.1"
 
 [libraries]
 # kotlinx libraries
@@ -62,7 +65,28 @@ android-plugin = { module = "com.android.tools.build:gradle", version.ref = "and
 mockk = { group = "io.mockk", name = "mockk", version.require = "1.13.12" }
 
 # CLI
-jakewharton-mosaic = { module = "com.jakewharton.mosaic:mosaic-runtime", version.require = "0.14.0" }
+clikt-core = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
+
+## Decompose
+decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+decompose-jetbrains-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
+
+## FlowMVI
+# Core KMP module
+flowmvi-core = { module = "pro.respawn.flowmvi:core", version.ref = "flowmvi" }
+# Test DSL
+flowmvi-test = { module = "pro.respawn.flowmvi:test", version.ref = "flowmvi" }
+# Compose multiplatform
+flowmvi-compose = { module = "pro.respawn.flowmvi:compose", version.ref = "flowmvi" }
+# Android (common + view-based)
+flowmvi-android = { module = "pro.respawn.flowmvi:android", version.ref = "flowmvi" }
+# Multiplatform state preservation
+flowmvi-savedstate = { module = "pro.respawn.flowmvi:savedstate", version.ref = "flowmvi" }
+# Remote debugging client
+flowmvi-debugger-client = { module = "pro.respawn.flowmvi:debugger-plugin", version.ref = "flowmvi" }
+# Essenty (Decompose) integration
+flowmvi-essenty = { module = "pro.respawn.flowmvi:essenty", version.ref = "flowmvi" }
+flowmvi-essenty-compose = { module = "pro.respawn.flowmvi:essenty-compose", version.ref = "flowmvi" }
 
 [plugins]
 # Build Conventions

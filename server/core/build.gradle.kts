@@ -15,7 +15,7 @@ dependencies {
     commonMainImplementation(libs.ktor.server.websockets)
 
     // -- RSocket --
-    commonMainImplementation(libs.rsocket.server)
+    commonMainApi(libs.rsocket.server)
 
     // -- Serialization --
     commonMainImplementation(libs.kotlinx.serialization.proto)

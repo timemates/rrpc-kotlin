@@ -5,13 +5,12 @@ import org.timemates.rrpc.client.RRpcServiceClient
 import org.timemates.rrpc.client.config.RRpcClientConfig
 import org.timemates.rrpc.client.options.RPCsOptions
 import org.timemates.rrpc.client.schema.request.PagedRequest
-import org.timemates.rrpc.common.schema.RMFile
-import org.timemates.rrpc.common.schema.RMService
+import org.timemates.rrpc.common.schema.RSFile
+import org.timemates.rrpc.common.schema.RSService
 import org.timemates.rrpc.metadata.ClientMetadata
 import org.timemates.rrpc.options.OptionsWithValue
 import org.timemates.rrpc.client.schema.request.BatchedRequest
-import org.timemates.rrpc.common.schema.RMExtend
-import org.timemates.rrpc.common.schema.RMType
+import org.timemates.rrpc.common.schema.RSType
 import io.rsocket.kotlin.RSocketError
 
 /**
@@ -45,11 +44,11 @@ public class SchemaClient(
      * Fetches a paged list of available services from the server.
      *
      * @param request A [PagedRequest] defining pagination settings.
-     * @return A [PagedRequest.Response] containing a list of [RMService] and the next page token.
+     * @return A [PagedRequest.Response] containing a list of [RSService] and the next page token.
      *
      * @throws RSocketError if the request fails.
      */
-    public suspend fun getAvailableServices(request: PagedRequest): PagedRequest.Response<RMService> {
+    public suspend fun getAvailableServices(request: PagedRequest): PagedRequest.Response<RSService> {
         return handler.requestResponse(
             metadata = ClientMetadata(
                 serviceName = SERVICE_NAME,
@@ -58,7 +57,7 @@ public class SchemaClient(
             data = request,
             options = OptionsWithValue.EMPTY,
             serializationStrategy = PagedRequest.serializer(),
-            deserializationStrategy = PagedRequest.Response.serializer(RMService.serializer()),
+            deserializationStrategy = PagedRequest.Response.serializer(RSService.serializer()),
         )
     }
 
@@ -66,11 +65,11 @@ public class SchemaClient(
      * Fetches a paged list of available files from the server.
      *
      * @param request A [PagedRequest] specifying pagination options.
-     * @return A [PagedRequest.Response] containing a list of [RMFile] and the next page token.
+     * @return A [PagedRequest.Response] containing a list of [RSFile] and the next page token.
      *
      * @throws RSocketError if the request fails.
      */
-    public suspend fun getAvailableFiles(request: PagedRequest): PagedRequest.Response<RMFile> {
+    public suspend fun getAvailableFiles(request: PagedRequest): PagedRequest.Response<RSFile> {
         return handler.requestResponse(
             metadata = ClientMetadata(
                 serviceName = SERVICE_NAME,
@@ -79,7 +78,7 @@ public class SchemaClient(
             data = request,
             options = OptionsWithValue.EMPTY,
             serializationStrategy = PagedRequest.serializer(),
-            deserializationStrategy = PagedRequest.Response.serializer(RMFile.serializer()),
+            deserializationStrategy = PagedRequest.Response.serializer(RSFile.serializer()),
         )
     }
 
@@ -87,11 +86,11 @@ public class SchemaClient(
      * Retrieves detailed information about multiple types in a batched request.
      *
      * @param request A [BatchedRequest] containing a list of [RMDeclarationUrl]s for the requested types.
-     * @return A [BatchedRequest.Response] containing a map of each requested [RMDeclarationUrl] to its associated [RMType].
+     * @return A [BatchedRequest.Response] containing a map of each requested [RMDeclarationUrl] to its associated [RSType].
      *
      * @throws RSocketError if the request fails.
      */
-    public suspend fun getTypeDetailsBatch(request: BatchedRequest): BatchedRequest.Response<RMType> {
+    public suspend fun getTypeDetailsBatch(request: BatchedRequest): BatchedRequest.Response<RSType> {
         return handler.requestResponse(
             metadata = ClientMetadata(
                 serviceName = SERVICE_NAME,
@@ -100,28 +99,7 @@ public class SchemaClient(
             data = request,
             options = OptionsWithValue.EMPTY,
             serializationStrategy = BatchedRequest.serializer(),
-            deserializationStrategy = BatchedRequest.Response.serializer(RMType.serializer()),
-        )
-    }
-
-    /**
-     * Retrieves detailed information about multiple extensions in a batched request.
-     *
-     * @param request A [BatchedRequest] containing a list of [RMDeclarationUrl]s for the requested extensions.
-     * @return A [BatchedRequest.Response] containing a map of each requested [RMDeclarationUrl] to its associated [RMExtend].
-     *
-     * @throws RSocketError if the request fails.
-     */
-    public suspend fun getExtendDetailsBatch(request: BatchedRequest): BatchedRequest.Response<RMExtend> {
-        return handler.requestResponse(
-            metadata = ClientMetadata(
-                serviceName = SERVICE_NAME,
-                procedureName = "GetExtendDetailsBatch",
-            ),
-            data = request,
-            options = OptionsWithValue.EMPTY,
-            serializationStrategy = BatchedRequest.serializer(),
-            deserializationStrategy = BatchedRequest.Response.serializer(RMExtend.serializer()),
+            deserializationStrategy = BatchedRequest.Response.serializer(RSType.serializer()),
         )
     }
 }

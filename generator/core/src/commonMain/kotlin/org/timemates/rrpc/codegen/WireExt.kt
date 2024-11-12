@@ -48,8 +48,8 @@ internal fun ProtoType.asRMTypeUrl(): RMDeclarationUrl {
     }
 }
 
-internal fun Field.asRMField(): RMField {
-    return RMField(
+internal fun Field.asRMField(): RSField {
+    return RSField(
         tag = tag,
         name = name,
         options = options.asRMOptions(),
@@ -61,8 +61,8 @@ internal fun Field.asRMField(): RMField {
     )
 }
 
-internal fun OneOf.asRMOneOf(): RMOneOf {
-    return RMOneOf(
+internal fun OneOf.asRMOneOf(): RSOneOf {
+    return RSOneOf(
         name = name,
         fields = fields.map { it.asRMField() },
         documentation = documentation,
@@ -70,8 +70,8 @@ internal fun OneOf.asRMOneOf(): RMOneOf {
     )
 }
 
-internal fun EnumConstant.asRMConstant(): RMEnumConstant {
-    return RMEnumConstant(
+internal fun EnumConstant.asRMConstant(): RSEnumConstant {
+    return RSEnumConstant(
         name = name,
         tag = tag,
         options = options.asRMOptions(),
@@ -79,42 +79,42 @@ internal fun EnumConstant.asRMConstant(): RMEnumConstant {
     )
 }
 
-internal fun ProtoMember.asRMOption(value: Any?): RMOption {
-    return RMOption(
+internal fun ProtoMember.asRMOption(value: Any?): RSOption {
+    return RSOption(
         name = simpleName,
-        fieldUrl = RMTypeMemberUrl(type.asRMTypeUrl(), member),
+        fieldUrl = RSTypeMemberUrl(type.asRMTypeUrl(), member),
         value = value?.asRMOptionValue(),
     )
 }
 
-private fun Any.asRMOptionValue(): RMOption.Value {
+private fun Any.asRMOptionValue(): RSOption.Value {
     return if (this is Map<*, *>) {
         val firstKey = keys.firstOrNull()
 
         if (firstKey is ProtoMember) {
             @Suppress("UNCHECKED_CAST")
-            RMOption.Value.MessageMap((this as Map<ProtoMember, Any>).map { (key, mapValue) ->
-                RMTypeMemberUrl(key.type.asRMTypeUrl(), key.member) to mapValue.asRMOptionValue()
+            RSOption.Value.MessageMap((this as Map<ProtoMember, Any>).map { (key, mapValue) ->
+                RSTypeMemberUrl(key.type.asRMTypeUrl(), key.member) to mapValue.asRMOptionValue()
             }.associate { it })
         } else {
-            RMOption.Value.RawMap(
+            RSOption.Value.RawMap(
                 map { (key, value) ->
-                    RMOption.Value.Raw(key.toString()) to RMOption.Value.Raw(value.toString()) }
+                    RSOption.Value.Raw(key.toString()) to RSOption.Value.Raw(value.toString()) }
                     .associate { it }
             )
         }
     } else {
-        RMOption.Value.Raw(toString())
+        RSOption.Value.Raw(toString())
     }
 }
 
-internal fun Options.asRMOptions(): RMOptions {
-    return RMOptions(map.map { (key, value) -> key.asRMOption(value) })
+internal fun Options.asRMOptions(): RSOptions {
+    return RSOptions(map.map { (key, value) -> key.asRMOption(value) })
 }
 
-internal fun Type.asRMType(): RMType {
+internal fun Type.asRMType(): RSType {
     return when (this) {
-        is EnclosingType -> RMType.Enclosing(
+        is EnclosingType -> RSType.Enclosing(
             name = name,
             documentation = documentation,
             typeUrl = type.asRMTypeUrl(),
@@ -122,7 +122,7 @@ internal fun Type.asRMType(): RMType {
             nestedExtends = nestedExtendList.map { it.asRMExtend() }
         )
 
-        is EnumType -> RMType.Enum(
+        is EnumType -> RSType.Enum(
             name = name,
             constants = constants.map { it.asRMConstant() },
             documentation = documentation,
@@ -132,7 +132,7 @@ internal fun Type.asRMType(): RMType {
             nestedExtends = nestedExtendList.map { it.asRMExtend() },
         )
 
-        is MessageType -> RMType.Message(
+        is MessageType -> RSType.Message(
             name = name,
             documentation = documentation,
             fields = fields.map { it.asRMField() },
@@ -145,8 +145,8 @@ internal fun Type.asRMType(): RMType {
     }
 }
 
-internal fun Extend.asRMExtend(): RMExtend {
-    return RMExtend(
+internal fun Extend.asRMExtend(): RSExtend {
+    return RSExtend(
         typeUrl = type!!.asRMTypeUrl(),
         name = name,
         fields = fields.map { it.asRMField() },
@@ -154,8 +154,8 @@ internal fun Extend.asRMExtend(): RMExtend {
     )
 }
 
-internal fun Rpc.asRMRpc(): RMRpc {
-    return RMRpc(
+internal fun Rpc.asRMRpc(): RSRpc {
+    return RSRpc(
         name = name,
         requestType = StreamableRMTypeUrl(requestStreaming, requestType!!.asRMTypeUrl()),
         responseType = StreamableRMTypeUrl(responseStreaming, responseType!!.asRMTypeUrl()),
@@ -164,8 +164,8 @@ internal fun Rpc.asRMRpc(): RMRpc {
     )
 }
 
-internal fun Service.asRMService(): RMService {
-    return RMService(
+internal fun Service.asRMService(): RSService {
+    return RSService(
         name = name,
         rpcs = rpcs.map { it.asRMRpc() },
         options = options.asRMOptions(),
@@ -173,8 +173,8 @@ internal fun Service.asRMService(): RMService {
     )
 }
 
-internal fun ProtoFile.asRMFile(): RMFile {
-    return RMFile(
+internal fun ProtoFile.asRMFile(): RSFile {
+    return RSFile(
         name = name(),
         packageName = RMPackageName(packageName!!),
         options = options.asRMOptions(),

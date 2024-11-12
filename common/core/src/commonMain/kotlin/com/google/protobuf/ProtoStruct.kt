@@ -83,5 +83,5 @@ public sealed class ProtoStructValueKind {
 @Serializable
 private enum class _NullValue {
     @ProtoNumber(0)
-    NULL_VALUE;
+    NULL_VALUE
 }

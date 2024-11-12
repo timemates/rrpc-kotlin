@@ -8,6 +8,7 @@ version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
     // -- Project --
+    commonMainImplementation(projects.common.core)
     commonMainImplementation(projects.server.core)
     commonMainImplementation(projects.common.schema)
 

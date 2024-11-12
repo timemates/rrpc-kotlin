@@ -3,7 +3,7 @@ package org.timemates.rrpc.codegen
 import org.timemates.rrpc.common.schema.*
 
 public abstract class RMDefaultVisitor<D, R> : RMEmptyVisitor<D, R>() {
-    override fun visitFile(file: RMFile, data: D): R {
+    override fun visitFile(file: RSFile, data: D): R {
         file.services.forEach { service ->
             visitService(service, data)
         }
@@ -13,16 +13,16 @@ public abstract class RMDefaultVisitor<D, R> : RMEmptyVisitor<D, R>() {
         return super.visitFile(file, data)
     }
 
-    override fun visitService(service: RMService, data: D): R {
+    override fun visitService(service: RSService, data: D): R {
         service.rpcs.forEach { rpc -> visitRpc(rpc, data) }
         return super.visitService(service, data)
     }
 
-    override fun visitType(type: RMType, data: D): R {
+    override fun visitType(type: RSType, data: D): R {
         when (type) {
-            is RMType.Enum -> type.constants.forEach { constant -> visitConstant(constant, data) }
-            is RMType.Message -> type.fields.forEach { field -> visitField(field, data) }
-            is RMType.Enclosing -> type.nestedTypes.forEach { type -> visitType(type, data) }
+            is RSType.Enum -> type.constants.forEach { constant -> visitConstant(constant, data) }
+            is RSType.Message -> type.fields.forEach { field -> visitField(field, data) }
+            is RSType.Enclosing -> type.nestedTypes.forEach { type -> visitType(type, data) }
         }
         return super.visitType(type, data)
     }

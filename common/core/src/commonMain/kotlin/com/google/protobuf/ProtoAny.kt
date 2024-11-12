@@ -33,10 +33,6 @@ public class ProtoAny private constructor(
     @ProtoNumber(2)
     public val value: ByteArray = byteArrayOf(),
 ) : ProtoType {
-
-    /**
-     * Companion object for `ProtoAny` that provides helper functions for packing and unpacking messages.
-     */
     public companion object : ProtoType.Definition<ProtoAny> {
 
         /**

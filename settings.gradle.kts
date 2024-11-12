@@ -41,12 +41,16 @@ include(
 include(
     ":generator:core",
     ":generator:kotlin",
-    ":generator:kotlin:dynamic-serialization",
-    ":generator:gradle-plugin",
 )
 
 include(":integration-tests")
 
 include(
-    ":tools:rrpcurl",
+    //":tools:rrpcurl",
+    ":tooling:generator-cli",
+    ":tooling:gradle-plugin",
+)
+
+include(
+    ":internal:dynamic-serialization"
 )

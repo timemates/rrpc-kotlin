@@ -28,6 +28,10 @@ public value class RMDeclarationUrl(public val value: String) {
         return if (dot == -1) null else string.substring(0, dot)
     }
 
+    override fun toString(): String {
+        return value
+    }
+
     public companion object {
         public val UNKNOWN: RMDeclarationUrl = RMDeclarationUrl("unknown")
 
