@@ -21,25 +21,31 @@ internal object OptionsMetadataGenerator {
                 newline()
                 add("listOf(")
                 options.list.forEach { option ->
-                    val field = resolver.resolveField(option.fieldUrl) ?: return@forEach
+                    val field = resolver.resolveField(option.fieldUrl)!! ?: return@forEach
                     withIndent {
+                        newline()
                         add("%T(", LibClassNames.RS.Option)
                         withIndent {
+                            newline()
                             add("name = %S,", option.name)
                             newline()
                             add("tag = %L,", field.tag)
                             newline()
-                            add("fieldUrl = %1T(", LibClassNames.RS.TypeMemberUrl, option.fieldUrl.typeUrl)
-                            newline()
+                            add("fieldUrl = %T(", LibClassNames.RS.TypeMemberUrl)
                             withIndent {
+                                newline()
                                 add("typeUrl = %S,", option.fieldUrl.typeUrl)
+                                newline()
                                 add("memberName = %S,", option.fieldUrl.memberName)
                             }
+                            newline()
                             add("),")
+                            newline()
                             option.value?.let { value ->
-                                add("value = %P,", generateValue(value))
+                                add("value = %L,", generateValue(value))
                             }
                         }
+                        newline()
                         add("),")
                     }
                 }
@@ -53,7 +59,7 @@ internal object OptionsMetadataGenerator {
     private fun generateValue(value: RSOption.Value): CodeBlock {
         return buildCodeBlock {
             when (value) {
-                is RSOption.Value.Raw -> add("%T(%S)", LibClassNames.RS.OptionValueRaw)
+                is RSOption.Value.Raw -> add("%T(%S)", LibClassNames.RS.OptionValueRaw, value.string)
                 is RSOption.Value.RawMap -> {
                     add("%T(", LibClassNames.RS.Option)
                     newline()

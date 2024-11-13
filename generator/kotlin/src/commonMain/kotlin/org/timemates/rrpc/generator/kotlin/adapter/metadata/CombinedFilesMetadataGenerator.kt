@@ -8,10 +8,12 @@ import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.withIndent
 import org.timemates.rrpc.codegen.typemodel.LibClassNames
 import org.timemates.rrpc.common.schema.RSResolver
+import org.timemates.rrpc.common.schema.annotations.NonPlatformSpecificAccess
 import org.timemates.rrpc.generator.kotlin.adapter.internal.ext.newline
 import kotlin.random.Random
 
 public object CombinedFilesMetadataGenerator {
+    @OptIn(NonPlatformSpecificAccess::class)
     public fun generate(
         name: String?,
         scoped: Boolean,
@@ -29,7 +31,12 @@ public object CombinedFilesMetadataGenerator {
                         delegate = buildCodeBlock {
                             add("RMResolver(")
                             withIndent {
-                                resolver.resolveAvailableFiles().forEach { file ->
+                                resolver.resolveAvailableFiles()
+                                    .filterNot { file ->
+                                        file.packageName.value.startsWith("wire")
+                                            || file.packageName.value.startsWith("google.protobuf")
+                                    }
+                                    .forEach { file ->
                                     newline()
                                     add(FileMetadataGenerator.generate(file, resolver))
                                     add(",")

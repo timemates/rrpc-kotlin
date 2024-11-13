@@ -18,7 +18,6 @@ public object KotlinMetadataSchemaAdapter : SchemaAdapter {
         GenerationOptions.METADATA_SCOPE_NAME,
     )
 
-    @OptIn(NonPlatformSpecificAccess::class)
     override fun process(
         options: GenerationOptions,
         resolver: RSResolver,
@@ -26,18 +25,11 @@ public object KotlinMetadataSchemaAdapter : SchemaAdapter {
         if (metadataGeneration == MetadataGenerationType.SCOPED && metadataScopeName == null)
             throw GenerationException("Metadata config requires generation to be scoped, but name isn't provided.")
 
-        resolver.resolveAvailableFiles()
-            .filterNot { file -> file.packageName.value.startsWith("wire") }
-            .toList()
-            .let {
-                CombinedFilesMetadataGenerator.generate(
-                    name = metadataScopeName,
-                    scoped = metadataGeneration == MetadataGenerationType.SCOPED,
-                    resolver = RSResolver(it)
-                )
-            }.apply {
-                writeTo(output.toNioPath())
-            }
+        CombinedFilesMetadataGenerator.generate(
+            name = metadataScopeName,
+            scoped = metadataGeneration == MetadataGenerationType.SCOPED,
+            resolver = resolver,
+        ).writeTo(output.toNioPath())
 
         return resolver
     }

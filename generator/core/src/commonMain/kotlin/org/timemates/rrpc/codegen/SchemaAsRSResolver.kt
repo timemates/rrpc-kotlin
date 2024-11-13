@@ -16,8 +16,8 @@ private class SchemaAsRSResolver(
     override fun resolveField(typeMemberUrl: RSTypeMemberUrl): RSField? {
         return schema.getField(
             ProtoMember.get(
-                ProtoType.get(typeMemberUrl.typeUrl.value),
-                typeMemberUrl.memberName
+                ProtoType.get(typeMemberUrl.typeUrl.value.replace("type.googleapis.com/", "")),
+                typeMemberUrl.memberName,
             )
         )?.asRMField()
     }
