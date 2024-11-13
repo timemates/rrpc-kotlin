@@ -11,10 +11,10 @@ import org.timemates.rrpc.generator.kotlin.adapter.internal.ext.newline
 internal object FileMetadataGenerator {
     fun generate(file: RSFile, resolver: RSResolver): CodeBlock {
         return CodeBlock.builder().apply {
-            addStatement("%T(", LibClassNames.RM.File).withIndent {
+            addStatement("%T(", LibClassNames.RS.File).withIndent {
                 addStatement("name = %S,", file.name)
                 @OptIn(NonPlatformSpecificAccess::class)
-                addStatement("packageName = %T(%S),", LibClassNames.RM.Value.PackageName, file.packageName.value)
+                addStatement("packageName = %T(%S),", LibClassNames.RS.Value.PackageName, file.packageName.value)
                 addStatement("options = %L,", OptionsMetadataGenerator.generate(file.options, resolver))
                 if (file.services.isNotEmpty()) {
                     add("services = listOf(")
@@ -24,6 +24,7 @@ internal object FileMetadataGenerator {
                             add(ServiceMetadataGenerator.generate(service, resolver))
                         }
                     }
+                    newline()
                     add("),")
                 } else {
                     add("services = emptyList(),")

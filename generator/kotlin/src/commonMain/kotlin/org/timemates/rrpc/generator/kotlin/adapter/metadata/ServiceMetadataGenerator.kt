@@ -11,7 +11,7 @@ import org.timemates.rrpc.generator.kotlin.adapter.internal.ext.newline
 internal object ServiceMetadataGenerator {
     fun generate(service: RSService, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
-            addStatement("%T(", LibClassNames.RM.Service)
+            addStatement("%T(", LibClassNames.RS.Service)
             withIndent {
                 addStatement("name = %S,", service.name)
                 add("rpcs = listOf(").withIndent {
@@ -28,7 +28,7 @@ internal object ServiceMetadataGenerator {
                 newline()
                 add(
                     format = "typeUrl = %T(%S),",
-                    LibClassNames.RM.Value.TypeUrl,
+                    LibClassNames.RS.Value.TypeUrl,
                     service.typeUrl.value,
                 )
             }

@@ -13,23 +13,23 @@ internal object OptionsMetadataGenerator {
     fun generate(options: RSOptions, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
             if (options.list.isEmpty()) {
-                add("%T.EMPTY", LibClassNames.RM.Options)
+                add("%T.EMPTY", LibClassNames.RS.Options)
                 return@buildCodeBlock
             }
-            add("%T(", LibClassNames.RM.Options)
+            add("%T(", LibClassNames.RS.Options)
             withIndent {
                 newline()
                 add("listOf(")
                 options.list.forEach { option ->
                     val field = resolver.resolveField(option.fieldUrl) ?: return@forEach
                     withIndent {
-                        add("%T(", LibClassNames.RM.Option)
+                        add("%T(", LibClassNames.RS.Option)
                         withIndent {
                             add("name = %S,", option.name)
                             newline()
                             add("tag = %L,", field.tag)
                             newline()
-                            add("fieldUrl = %1T(", LibClassNames.RM.TypeMemberUrl, option.fieldUrl.typeUrl)
+                            add("fieldUrl = %1T(", LibClassNames.RS.TypeMemberUrl, option.fieldUrl.typeUrl)
                             newline()
                             withIndent {
                                 add("typeUrl = %S,", option.fieldUrl.typeUrl)
@@ -53,9 +53,9 @@ internal object OptionsMetadataGenerator {
     private fun generateValue(value: RSOption.Value): CodeBlock {
         return buildCodeBlock {
             when (value) {
-                is RSOption.Value.Raw -> add("%T(%S)", LibClassNames.RM.OptionValueRaw)
+                is RSOption.Value.Raw -> add("%T(%S)", LibClassNames.RS.OptionValueRaw)
                 is RSOption.Value.RawMap -> {
-                    add("%T(", LibClassNames.RM.Option)
+                    add("%T(", LibClassNames.RS.Option)
                     newline()
                     withIndent {
                         add("map = mapOf(")
@@ -64,7 +64,7 @@ internal object OptionsMetadataGenerator {
                                 newline()
                                 add(
                                     format = "%1T(%2S) to %1T(%3S),",
-                                    LibClassNames.RM.OptionValueRaw,
+                                    LibClassNames.RS.OptionValueRaw,
                                     key.string,
                                     value.string,
                                 )
@@ -75,7 +75,7 @@ internal object OptionsMetadataGenerator {
                     add("),")
                 }
                 is RSOption.Value.MessageMap -> {
-                    add("%T(", LibClassNames.RM.OptionValueMessageMap)
+                    add("%T(", LibClassNames.RS.OptionValueMessageMap)
                     newline()
                     withIndent {
                         add("map = mapOf(")
@@ -84,7 +84,7 @@ internal object OptionsMetadataGenerator {
                                 newline()
                                 add(
                                     format = "%1T(%2S, %3S) to %P",
-                                    LibClassNames.RM.TypeMemberUrl,
+                                    LibClassNames.RS.TypeMemberUrl,
                                     key.typeUrl,
                                     key.memberName,
                                     generateValue(value)

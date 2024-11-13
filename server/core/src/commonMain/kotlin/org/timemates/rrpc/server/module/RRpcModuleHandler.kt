@@ -46,6 +46,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
             requestStreamHandler()
             requestChannelHandler()
             fireAndForgetHandler()
+            metadataPushHandler()
         }
     }
 

@@ -64,33 +64,33 @@ internal object LibClassNames {
     fun ProtoTypeDefinition(type: TypeName) = ProtoType.nestedClass("Definition")
             .parameterizedBy(type)
 
-    object RM {
-        val File = ClassName("org.timemates.rrpc.common.metadata", "RMFile")
-        val Constant = ClassName("org.timemates.rrpc.common.metadata", "RMEnumConstant")
-        val Extend = ClassName("org.timemates.rrpc.common.metadata", "RMEnumConstant")
-        val Field = ClassName("org.timemates.rrpc.common.metadata", "RMField")
-        val OneOf = ClassName("org.timemates.rrpc.common.metadata", "RMOneOf")
-        val Option = ClassName("org.timemates.rrpc.common.metadata", "RMOption")
+    object RS {
+        val File = ClassName("org.timemates.rrpc.common.metadata", "RSFile")
+        val Constant = ClassName("org.timemates.rrpc.common.metadata", "RSEnumConstant")
+        val Extend = ClassName("org.timemates.rrpc.common.metadata", "RSExtend")
+        val Field = ClassName("org.timemates.rrpc.common.metadata", "RSField")
+        val OneOf = ClassName("org.timemates.rrpc.common.metadata", "RSOneOf")
+        val Option = ClassName("org.timemates.rrpc.common.metadata", "RSOption")
         val OptionValueRaw = Option.nestedClass("Value").nestedClass("Raw")
         val OptionValueRawMap = Option.nestedClass("Value").nestedClass("RawMap")
         val OptionValueMessageMap = Option.nestedClass("Value").nestedClass("MessageMap")
-        val Options = ClassName("org.timemates.rrpc.common.metadata", "RMOptions")
-        val Rpc = ClassName("org.timemates.rrpc.common.metadata", "RMRpc")
-        val Message = ClassName("org.timemates.rrpc.common.metadata", "RMType", "Message")
-        val Enum = ClassName("org.timemates.rrpc.common.metadata", "RMType", "Enum")
-        val Enclosing = ClassName("org.timemates.rrpc.common.metadata", "RMType", "Enclosing")
+        val Options = ClassName("org.timemates.rrpc.common.metadata", "RSOptions")
+        val Rpc = ClassName("org.timemates.rrpc.common.metadata", "RSRpc")
+        val Message = ClassName("org.timemates.rrpc.common.metadata", "RSType", "Message")
+        val Enum = ClassName("org.timemates.rrpc.common.metadata", "RSType", "Enum")
+        val Enclosing = ClassName("org.timemates.rrpc.common.metadata", "RSType", "Enclosing")
 
-        val Service = ClassName("org.timemates.rrpc.common.metadata", "RMService")
+        val Service = ClassName("org.timemates.rrpc.common.metadata", "RSService")
 
-        val TypeMemberUrl = ClassName("org.timemates.rrpc.common.metadata", "RMTypeMemberUrl")
-        val StreamableTypeUrl = ClassName("org.timemates.rrpc.common.metadata", "StreamableRMTypeUrl")
+        val TypeMemberUrl = ClassName("org.timemates.rrpc.common.metadata", "RSTypeMemberUrl")
+        val StreamableTypeUrl = ClassName("org.timemates.rrpc.common.metadata", "StreamableRSTypeUrl")
 
         object Value {
-            val PackageName = ClassName("org.timemates.rrpc.common.metadata.value", "RMPackageName")
-            val TypeUrl = ClassName("org.timemates.rrpc.common.metadata.value", "RMTypeUrl")
+            val PackageName = ClassName("org.timemates.rrpc.common.metadata.value", "RSPackageName")
+            val TypeUrl = ClassName("org.timemates.rrpc.common.metadata.value", "RSTypeUrl")
         }
 
-        val Resolver = ClassName("org.timemates.rrpc.common.metadata", "RMResolver")
+        val Resolver = ClassName("org.timemates.rrpc.common.metadata", "RSResolver")
 
         object Server {
             val MetadataLookup = ClassName("org.timemates.rrpc.server.metadata", "MetadataLookup")

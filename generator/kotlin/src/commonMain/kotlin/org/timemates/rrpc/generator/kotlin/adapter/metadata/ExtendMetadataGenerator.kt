@@ -11,15 +11,15 @@ import org.timemates.rrpc.generator.kotlin.adapter.internal.ext.newline
 internal object ExtendMetadataGenerator {
     fun generate(extend: RSExtend, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
-            addStatement("%T(", LibClassNames.RM.Extend)
+            addStatement("%T(", LibClassNames.RS.Extend)
             withIndent {
                 addStatement(
                     format = "typeUrl = %1T(%2S),",
-                    LibClassNames.RM.Value.TypeUrl,
+                    LibClassNames.RS.Value.TypeUrl,
                     extend.typeUrl.value,
                 )
                 addStatement("name = %S,", extend.name)
-                addStatement("fields = listOf(")
+                add("fields = listOf(")
                 withIndent {
                     extend.fields.forEach { field ->
                         newline()
@@ -27,12 +27,15 @@ internal object ExtendMetadataGenerator {
                         add(",")
                     }
                 }
-                addStatement("),")
-                addStatement(
+                newline()
+                add("),")
+                newline()
+                add(
                     format = "documentation = %L,",
                     if (extend.documentation != null) "null" else "\"${extend.documentation}\""
                 )
             }
+            newline()
             add(")")
         }
     }

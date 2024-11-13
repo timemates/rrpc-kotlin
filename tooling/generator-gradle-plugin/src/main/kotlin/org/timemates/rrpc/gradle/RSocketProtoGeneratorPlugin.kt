@@ -1,4 +1,4 @@
-package org.timemates.rrpc.plugin
+package org.timemates.rrpc.gradle
 
 //public class RSocketProtoGeneratorPlugin : Plugin<Project> {
 //    override fun apply(target: Project) {

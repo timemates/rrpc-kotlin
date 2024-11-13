@@ -48,7 +48,7 @@ include(":integration-tests")
 include(
     //":tools:rrpcurl",
     ":tooling:generator-cli",
-    ":tooling:gradle-plugin",
+    ":tooling:generator-gradle-plugin",
 )
 
 include(

@@ -49,7 +49,7 @@ squareup-wire-schema = { module = "com.squareup.wire:wire-schema", version.requi
 squareup-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 squareup-okio-fakeFs = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 
-squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.require = "1.18.0" }
+squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.require = "2.0.0" }
 
 # Other JVM Libraries
 h2-database = { module = "com.h2database:h2", version.require = "2.2.224" }

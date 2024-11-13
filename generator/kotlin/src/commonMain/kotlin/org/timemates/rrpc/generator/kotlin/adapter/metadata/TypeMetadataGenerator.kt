@@ -20,11 +20,11 @@ internal object TypeMetadataGenerator {
 
     private fun generateMessage(message: RSType.Message, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
-            add("%T(", LibClassNames.RM.Enum)
+            add("%T(", LibClassNames.RS.Enum)
             withIndent {
                 addStatement("name = %S", message.name)
                 addDocumentation(message.documentation)
-                addStatement("fields = listOf(")
+                add("fields = listOf(")
                 withIndent {
                     message.fields.forEach { field ->
                         newline()
@@ -42,7 +42,7 @@ internal object TypeMetadataGenerator {
                 }
                 addStatement("),")
                 addStatement("options = %P", OptionsMetadataGenerator.generate(message.options, resolver))
-                addStatement("typeUrl = %T(%S)", LibClassNames.RM.Value.TypeUrl, message.typeUrl)
+                addStatement("typeUrl = %T(%S)", LibClassNames.RS.Value.TypeUrl, message.typeUrl)
                 addNestedTypes(message.nestedTypes, resolver)
                 addNestedExtends(message.nestedExtends, resolver)
             }
@@ -52,11 +52,11 @@ internal object TypeMetadataGenerator {
 
     private fun generateEnclosing(enclosing: RSType.Enclosing, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
-            add("%T(", LibClassNames.RM.Enum)
+            add("%T(", LibClassNames.RS.Enum)
             withIndent {
                 addStatement("name = %S,", enclosing.name)
                 addDocumentation(enclosing.documentation)
-                addStatement("typeUrl = %T(%S),", LibClassNames.RM.Value.TypeUrl, enclosing.typeUrl)
+                addStatement("typeUrl = %T(%S),", LibClassNames.RS.Value.TypeUrl, enclosing.typeUrl)
                 addNestedTypes(enclosing.nestedTypes, resolver)
                 addNestedExtends(enclosing.nestedExtends, resolver)
             }
@@ -66,26 +66,30 @@ internal object TypeMetadataGenerator {
 
     private fun generateEnum(enum: RSType.Enum, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
-            add("%T(", LibClassNames.RM.Enum)
+            add("%T(", LibClassNames.RS.Enum)
             withIndent {
-                addStatement("name = %S", enum.name)
-                addStatement("constants = listOf(")
+                newline()
+                add("name = %S", enum.name)
+                newline()
+                add("constants = listOf(")
                 withIndent {
                     enum.constants.forEach { constant ->
                         newline()
                         add("%T(")
                         withIndent {
-                            addStatement("name = %S,", constant.name)
-                            addStatement("tag = %L,", constant.tag)
-                            addStatement("options = %P,", OptionsMetadataGenerator.generate(constant.options, resolver))
-                            addStatement(
-                                format = "documentation = %L,",
-                                if (constant.documentation == null) "null" else "\"${constant.documentation}\""
-                            )
+                            newline()
+                            add("name = %S,", constant.name)
+                            newline()
+                            add("tag = %L,", constant.tag)
+                            newline()
+                            add("options = %P,", OptionsMetadataGenerator.generate(constant.options, resolver))
+                            addDocumentation(constant.documentation)
                         }
+                        newline()
                         add("),")
                     }
                 }
+                newline()
                 add("),")
                 addDocumentation(enum.documentation)
                 addStatement("options = %P,", OptionsMetadataGenerator.generate(enum.options, resolver))
@@ -93,7 +97,7 @@ internal object TypeMetadataGenerator {
                 addNestedExtends(enum.nestedExtends, resolver)
                 addStatement(
                     format = "typeUrl = %T(%S),",
-                    LibClassNames.RM.Value.TypeUrl,
+                    LibClassNames.RS.Value.TypeUrl,
                     enum.typeUrl.value
                 )
             }

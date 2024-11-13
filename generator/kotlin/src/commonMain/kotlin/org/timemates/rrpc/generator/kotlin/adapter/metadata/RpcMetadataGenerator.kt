@@ -12,23 +12,23 @@ import org.timemates.rrpc.generator.kotlin.adapter.internal.ext.newline
 internal object RpcMetadataGenerator {
     fun generate(rpc: RSRpc, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
-            add("%T(", LibClassNames.RM.Rpc)
+            add("%T(", LibClassNames.RS.Rpc)
             withIndent {
                 newline()
                 @OptIn(NonPlatformSpecificAccess::class)
                 addStatement("name = %S,", rpc.name)
                 addStatement(
                     format = "requestType = %1T(isStreaming = %2L, %3T(%4S)),",
-                    LibClassNames.RM.StreamableTypeUrl,
+                    LibClassNames.RS.StreamableTypeUrl,
                     rpc.requestType.isStreaming,
-                    LibClassNames.RM.Value.TypeUrl,
+                    LibClassNames.RS.Value.TypeUrl,
                     rpc.requestType.type.value
                 )
                 addStatement(
                     format = "responseType = %1T(isStreaming = %2L, %3T(%4S)),",
-                    LibClassNames.RM.StreamableTypeUrl,
+                    LibClassNames.RS.StreamableTypeUrl,
                     rpc.responseType.isStreaming,
-                    LibClassNames.RM.Value.TypeUrl,
+                    LibClassNames.RS.Value.TypeUrl,
                     rpc.responseType.type.value
                 )
                 addStatement("options = %L,", OptionsMetadataGenerator.generate(rpc.options, resolver))

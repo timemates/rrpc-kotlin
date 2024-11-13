@@ -25,7 +25,7 @@ public object CombinedFilesMetadataGenerator {
             .addType(
                 TypeSpec.objectBuilder(name)
                     .addSuperinterface(
-                        superinterface = LibClassNames.RM.Server.MetadataLookup,
+                        superinterface = LibClassNames.RS.Server.MetadataLookup,
                         delegate = buildCodeBlock {
                             add("RMResolver(")
                             withIndent {
@@ -35,13 +35,16 @@ public object CombinedFilesMetadataGenerator {
                                     add(",")
                                 }
                             }
-                            addStatement(")")
+                            newline()
+                            add(")")
+                            //newline()
                         }
                     )
                     .apply {
                         if (!scoped) {
                             addInitializerBlock(buildCodeBlock {
-                                add("%T.register(this)", LibClassNames.RM.Server.MetadataLookup.nestedClass("Global"))
+                                add("%T.register(this)", LibClassNames.RS.Server.MetadataLookup.nestedClass("Global"))
+                                newline()
                             })
                         }
 

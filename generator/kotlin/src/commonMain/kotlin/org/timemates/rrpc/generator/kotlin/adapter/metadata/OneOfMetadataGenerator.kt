@@ -11,7 +11,7 @@ import org.timemates.rrpc.generator.kotlin.adapter.internal.ext.newline
 internal object OneOfMetadataGenerator {
     fun generate(oneOf: RSOneOf, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
-            add("%T(", LibClassNames.RM.OneOf)
+            add("%T(", LibClassNames.RS.OneOf)
             withIndent {
                 addStatement("name = %S", oneOf.name)
                 addDocumentation(oneOf.documentation)

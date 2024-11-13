@@ -6,31 +6,34 @@ import com.squareup.kotlinpoet.withIndent
 import org.timemates.rrpc.codegen.typemodel.LibClassNames
 import org.timemates.rrpc.common.schema.RSField
 import org.timemates.rrpc.common.schema.RSResolver
+import org.timemates.rrpc.generator.kotlin.adapter.internal.ext.newline
 
 internal object FieldMetadataGenerator {
     fun generate(field: RSField, resolver: RSResolver): CodeBlock {
         return buildCodeBlock {
-            addStatement("%T(", LibClassNames.RM.Field)
+            addStatement("%T(", LibClassNames.RS.Field)
             withIndent {
                 addStatement("tag = %L,", field.tag)
                 addStatement("name = %S,", field.name)
-                addStatement(
+                add(
                     format = "options = %L,",
                     OptionsMetadataGenerator.generate(field.options, resolver)
                 )
-                addStatement(
-                    "documentation = %L,",
-                    if (field.documentation == null) "null" else "\"${field.documentation}\""
-                )
-                addStatement(
+                addDocumentation(field.documentation)
+                newline()
+                add(
                     format = "typeUrl = %T(%S),",
-                    LibClassNames.RM.Value.TypeUrl,
+                    LibClassNames.RS.Value.TypeUrl,
                     field.typeUrl.value,
                 )
-                addStatement("isRepeated = %L,", field.isRepeated)
-                addStatement("isInOneOf = %L,", field.isInOneOf)
-                addStatement("isExtension = %L,", field.isExtension)
+                newline()
+                add("isRepeated = %L,", field.isRepeated)
+                newline()
+                add("isInOneOf = %L,", field.isInOneOf)
+                newline()
+                add("isExtension = %L,", field.isExtension)
             }
+            newline()
             add(")")
         }
     }

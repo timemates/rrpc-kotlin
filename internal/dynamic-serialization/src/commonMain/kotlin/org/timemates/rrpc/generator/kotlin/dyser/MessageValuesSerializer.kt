@@ -131,6 +131,7 @@ internal class MessageValuesSerializer(
 }
 
 
+// TODO better handling of primitives to avoid overhead while using encodeNullableSerializableElement for now we keep it for simplicity.
 private fun getSerializer(
     url: RMDeclarationUrl,
     factory: MessageSerializerFactory,
