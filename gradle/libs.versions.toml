@@ -12,6 +12,7 @@ compose = "1.7.0"
 decompose = "3.2.1"
 flowmvi = "3.1.0-beta02"
 clikt = "5.0.1"
+graalvm = "0.10.3"
 
 [libraries]
 # kotlinx libraries
@@ -88,6 +89,9 @@ flowmvi-debugger-client = { module = "pro.respawn.flowmvi:debugger-plugin", vers
 flowmvi-essenty = { module = "pro.respawn.flowmvi:essenty", version.ref = "flowmvi" }
 flowmvi-essenty-compose = { module = "pro.respawn.flowmvi:essenty-compose", version.ref = "flowmvi" }
 
+# JNA
+net-java-jna = { module = "net.java.dev.jna:jna", version.require = "5.8.0" }
+
 [plugins]
 # Build Conventions
 conventions-multiplatform-core = { id = "multiplatform-convention", version.require = "SNAPSHOT" }
@@ -114,3 +118,6 @@ gradle-publish = { id = "com.gradle.plugin-publish", version.require = "1.2.1" }
 # Jetbrains
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-compiler-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# GraalVM
+graalvm-native = { id = "org.graalvm.buildtools.native", version.ref = "graalvm" }
