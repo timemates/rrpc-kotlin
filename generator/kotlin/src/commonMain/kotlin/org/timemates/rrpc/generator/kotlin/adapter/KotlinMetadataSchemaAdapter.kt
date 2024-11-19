@@ -21,17 +21,12 @@ public object KotlinMetadataSchemaAdapter : SchemaAdapter {
     override fun process(
         options: GenerationOptions,
         resolver: RSResolver,
-    ): RSResolver = with(KotlinPluginOptions(options)) {
-        if (metadataGeneration == MetadataGenerationType.SCOPED && metadataScopeName == null)
-            throw GenerationException("Metadata config requires generation to be scoped, but name isn't provided.")
-
+    ): Unit = with(KotlinPluginOptions(options)) {
         CombinedFilesMetadataGenerator.generate(
             name = metadataScopeName,
-            scoped = metadataGeneration == MetadataGenerationType.SCOPED,
+            scoped = !metadataScopeName.isNullOrEmpty(),
             resolver = resolver,
         ).writeTo(output.toNioPath())
-
-        return resolver
     }
 
 }

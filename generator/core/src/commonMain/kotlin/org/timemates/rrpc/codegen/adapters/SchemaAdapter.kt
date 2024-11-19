@@ -20,5 +20,5 @@ public interface SchemaAdapter {
     public fun process(
         options: GenerationOptions,
         resolver: RSResolver,
-    ): RSResolver
+    )
 }

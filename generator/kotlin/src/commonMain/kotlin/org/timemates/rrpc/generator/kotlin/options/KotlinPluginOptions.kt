@@ -13,8 +13,7 @@ public value class KotlinPluginOptions(private val options: GenerationOptions) {
         get() = options[GenerationOptions.KOTLIN_OUTPUT]
             ?: throw GenerationException("Kotlin output folder was not specified.")
 
-    public val metadataGeneration: MetadataGenerationType
-        get() = options[GenerationOptions.METADATA_GENERATION]
-                ?: MetadataGenerationType.DISABLED
+    public val metadataGeneration: Boolean
+        get() = options[GenerationOptions.METADATA_GENERATION] == true
     public val metadataScopeName: String? get() = options[GenerationOptions.METADATA_SCOPE_NAME]
 }

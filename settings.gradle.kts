@@ -49,6 +49,7 @@ include(
     //":tools:rrpcurl",
     ":tooling:generator-cli",
     ":tooling:generator-gradle-plugin",
+    ":tooling:rrpc-testing-app",
 )
 
 include(

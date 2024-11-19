@@ -8,6 +8,7 @@ import org.timemates.rrpc.codegen.configuration.GenerationOption
 import org.timemates.rrpc.codegen.configuration.GenerationOptions
 import org.timemates.rrpc.codegen.configuration.isPackageCyclesPermitted
 import org.timemates.rrpc.codegen.configuration.protoInputs
+import org.timemates.rrpc.common.schema.RSResolver
 
 public class CodeGenerator(private val fileSystem: FileSystem = FileSystem.SYSTEM) {
     public companion object {
@@ -20,7 +21,7 @@ public class CodeGenerator(private val fileSystem: FileSystem = FileSystem.SYSTE
     public fun generate(
         options: GenerationOptions,
         adapters: List<SchemaAdapter>,
-    ) {
+    ): RSResolver {
         val schemaLoader = SchemaLoader(fileSystem)
         schemaLoader.permitPackageCycles = options.isPackageCyclesPermitted
 
@@ -31,8 +32,10 @@ public class CodeGenerator(private val fileSystem: FileSystem = FileSystem.SYSTE
         val schema = schemaLoader.loadSchema()
         val resolver = schema.asRSResolver()
 
-        return adapters.forEach { adapter ->
+        adapters.forEach { adapter ->
             adapter.process(options, resolver)
         }
+
+        return resolver
     }
 }

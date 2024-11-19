@@ -21,7 +21,7 @@ public object KotlinSchemaAdapter : SchemaAdapter {
     override fun process(
         options: GenerationOptions,
         resolver: RSResolver,
-    ): RSResolver = with(KotlinPluginOptions(options)) {
+    ): Unit = with(KotlinPluginOptions(options)) {
         FileSystem.SYSTEM.deleteRecursively(output)
 
         resolver.resolveAvailableFiles().filterNot {
@@ -38,9 +38,7 @@ public object KotlinSchemaAdapter : SchemaAdapter {
             spec.writeTo(directory = output.toNioPath())
         }
 
-        if (metadataGeneration != MetadataGenerationType.DISABLED)
+        if (metadataGeneration)
             KotlinMetadataSchemaAdapter.process(options, resolver)
-
-        return resolver
     }
 }

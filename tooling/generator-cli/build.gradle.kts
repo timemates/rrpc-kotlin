@@ -17,6 +17,10 @@ dependencies {
 
     // -- JNA --
     implementation(libs.net.java.jna)
+
+    // -- KotlinX --
+    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.serialization.proto)
 }
 
 application {

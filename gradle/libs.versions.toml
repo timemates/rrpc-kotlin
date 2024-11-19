@@ -92,6 +92,9 @@ flowmvi-essenty-compose = { module = "pro.respawn.flowmvi:essenty-compose", vers
 # JNA
 net-java-jna = { module = "net.java.dev.jna:jna", version.require = "5.8.0" }
 
+# Bonsai (Trees for Compose)
+bonsai-core = { module = "cafe.adriel.bonsai:bonsai-core", version.require = "1.2.0" }
+
 [plugins]
 # Build Conventions
 conventions-multiplatform-core = { id = "multiplatform-convention", version.require = "SNAPSHOT" }

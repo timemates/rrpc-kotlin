@@ -1,5 +1,7 @@
 package org.timemates.rrpc.codegen.configuration
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
 import okio.Path
 import okio.Path.Companion.toPath
 
@@ -16,7 +18,7 @@ import okio.Path.Companion.toPath
  * @see GenerationOption
  */
 @JvmInline
-public value class GenerationOptions private constructor(private val map: Map<String, Any>) {
+public value class GenerationOptions(private val map: Map<String, Any>) {
     /**
      * A collection of predefined options for code generation.
      */
@@ -47,7 +49,9 @@ public value class GenerationOptions private constructor(private val map: Map<St
      * @return The value of the option, or `null` if not found.
      */
     @Suppress("UNCHECKED_CAST")
-    public operator fun <T> get(option: SingleGenerationOption<T>): T? = map[option.name] as? T
+    public operator fun <T> get(option: SingleGenerationOption<T>): T? {
+        return map[option.name]?.let { option.valueFactory(it.toString()) }
+    }
 
     /**
      * Retrieves the values for a given [option], casting it to the expected type.
@@ -56,27 +60,39 @@ public value class GenerationOptions private constructor(private val map: Map<St
      * @return The value of the option, or `null` if not found.
      */
     @Suppress("UNCHECKED_CAST")
-    public operator fun <T> get(option: RepeatableGenerationOption<T>): List<T>? = map[option.name] as? List<T>
+    public operator fun <T> get(option: RepeatableGenerationOption<T>): List<T>? {
+        val list = map[option.name] as? List<String> ?: return null
+        return list.map { option.valueFactory(it) }
+    }
+
+    public val raw: Map<String, Any> get() = map.toMap()
 
     public class Builder {
         private val map: MutableMap<String, Any> = mutableMapOf()
 
         public operator fun <T : Any> set(option: SingleGenerationOption<T>, value: String) {
-            @Suppress("NAME_SHADOWING")
-            val value = option.valueFactory(value)
-
             map[option.name] = value
         }
 
         public fun <T : Any> append(option: RepeatableGenerationOption<T>, value: String) {
-            @Suppress("NAME_SHADOWING")
-            val value = option.valueFactory(value)
-
             if (map.containsKey(option.name)) {
                 @Suppress("UNCHECKED_CAST")
-                map[option.name] = (map[option.name] as? List<T>)?.plus(value) ?: listOf(value)
+                map[option.name] = (map[option.name] as? List<String>)?.plus(value) ?: listOf(value)
             } else {
                 map[option.name] = listOf(value)
+            }
+        }
+
+        public fun rawSet(name: String, value: String) {
+            map[name] = value
+        }
+
+        public fun rawAppend(name: String, value: String) {
+            if (map.containsKey(name)) {
+                @Suppress("UNCHECKED_CAST")
+                map[name] = (map[name] as? List<String>)?.plus(value) ?: listOf(value)
+            } else {
+                map[name] = listOf(value)
             }
         }
 
@@ -123,17 +139,27 @@ public sealed interface GenerationOption {
     }
 }
 
+@Serializable
 public sealed interface OptionTypeKind {
+    @Serializable
     public data object Text : OptionTypeKind
+    @Serializable
     public data object Boolean : OptionTypeKind
+    @Serializable
     public sealed interface Number : OptionTypeKind {
+        @Serializable
         public data object Int : Number
+        @Serializable
         public data object Long : Number
+        @Serializable
         public data object Float : Number
+        @Serializable
         public data object Double : Number
     }
+    @Serializable
     public data object Path : OptionTypeKind
-    public data class Choice(public val variants: List<String>) : OptionTypeKind
+    @Serializable
+    public data class Choice(@ProtoNumber(1) public val variants: List<String>) : OptionTypeKind
 }
 
 @Suppress("unused")
