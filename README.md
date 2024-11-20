@@ -23,7 +23,7 @@ You can learn more about the library in official documentation – [https://rrpc
 ## Feedback
 
 For bugs, questions and discussions please use
-the [GitHub Issues](https://github.com/timemates/rrpcroto/issues).
+the [GitHub Issues](https://github.com/timemates/rrpc-kotlin/issues).
 
 ## License
 
