@@ -74,6 +74,7 @@ class GenerateCommand(
                                 )
                             }
                             is PluginSignal.SendOptions -> { /* ignored: should've received before */ }
+                            is PluginSignal.RequestStatusChange.Finished -> return@launch
                         }
                     }
                 }
