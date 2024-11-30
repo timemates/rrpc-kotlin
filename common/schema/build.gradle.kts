@@ -25,12 +25,12 @@ kotlin {
 mavenPublishing {
     coordinates(
         groupId = "org.timemates.rrpc",
-        artifactId = "common-metadata",
+        artifactId = "common-schema",
         version = System.getenv("LIB_VERSION") ?: return@mavenPublishing,
     )
 
     pom {
         name.set("RRpc Common Metadata")
-        description.set("Multiplatform Kotlin Mutadata library for RRpc servers and clients.")
+        description.set("Multiplatform Kotlin Metadata library for RRpc servers and clients.")
     }
 }

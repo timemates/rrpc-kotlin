@@ -24,7 +24,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
  * @param group The metadata lookup group used for resolving services, types, and extensions.
  */
 public class SchemaService(
-    private val group: SchemaLookup = SchemaLookup.Global,
+    private val group: SchemaMetadata = SchemaMetadata.Global,
 ) : RRpcService {
     override val descriptor: ServiceDescriptor = ServiceDescriptor(
         name = "timemates.rrpc.server.schema.SchemaService",
@@ -73,7 +73,7 @@ public class SchemaService(
     }
 
     /**
-     * Retrieves available files that are loaded into [SchemaLookup].
+     * Retrieves available files that are loaded into [SchemaMetadata].
      *
      * @param request The paged request containing pagination information.
      * @return A paged response containing a list of available RMFiles.
