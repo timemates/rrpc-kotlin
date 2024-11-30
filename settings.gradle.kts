@@ -26,6 +26,7 @@ includeBuild("build-conventions")
 include(
     ":common:core",
     ":common:schema",
+    ":common:core:java-support",
 )
 
 include(
@@ -38,20 +39,12 @@ include(
     ":client:schema",
 )
 
-include(
-    ":generator:core",
-    ":generator:kotlin",
-)
-
 include(":integration-tests")
 
 include(
-    //":tools:rrpcurl",
-    ":tooling:generator-cli",
-    ":tooling:generator-gradle-plugin",
     ":tooling:rrpc-testing-app",
 )
 
-include(
-    ":internal:dynamic-serialization"
-)
+//include(
+//    ":internal:dynamic-serialization"
+//)

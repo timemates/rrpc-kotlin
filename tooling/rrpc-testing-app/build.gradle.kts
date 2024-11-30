@@ -2,6 +2,8 @@ plugins {
     id(libs.plugins.conventions.multiplatform.core.get().pluginId)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.jetbrains.compiler.compose)
+    application
+    alias(libs.plugins.graalvm.native)
 }
 
 dependencies {
@@ -21,4 +23,11 @@ dependencies {
 
     // -- SquareUp --
     commonMainImplementation(libs.squareup.okio)
+
+    // -- Schema --
+    commonMainImplementation(projects.common.schema)
+    commonMainImplementation(projects.client.schema)
+
+    // -- Bonsai (Compose Tree) --
+    commonMainImplementation(libs.bonsai.core)
 }
