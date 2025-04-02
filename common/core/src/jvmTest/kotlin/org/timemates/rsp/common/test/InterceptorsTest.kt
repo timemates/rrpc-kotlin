@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalInterceptorsApi::class, InternalRRpcAPI::class)
 
-package org.timemates.rrpc.common.test
+package org.timemates.rsp.common.test
 
+import com.google.protobuf.ProtoEmpty
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -9,9 +10,9 @@ import org.timemates.rrpc.Single
 import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
 import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.instances.InstanceContainer
-import org.timemates.rrpc.interceptors.Interceptor
 import org.timemates.rrpc.interceptors.InterceptorContext
 import org.timemates.rrpc.interceptors.Interceptors
+import org.timemates.rrpc.interceptors.RRpcInterceptor
 import org.timemates.rrpc.metadata.ClientMetadata
 import org.timemates.rrpc.metadata.ServerMetadata
 import org.timemates.rrpc.options.OptionsWithValue
@@ -26,7 +27,7 @@ class InterceptorsTest {
 
         assertNull(
             actual = interceptors.runInputInterceptors(
-                Single(""),
+                Single(ProtoEmpty.Default),
                 ClientMetadata(),
                 OptionsWithValue.EMPTY,
                 InstanceContainer(emptyMap()),
@@ -36,7 +37,7 @@ class InterceptorsTest {
 
     @Test
     fun `runInputInterceptors with interceptors that change context should return actual context`(): Unit = runBlocking {
-        val testInterceptor = mockk<Interceptor<ClientMetadata>>()
+        val testInterceptor = mockk<RRpcInterceptor<ClientMetadata>>()
         val expectedContext = mockk<InterceptorContext<ClientMetadata>>()
         coEvery { testInterceptor.intercept(any()) } returns expectedContext
 
@@ -44,7 +45,7 @@ class InterceptorsTest {
 
         assertSame(
             actual = interceptors.runInputInterceptors(
-                Single(""),
+                Single(ProtoEmpty.Default),
                 ClientMetadata(),
                 OptionsWithValue.EMPTY,
                 InstanceContainer(emptyMap()),
@@ -59,7 +60,7 @@ class InterceptorsTest {
 
         assertNull(
             actual = interceptors.runOutputInterceptors(
-                Single(""),
+                Single(ProtoEmpty.Default),
                 ServerMetadata(),
                 OptionsWithValue.EMPTY,
                 InstanceContainer(emptyMap()),
@@ -69,7 +70,7 @@ class InterceptorsTest {
 
     @Test
     fun `runOutputInterceptors with interceptors that change context should return actual context`(): Unit = runBlocking {
-        val testInterceptor = mockk<Interceptor<ServerMetadata>>()
+        val testInterceptor = mockk<RRpcInterceptor<ServerMetadata>>()
         val expectedContext = mockk<InterceptorContext<ServerMetadata>>()
         coEvery { testInterceptor.intercept(any()) } returns expectedContext
 
@@ -77,7 +78,7 @@ class InterceptorsTest {
 
         assertSame(
             actual = interceptors.runOutputInterceptors(
-                Single(""),
+                Single(ProtoEmpty.Default),
                 ServerMetadata(),
                 OptionsWithValue.EMPTY,
                 InstanceContainer(emptyMap()),

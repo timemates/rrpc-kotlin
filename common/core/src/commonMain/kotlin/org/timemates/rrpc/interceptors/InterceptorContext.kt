@@ -3,6 +3,7 @@
 package org.timemates.rrpc.interceptors
 
 import org.timemates.rrpc.DataVariant
+import org.timemates.rrpc.ProtoType
 import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.instances.InstanceContainer
 import org.timemates.rrpc.instances.ProvidableInstance
@@ -23,7 +24,7 @@ import kotlin.jvm.JvmSynthetic
  */
 @OptIn(InternalRRpcAPI::class)
 public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcAPI constructor(
-    public val data: DataVariant<*>,
+    public val data: DataVariant<ProtoType>,
     public val metadata: TMetadata,
     public val options: OptionsWithValue,
     public val instances: InstanceContainer,
@@ -49,7 +50,7 @@ public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcAPI const
      */
     @JvmSynthetic
     public fun copy(
-        data: DataVariant<*> = this.data,
+        data: DataVariant<ProtoType> = this.data,
         extra: ExtraMetadata = this.metadata.extra,
         options: OptionsWithValue = this.options,
         instances: InstanceContainer = this.instances,
@@ -66,7 +67,7 @@ public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcAPI const
     public class Builder<TMetadata : RRpcMetadata>(
         private var instances: InstanceContainer,
         private var metadata: TMetadata,
-        private var data: DataVariant<*>,
+        private var data: DataVariant<ProtoType>,
         private var options: OptionsWithValue,
     ) {
         /**
@@ -113,7 +114,7 @@ public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcAPI const
          * @return This builder instance for chaining method calls.
          * @throws IllegalArgumentException if the data type of [value] does not match the current data type.
          */
-        public fun data(value: DataVariant<*>): Builder<TMetadata> {
+        public fun data(value: DataVariant<ProtoType>): Builder<TMetadata> {
             data = value
             return this
         }

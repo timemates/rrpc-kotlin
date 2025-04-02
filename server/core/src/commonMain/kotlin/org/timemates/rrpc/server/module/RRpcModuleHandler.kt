@@ -6,15 +6,22 @@ import io.ktor.utils.io.core.*
 import io.rsocket.kotlin.RSocketError
 import io.rsocket.kotlin.RSocketRequestHandlerBuilder
 import io.rsocket.kotlin.payload.Payload
-import kotlinx.coroutines.flow.*
-import kotlinx.serialization.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.encodeToByteArray
 import org.timemates.rrpc.*
 import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
 import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.exceptions.ProcedureNotFoundException
 import org.timemates.rrpc.exceptions.ServiceNotFoundException
+import org.timemates.rrpc.instances.InstanceContainer
 import org.timemates.rrpc.instances.ProtobufInstance
 import org.timemates.rrpc.interceptors.InterceptorContext
+import org.timemates.rrpc.interceptors.Interceptors
 import org.timemates.rrpc.metadata.ClientMetadata
 import org.timemates.rrpc.metadata.ServerMetadata
 import org.timemates.rrpc.options.OptionsWithValue
@@ -52,10 +59,17 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
 
     private fun RSocketRequestHandlerBuilder.requestResponseHandler() {
         requestResponse { payload ->
-            val metadata = getClientMetadata(payload.metadataOrFailure())
+            val moduleInstances = module.plus(RequestType.REQUEST_RESPONSE)
+
+            val metadata = getClientMetadata(
+                payload.metadataOrFailure(),
+                module.interceptors,
+                moduleInstances,
+            )
             val service = getService(metadata)
-            val method = service.procedure<ProcedureDescriptor.RequestResponse<Any, Any>>(metadata.procedureName)
-                ?: handleException(ProcedureNotFoundException(metadata), null)
+            val method =
+                service.procedure<ProcedureDescriptor.RequestResponse<ProtoType, ProtoType>>(metadata.procedureName)
+                    ?: handleException(ProcedureNotFoundException(metadata), null)
 
             val options = method.options
 
@@ -71,7 +85,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
                 data = data,
                 clientMetadata = metadata,
                 options = options,
-                module,
+                instanceContainer = moduleInstances,
             )
 
             if (startContext?.data is Failure) throw (startContext.data as Failure).exception
@@ -92,7 +106,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
                 data = Single(result),
                 serverMetadata = serverMetadata,
                 options = startContext?.options ?: options,
-                instanceContainer = startContext?.instances ?: module,
+                instanceContainer = startContext?.instances ?: moduleInstances,
             )
 
             if (finalContext?.data is Failure) throw (finalContext.data as Failure).exception
@@ -105,10 +119,18 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
 
     private fun RSocketRequestHandlerBuilder.requestStreamHandler() {
         requestStream { payload ->
-            val metadata = getClientMetadata(payload.metadataOrFailure())
+            val moduleInstances = module.plus(RequestType.REQUEST_STREAM)
+
+            val metadata = getClientMetadata(
+                payload.metadataOrFailure(),
+                module.interceptors,
+                moduleInstances,
+            )
+
             val service = getService(metadata)
-            val method = service.procedure<ProcedureDescriptor.RequestStream<Any, Any>>(metadata.procedureName)
-                ?: handleException(ProcedureNotFoundException(metadata), null)
+            val method =
+                service.procedure<ProcedureDescriptor.RequestStream<ProtoType, ProtoType>>(metadata.procedureName)
+                    ?: handleException(ProcedureNotFoundException(metadata), null)
 
             val options = method.options
 
@@ -124,7 +146,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
                 data = data,
                 clientMetadata = metadata,
                 options = options,
-                module,
+                moduleInstances,
             )
 
             if (startContext?.data is Failure)
@@ -144,7 +166,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
                 data = Streaming(result),
                 serverMetadata = serverMetadata,
                 options = startContext?.options ?: options,
-                instanceContainer = startContext?.instances ?: module,
+                instanceContainer = startContext?.instances ?: moduleInstances,
             )
 
             if (finalContext?.data is Failure) throw (finalContext.data as Failure).exception
@@ -158,10 +180,18 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
 
     private fun RSocketRequestHandlerBuilder.requestChannelHandler() {
         requestChannel { initial, payloads ->
-            val metadata = getClientMetadata(initial.metadataOrFailure())
+            val moduleInstances = module.plus(RequestType.REQUEST_CHANNEL)
+
+            val metadata = getClientMetadata(
+                initial.metadataOrFailure(),
+                module.interceptors,
+                moduleInstances,
+            )
+
             val service = getService(metadata)
-            val method = service.procedure<ProcedureDescriptor.RequestChannel<Any, Any>>(metadata.procedureName)
-                ?: handleException(ProcedureNotFoundException(metadata), null)
+            val method =
+                service.procedure<ProcedureDescriptor.RequestChannel<ProtoType, ProtoType>>(metadata.procedureName)
+                    ?: handleException(ProcedureNotFoundException(metadata), null)
 
             val options = method.options
 
@@ -180,7 +210,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
                     data = data,
                     clientMetadata = metadata,
                     options = options,
-                    module,
+                    moduleInstances,
                 )
 
             if (startContext?.data is Failure) throw (startContext.data as Failure).exception
@@ -200,7 +230,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
                 data = Streaming(result),
                 serverMetadata = serverMetadata,
                 options = startContext?.options ?: options,
-                instanceContainer = startContext?.instances ?: module,
+                instanceContainer = startContext?.instances ?: moduleInstances,
             )
 
             if (finalContext?.data is Failure) throw (finalContext.data as Failure).exception
@@ -212,9 +242,16 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
     }
 
     private fun RSocketRequestHandlerBuilder.fireAndForgetHandler(): Unit = fireAndForget { payload ->
-        val metadata = getClientMetadata(payload.metadataOrFailure())
+        val moduleInstances = module.plus(RequestType.FIRE_AND_FORGET)
+
+        val metadata = getClientMetadata(
+            payload.metadataOrFailure(),
+            module.interceptors,
+            moduleInstances,
+        )
+
         val service = getService(metadata)
-        val method = service.procedure<ProcedureDescriptor.FireAndForget<Any>>(metadata.procedureName)
+        val method = service.procedure<ProcedureDescriptor.FireAndForget<ProtoType>>(metadata.procedureName)
             ?: handleException(ProcedureNotFoundException(metadata), null)
 
         val options = method.options
@@ -231,14 +268,14 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
             data = data,
             clientMetadata = metadata,
             options = options,
-            module,
+            moduleInstances,
         )
 
         if (startContext?.data is Failure) throw (startContext.data as Failure).exception
 
 
         // Execute the method and handle exceptions
-        val result = try {
+        try {
             method.execute(
                 context = startContext?.toRequestContext() ?: RequestContext(module, metadata, options),
                 input = (startContext?.data ?: data).requireSingle()
@@ -249,10 +286,10 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
 
         // Run output interceptors and handle exceptions
         val finalContext = module.interceptors.runOutputInterceptors(
-            data = Single(result),
+            data = Single.EMPTY,
             serverMetadata = serverMetadata,
             options = startContext?.options ?: options,
-            instanceContainer = startContext?.instances ?: module,
+            instanceContainer = startContext?.instances ?: moduleInstances,
         )
 
         // is not propagated to the client
@@ -260,7 +297,14 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
     }
 
     private fun RSocketRequestHandlerBuilder.metadataPushHandler(): Unit = metadataPush { metadataBytes ->
-        val metadata = getClientMetadata(metadataBytes.readBytes())
+        val moduleInstances = module.plus(RequestType.METADATA_PUSH)
+
+        val metadata = getClientMetadata(
+            metadataBytes.readBytes(),
+            module.interceptors,
+            moduleInstances,
+        )
+
         val service = getService(metadata)
         val method = service.procedure<ProcedureDescriptor.MetadataPush>(metadata.procedureName)
             ?: handleException(ProcedureNotFoundException(metadata), null)
@@ -271,11 +315,10 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
             data = Single.EMPTY,
             clientMetadata = metadata,
             options = options,
-            module,
+            instanceContainer = moduleInstances,
         )
 
         if (startContext?.data is Failure) throw (startContext.data as Failure).exception
-
 
         try {
             method.execute(
@@ -290,7 +333,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
             data = Single.EMPTY,
             serverMetadata = serverMetadata,
             options = startContext?.options ?: options,
-            instanceContainer = startContext?.instances ?: module,
+            instanceContainer = startContext?.instances ?: moduleInstances,
         )
 
         // is not propagated to the client
@@ -318,11 +361,20 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
         throw resultException
     }
 
-    private fun getClientMetadata(metadata: ByteArray): ClientMetadata {
+    private suspend fun getClientMetadata(
+        metadata: ByteArray,
+        interceptors: Interceptors,
+        instances: InstanceContainer,
+    ): ClientMetadata {
         return try {
             protobuf.decodeFromByteArray(metadata)
         } catch (e: Exception) {
-            // TODO logging the exception
+            interceptors.runOutputInterceptors(
+                data = Failure(e),
+                serverMetadata = serverMetadata,
+                options = OptionsWithValue.EMPTY,
+                instanceContainer = instances,
+            )
             throw RSocketError.Rejected("Unable to process incoming request, data is corrupted or invalid.")
         }
     }

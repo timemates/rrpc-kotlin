@@ -5,7 +5,6 @@ import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
 import org.timemates.rrpc.instances.InstanceContainer
 import org.timemates.rrpc.instances.ProvidableInstance
 import org.timemates.rrpc.interceptors.Interceptors
-import org.timemates.rrpc.server.OptionsContainer
 import org.timemates.rrpc.server.module.descriptors.ProcedureDescriptor
 import org.timemates.rrpc.server.module.descriptors.ServiceDescriptor
 
@@ -23,9 +22,9 @@ public interface RRpcModule : InstanceContainer, ServicesContainer {
      * They are applied before the method is executed and can be used to perform actions such as authentication, logging,
      * or modifying the payload of the incoming request.
      *
-     * Interceptors are instances of the [org.timemates.rrpc.interceptors.Interceptor] interface.
+     * Interceptors are instances of the [org.timemates.rrpc.interceptors.RRpcInterceptor] interface.
      *
-     * @see [org.timemates.rrpc.interceptors.Interceptor]
+     * @see [org.timemates.rrpc.interceptors.RRpcInterceptor]
      */
     @ExperimentalInterceptorsApi
     public val interceptors: Interceptors

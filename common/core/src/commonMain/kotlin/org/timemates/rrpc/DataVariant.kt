@@ -1,5 +1,6 @@
 package org.timemates.rrpc
 
+import com.google.protobuf.ProtoEmpty
 import kotlinx.coroutines.flow.Flow
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -10,7 +11,7 @@ import kotlin.jvm.JvmSynthetic
  *
  * @param T The type of the value.
  */
-public sealed interface DataVariant<out T : Any> {
+public sealed interface DataVariant<out T : ProtoType> {
 
     /**
      * Checks if the other [DataVariant] is of the same type as this one.
@@ -27,13 +28,13 @@ public sealed interface DataVariant<out T : Any> {
  * @param T The type of the value.
  * @property value The single value.
  */
-public data class Single<T : Any>(public val value: T) : DataVariant<T> {
+public data class Single<T : ProtoType>(public val value: T) : DataVariant<T> {
     public companion object {
         /**
          * Denotes that single has no value inside. Usually, it's applicable only
          * to the Metadata Push requests.
          */
-        public val EMPTY: Single<Unit> = Single(Unit)
+        public val EMPTY: Single<ProtoEmpty> = Single(ProtoEmpty.Default)
     }
 
     override fun isSameType(other: DataVariant<*>): Boolean {
@@ -65,7 +66,7 @@ public data class Failure(public val exception: Exception) : DataVariant<Nothing
  * @param T The type of the values in the stream.
  * @property flow The flow of values.
  */
-public class Streaming<T : Any>(
+public class Streaming<T : ProtoType>(
     @get:JvmSynthetic
     public val flow: Flow<T>,
 ) : DataVariant<T> {
@@ -84,7 +85,7 @@ public class Streaming<T : Any>(
  * @return `true` if the variant is a [Single], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : Any> DataVariant<T>.isSingle(): Boolean {
+public inline fun <T : ProtoType> DataVariant<T>.isSingle(): Boolean {
     contract {
         returns(true) implies (this@isSingle is Single<T>)
         returns(false) implies (this@isSingle !is Single<T>)
@@ -99,7 +100,7 @@ public inline fun <T : Any> DataVariant<T>.isSingle(): Boolean {
  * @return `true` if the variant is a [Streaming], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : Any> DataVariant<T>.isStreaming(): Boolean {
+public inline fun <T : ProtoType> DataVariant<T>.isStreaming(): Boolean {
     contract {
         returns(true) implies (this@isStreaming is Streaming<T>)
         returns(false) implies (this@isStreaming !is Streaming<T>)
@@ -114,7 +115,7 @@ public inline fun <T : Any> DataVariant<T>.isStreaming(): Boolean {
  * @return `true` if the variant is a [Failure], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : Any> DataVariant<T>.isFailure(): Boolean {
+public inline fun <T : ProtoType> DataVariant<T>.isFailure(): Boolean {
     contract {
         returns(true) implies (this@isFailure is Failure)
         returns(false) implies (this@isFailure !is Failure)
@@ -130,7 +131,7 @@ public inline fun <T : Any> DataVariant<T>.isFailure(): Boolean {
  * @throws IllegalStateException if the variant is not a [Single].
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : Any> DataVariant<T>.requireSingle(): T {
+public inline fun <T : ProtoType> DataVariant<T>.requireSingle(): T {
     contract {
         returns() implies (this@requireSingle is Single<T>)
     }
@@ -144,7 +145,7 @@ public inline fun <T : Any> DataVariant<T>.requireSingle(): T {
  * @throws IllegalStateException if the variant is not a [Streaming].
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : Any> DataVariant<T>.requireStreaming(): Flow<T> {
+public inline fun <T : ProtoType> DataVariant<T>.requireStreaming(): Flow<T> {
     contract {
         returns() implies (this@requireStreaming is Streaming<T>)
     }
@@ -158,7 +159,7 @@ public inline fun <T : Any> DataVariant<T>.requireStreaming(): Flow<T> {
  * @throws IllegalStateException if the variant is not a [Single].
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : Any> DataVariant<T>.requireFailure(): Exception {
+public inline fun <T : ProtoType> DataVariant<T>.requireFailure(): Exception {
     contract {
         returns() implies (this@requireFailure is Failure)
     }

@@ -9,7 +9,7 @@ version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 dependencies {
     // -- Project --
     implementation(projects.server.core)
-    implementation(projects.server.schema)
+    //implementation(projects.server.schema)
     implementation(projects.client.core)
     implementation(projects.client.schema)
 

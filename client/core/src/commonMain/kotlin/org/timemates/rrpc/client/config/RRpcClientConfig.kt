@@ -7,7 +7,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
 import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.instances.*
-import org.timemates.rrpc.interceptors.Interceptor
+import org.timemates.rrpc.interceptors.RRpcInterceptor
 import org.timemates.rrpc.interceptors.Interceptors
 import org.timemates.rrpc.metadata.ClientMetadata
 import org.timemates.rrpc.metadata.ServerMetadata
@@ -38,11 +38,11 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
     public class Builder {
         /** List of interceptors for request processing */
         @ExperimentalInterceptorsApi
-        private val requestInterceptors: MutableList<Interceptor<ClientMetadata>> = mutableListOf()
+        private val requestInterceptors: MutableList<RRpcInterceptor<ClientMetadata>> = mutableListOf()
 
         /** List of interceptors for response processing */
         @ExperimentalInterceptorsApi
-        private val responseInterceptors: MutableList<Interceptor<ServerMetadata>> = mutableListOf()
+        private val responseInterceptors: MutableList<RRpcInterceptor<ServerMetadata>> = mutableListOf()
 
         /** The RSocket instance to use */
         private var rsocket: RSocket by Delegates.notNull()
@@ -56,7 +56,7 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
          * @return This builder instance.
          */
         @ExperimentalInterceptorsApi
-        public fun requestInterceptors(interceptors: List<Interceptor<ClientMetadata>>): Builder = apply {
+        public fun requestInterceptors(interceptors: List<RRpcInterceptor<ClientMetadata>>): Builder = apply {
             this.requestInterceptors += interceptors
         }
 
@@ -66,7 +66,7 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
          * @return This builder instance.
          */
         @ExperimentalInterceptorsApi
-        public fun requestInterceptors(vararg interceptors: Interceptor<ClientMetadata>): Builder = apply {
+        public fun requestInterceptors(vararg interceptors: RRpcInterceptor<ClientMetadata>): Builder = apply {
             this.requestInterceptors += interceptors
         }
 
@@ -76,7 +76,7 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
          * @return This builder instance.
          */
         @ExperimentalInterceptorsApi
-        public fun requestInterceptor(interceptor: Interceptor<ClientMetadata>): Builder = apply {
+        public fun requestInterceptor(interceptor: RRpcInterceptor<ClientMetadata>): Builder = apply {
             this.requestInterceptors += interceptor
         }
 
@@ -86,7 +86,7 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
          * @return This builder instance.
          */
         @ExperimentalInterceptorsApi
-        public fun responseInterceptors(interceptors: List<Interceptor<ServerMetadata>>): Builder = apply {
+        public fun responseInterceptors(interceptors: List<RRpcInterceptor<ServerMetadata>>): Builder = apply {
             this.responseInterceptors += interceptors
         }
 
@@ -96,7 +96,7 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
          * @return This builder instance.
          */
         @ExperimentalInterceptorsApi
-        public fun responseInterceptors(vararg interceptors: Interceptor<ServerMetadata>): Builder = apply {
+        public fun responseInterceptors(vararg interceptors: RRpcInterceptor<ServerMetadata>): Builder = apply {
             this.responseInterceptors += interceptors
         }
 
@@ -106,7 +106,7 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
          * @return This builder instance.
          */
         @ExperimentalInterceptorsApi
-        public fun responseInterceptor(interceptor: Interceptor<ServerMetadata>): Builder = apply {
+        public fun responseInterceptor(interceptor: RRpcInterceptor<ServerMetadata>): Builder = apply {
             this.responseInterceptors += interceptor
         }
 

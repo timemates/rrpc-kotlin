@@ -4,10 +4,10 @@ import org.timemates.rrpc.server.module.RRpcModuleBuilder
 
 /**
  * Registers a [SchemaService] for given module. By default, it will use
- * global instance of [SchemaLookup].
+ * global instance of [SchemaMetadata].
  */
 public fun RRpcModuleBuilder.ServicesBuilder.schemaService(
-    lookup: SchemaLookup = SchemaLookup.Global,
+    lookup: SchemaMetadata = SchemaMetadata.Global,
 ) {
     register(SchemaService(lookup))
 }

@@ -25,25 +25,23 @@ includeBuild("build-conventions")
 
 include(
     ":common:core",
-    ":common:schema",
-    ":common:core:java-support",
 )
 
 include(
     ":server:core",
-    ":server:schema",
+    //":server:schema",
 )
 
 include(
     ":client:core",
-    ":client:schema",
+    //":client:schema",
 )
 
-include(":integration-tests")
+//include(":integration-tests")
 
-include(
-    ":tooling:rrpc-testing-app",
-)
+//include(
+//    ":tooling:rrpc-testing-app",
+//)
 
 //include(
 //    ":internal:dynamic-serialization"

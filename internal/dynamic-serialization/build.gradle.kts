@@ -11,7 +11,7 @@ version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
     // -- Project --
-    commonMainImplementation(projects.common.core)
+    commonMainImplementation(libs.rrpc)
     commonMainImplementation(projects.generator.core)
 
     // -- Kotlinx Serialization --

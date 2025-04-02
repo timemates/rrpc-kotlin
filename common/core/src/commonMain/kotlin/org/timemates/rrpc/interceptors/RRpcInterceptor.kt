@@ -4,6 +4,7 @@ package org.timemates.rrpc.interceptors
 
 import org.timemates.rrpc.DataVariant
 import org.timemates.rrpc.Failure
+import org.timemates.rrpc.ProtoType
 import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
 import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.instances.InstanceContainer
@@ -18,7 +19,7 @@ import org.timemates.rrpc.options.OptionsWithValue
  * @param TMetadata The type of metadata that the interceptor processes.
  */
 @ExperimentalInterceptorsApi
-public interface Interceptor<TMetadata : RRpcMetadata> {
+public interface RRpcInterceptor<TMetadata : RRpcMetadata> {
     /**
      * Intercepts and processes the given [context].
      *
@@ -37,18 +38,18 @@ public interface Interceptor<TMetadata : RRpcMetadata> {
  * A type alias for an interceptor that processes client metadata.
  */
 @ExperimentalInterceptorsApi
-public typealias RequestInterceptor = Interceptor<ClientMetadata>
+public typealias RequestRRpcInterceptor = RRpcInterceptor<ClientMetadata>
 
 /**
  * A type alias for an interceptor that processes server metadata.
  */
 @ExperimentalInterceptorsApi
-public typealias ResponseInterceptor = Interceptor<ServerMetadata>
+public typealias ResponseRRpcInterceptor = RRpcInterceptor<ServerMetadata>
 
 @ExperimentalInterceptorsApi
 public data class Interceptors(
-    val request: List<Interceptor<ClientMetadata>>,
-    val response: List<Interceptor<ServerMetadata>>,
+    val request: List<RRpcInterceptor<ClientMetadata>>,
+    val response: List<RRpcInterceptor<ServerMetadata>>,
 ) {
     /**
      * Runs input interceptors and returns the result of the provided block.
@@ -62,7 +63,7 @@ public data class Interceptors(
      */
     @InternalRRpcAPI
     public suspend inline fun runInputInterceptors(
-        data: DataVariant<*>,
+        data: DataVariant<ProtoType>,
         clientMetadata: ClientMetadata,
         options: OptionsWithValue,
         instanceContainer: InstanceContainer,
@@ -96,7 +97,7 @@ public data class Interceptors(
      */
     @InternalRRpcAPI
     public suspend fun runOutputInterceptors(
-        data: DataVariant<*>,
+        data: DataVariant<ProtoType>,
         serverMetadata: ServerMetadata,
         options: OptionsWithValue,
         instanceContainer: InstanceContainer

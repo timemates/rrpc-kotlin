@@ -31,5 +31,5 @@ public val InterceptorContext<ClientMetadata>.service: ServiceDescriptor
         ?: error(
             "Unable to resolve the service: InstanceContainer is not including needed ServiceContainer or it's different" +
                 " instance without origin service. The only reason why it may happen: some of the interceptors " +
-                "replaced with a new InstanceContainer without taking in count ServiceContainer."
+                "replaced it with a new InstanceContainer without taking into account ServiceContainer. Or maybe you called it from client side?"
         )

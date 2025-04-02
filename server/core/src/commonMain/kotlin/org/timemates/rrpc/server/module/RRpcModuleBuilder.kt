@@ -7,8 +7,8 @@ import org.timemates.rrpc.instances.InstanceContainer
 import org.timemates.rrpc.instances.InstancesBuilder
 import org.timemates.rrpc.instances.protobuf
 import org.timemates.rrpc.interceptors.Interceptors
-import org.timemates.rrpc.interceptors.RequestInterceptor
-import org.timemates.rrpc.interceptors.ResponseInterceptor
+import org.timemates.rrpc.interceptors.RequestRRpcInterceptor
+import org.timemates.rrpc.interceptors.ResponseRRpcInterceptor
 
 /**
  * Creates an [RRpcModule] using the provided [block] to configure its builder.
@@ -81,26 +81,26 @@ public class RRpcModuleBuilder internal constructor() {
 
     @ExperimentalInterceptorsApi
     public class InterceptorsBuilder {
-        private val requestInterceptors: MutableList<RequestInterceptor> = mutableListOf()
-        private val responseInterceptors: MutableList<ResponseInterceptor> = mutableListOf()
+        private val requestInterceptors: MutableList<RequestRRpcInterceptor> = mutableListOf()
+        private val responseInterceptors: MutableList<ResponseRRpcInterceptor> = mutableListOf()
 
         /**
          * Adds a request interceptor to the module.
          *
-         * @param interceptor The [RequestInterceptor] to add.
+         * @param interceptor The [RequestRRpcInterceptor] to add.
          */
         @ExperimentalInterceptorsApi
-        public fun request(interceptor: RequestInterceptor) {
+        public fun request(interceptor: RequestRRpcInterceptor) {
             requestInterceptors += interceptor
         }
 
         /**
          * Adds a response interceptor to the module.
          *
-         * @param interceptor The [ResponseInterceptor] to add.
+         * @param interceptor The [ResponseRRpcInterceptor] to add.
          */
         @ExperimentalInterceptorsApi
-        public fun response(interceptor: ResponseInterceptor) {
+        public fun response(interceptor: ResponseRRpcInterceptor) {
             responseInterceptors += interceptor
         }
 
@@ -112,19 +112,19 @@ public class RRpcModuleBuilder internal constructor() {
 /**
  * Adds multiple request interceptors to the module.
  *
- * @param interceptors Vararg of [RequestInterceptor] to add.
+ * @param interceptors Vararg of [RequestRRpcInterceptor] to add.
  */
 @ExperimentalInterceptorsApi
-public fun RRpcModuleBuilder.InterceptorsBuilder.request(vararg interceptors: RequestInterceptor) {
+public fun RRpcModuleBuilder.InterceptorsBuilder.request(vararg interceptors: RequestRRpcInterceptor) {
     interceptors.forEach { request(it) }
 }
 
 /**
  * Adds multiple response interceptors to the module.
  *
- * @param interceptors Vararg of [ResponseInterceptor] to add.
+ * @param interceptors Vararg of [ResponseRRpcInterceptor] to add.
  */
 @ExperimentalInterceptorsApi
-public fun RRpcModuleBuilder.InterceptorsBuilder.response(vararg interceptors: ResponseInterceptor) {
+public fun RRpcModuleBuilder.InterceptorsBuilder.response(vararg interceptors: ResponseRRpcInterceptor) {
     interceptors.forEach { response(interceptor = it) }
 }

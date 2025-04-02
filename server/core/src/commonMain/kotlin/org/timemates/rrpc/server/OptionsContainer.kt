@@ -47,7 +47,7 @@ public fun <T> OptionsContainer.getOptionOrNull(option: Option<T>): T? {
  * @param defaultValue The default value to return if the option is not present.
  * @return The value of the option, or the default value if the option is not present.
  */
-public fun <T> OptionsContainer.getOptionOrElse(
+public fun <T> OptionsContainer.getOptionOrDefault(
     option: Option<T>,
     defaultValue: () -> T
 ): T {

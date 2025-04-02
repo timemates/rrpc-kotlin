@@ -3,6 +3,7 @@ package org.timemates.rrpc.server.module.descriptors
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
+import org.timemates.rrpc.ProtoType
 import org.timemates.rrpc.options.OptionsWithValue
 import org.timemates.rrpc.server.OptionsContainer
 import org.timemates.rrpc.server.RequestContext
@@ -27,7 +28,7 @@ public sealed interface ProcedureDescriptor : OptionsContainer {
      * @param procedure The suspend function representing the procedure logic.
      * @param options The list of options associated with the procedure.
      */
-    public class RequestResponse<TInput : Any, TOutput : Any>(
+    public class RequestResponse<TInput : ProtoType, TOutput : ProtoType>(
         override val name: String,
         public val inputSerializer: DeserializationStrategy<TInput>,
         public val outputSerializer: SerializationStrategy<TOutput>,
@@ -55,7 +56,7 @@ public sealed interface ProcedureDescriptor : OptionsContainer {
      * @param procedure The suspend function representing the procedure logic.
      * @param options The list of options associated with the procedure.
      */
-    public class RequestStream<TInput : Any, TOutput : Any>(
+    public class RequestStream<TInput : ProtoType, TOutput : ProtoType>(
         override val name: String,
         public val inputSerializer: DeserializationStrategy<TInput>,
         public val outputSerializer: SerializationStrategy<TOutput>,
@@ -83,7 +84,7 @@ public sealed interface ProcedureDescriptor : OptionsContainer {
      * @param procedure The suspend function representing the procedure logic.
      * @param options The list of options associated with the procedure.
      */
-    public class RequestChannel<TInput : Any, TOutput : Any>(
+    public class RequestChannel<TInput : ProtoType, TOutput : ProtoType>(
         override val name: String,
         public val inputSerializer: DeserializationStrategy<TInput>,
         public val outputSerializer: SerializationStrategy<TOutput>,
@@ -109,7 +110,7 @@ public sealed interface ProcedureDescriptor : OptionsContainer {
     /**
      * Represents a Fire-And-Forget request type in RSocket.
      */
-    public class FireAndForget<TInput : Any>(
+    public class FireAndForget<TInput : ProtoType>(
         override val name: String,
         public val inputSerializer: DeserializationStrategy<TInput>,
         private val procedure: suspend (RequestContext, TInput) -> Unit,

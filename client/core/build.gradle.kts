@@ -9,7 +9,7 @@ version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 dependencies {
     dependencies {
         // -- Project --
-        commonMainImplementation(projects.common.core)
+        commonMainApi(projects.common.core)
 
         // -- RSocket --
         commonMainApi(libs.rsocket.client)
