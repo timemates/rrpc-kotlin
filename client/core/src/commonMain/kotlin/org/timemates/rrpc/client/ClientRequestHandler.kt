@@ -6,7 +6,11 @@ package org.timemates.rrpc.client
 import com.google.protobuf.ProtoEmpty
 import io.ktor.utils.io.core.*
 import io.rsocket.kotlin.payload.Payload
+import io.rsocket.kotlin.payload.buildPayload
+import io.rsocket.kotlin.payload.data
+import io.rsocket.kotlin.payload.metadata
 import kotlinx.coroutines.flow.*
+import kotlinx.io.Buffer
 import kotlinx.serialization.*
 import org.timemates.rrpc.*
 import org.timemates.rrpc.annotations.ExperimentalInterceptorsApi
@@ -59,10 +63,10 @@ public class ClientRequestHandler(
         val finalMetadata = requestContext?.metadata ?: metadata
         val finalData = (requestContext?.data?.requireSingle() as? T) ?: data
 
-        val request = Payload(
-            ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, value = finalData)),
-            ByteReadPacket(protobuf.encodeToByteArray(ClientMetadata.serializer(), finalMetadata)),
-        )
+        val request = buildPayload {
+            data(protobuf.encodeToByteArray(serializationStrategy, value = finalData))
+            metadata(protobuf.encodeToByteArray(ClientMetadata.serializer(), finalMetadata))
+        }
 
         val response = try {
             rsocket.requestResponse(request)
@@ -132,10 +136,10 @@ public class ClientRequestHandler(
             val finalMetadata = requestContext?.metadata ?: metadata
             val finalData = (requestContext?.data?.requireSingle() as? T) ?: data
 
-            val request = Payload(
-                ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, value = finalData)),
-                ByteReadPacket(protobuf.encodeToByteArray(ClientMetadata.serializer(), finalMetadata)),
-            )
+            val request = buildPayload {
+                data(protobuf.encodeToByteArray(serializationStrategy, value = finalData))
+                metadata(protobuf.encodeToByteArray(ClientMetadata.serializer(), finalMetadata))
+            }
 
             handleStreamingResponse(
                 rsocket.requestStream(request),
@@ -177,16 +181,19 @@ public class ClientRequestHandler(
                     // in the initial payload, we put only metadata: it follows up the same logic
                     // how we treat responses (the first chunk contains only metadata) and
                     // makes it more idiomatic from the ProtoBuf RPC definition side.
-                    initPayload = Payload(
-                        data = ByteReadPacket.Empty,
-                        metadata = ByteReadPacket(
+                    initPayload = buildPayload {
+                        metadata(
                             protobuf.encodeToByteArray<ClientMetadata>(
                                 requestContext?.metadata ?: metadata
                             )
                         )
-                    ),
+                    },
                     payloads = (requestContext?.data?.requireStreaming() ?: data)
-                        .map { Payload(ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, it as T))) },
+                        .map {
+                            buildPayload {
+                                data(protobuf.encodeToByteArray(serializationStrategy, it as T))
+                            }
+                        },
                 ),
                 options = requestContext?.options ?: options,
                 requestContext = requestContext,
@@ -214,12 +221,10 @@ public class ClientRequestHandler(
             options = requestContext?.options ?: options,
             call = {
                 rsocket.fireAndForget(
-                    Payload(
-                        data = ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, data)),
-                        metadata = ByteReadPacket(
-                            protobuf.encodeToByteArray<ClientMetadata>(requestContext?.metadata ?: metadata)
-                        )
-                    )
+                    buildPayload {
+                        data(protobuf.encodeToByteArray(serializationStrategy, data))
+                        metadata(protobuf.encodeToByteArray<ClientMetadata>(requestContext?.metadata ?: metadata))
+                    }
                 )
             }
         )
@@ -242,9 +247,9 @@ public class ClientRequestHandler(
             options = requestContext?.options ?: options,
             call = {
                 rsocket.metadataPush(
-                    metadata = ByteReadPacket(
-                        protobuf.encodeToByteArray<ClientMetadata>(requestContext?.metadata ?: metadata)
-                    )
+                    metadata = Buffer().apply {
+                        write(protobuf.encodeToByteArray<ClientMetadata>(requestContext?.metadata ?: metadata))
+                    }
                 )
             }
         )

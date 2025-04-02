@@ -1,18 +1,10 @@
 [versions]
-kotlin = "2.0.21"
-kotlinx-coroutines = "1.9.0"
-kotlinx-serialization = "1.7.3"
-ktor = "2.3.12"
-jupiter = "5.4.0"
-exposed = "0.41.1"
-android-gradle-plugin = "7.3.1"
-okio = "3.9.1"
-rsocket = "0.16.0"
-compose = "1.7.0"
-decompose = "3.2.1"
-flowmvi = "3.1.0-beta02"
-clikt = "5.0.1"
-graalvm = "0.10.3"
+kotlin = "2.1.10"
+kotlinx-coroutines = "1.10.1"
+kotlinx-serialization = "1.8.1"
+ktor = "3.1.1"
+rsocket = "0.20.0"
+mockk = "1.13.17"
 
 [libraries]
 # kotlinx libraries
@@ -33,68 +25,19 @@ ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negoti
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 # RSocket libraries
-rsocket-server = { module = "io.rsocket.kotlin:rsocket-ktor-server", version.ref = "rsocket" }
-rsocket-client = { module = "io.rsocket.kotlin:rsocket-ktor-client", version.ref = "rsocket" }
+rsocket-server = { module = "io.rsocket.kotlin:ktor-server-rsocket", version.ref = "rsocket" }
+rsocket-client = { module = "io.rsocket.kotlin:ktor-client-rsocket", version.ref = "rsocket" }
 rsocket-core = { module = "io.rsocket.kotlin:rsocket-core", version.ref = "rsocket" }
 
 # Testing Libraries
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jupiter" }
-
-# Other Multiplatform Libraries
-cache4k = { module = "io.github.reactivecircus.cache4k:cache4k", version.require="0.9.0" }
-
-squareup-wire-schema = { module = "com.squareup.wire:wire-schema", version.require = "5.0.0" }
-
-squareup-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-squareup-okio-fakeFs = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
-
-squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.require = "2.0.0" }
-
-# Other JVM Libraries
-h2-database = { module = "com.h2database:h2", version.require = "2.2.224" }
-
-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 # Plugin classpaths
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 vanniktech-maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.require = "0.25.3" }
-android-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
-
-mockk = { group = "io.mockk", name = "mockk", version.require = "1.13.12" }
-
-# CLI
-clikt-core = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
-
-## Decompose
-decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
-decompose-jetbrains-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
-
-## FlowMVI
-# Core KMP module
-flowmvi-core = { module = "pro.respawn.flowmvi:core", version.ref = "flowmvi" }
-# Test DSL
-flowmvi-test = { module = "pro.respawn.flowmvi:test", version.ref = "flowmvi" }
-# Compose multiplatform
-flowmvi-compose = { module = "pro.respawn.flowmvi:compose", version.ref = "flowmvi" }
-# Android (common + view-based)
-flowmvi-android = { module = "pro.respawn.flowmvi:android", version.ref = "flowmvi" }
-# Multiplatform state preservation
-flowmvi-savedstate = { module = "pro.respawn.flowmvi:savedstate", version.ref = "flowmvi" }
-# Remote debugging client
-flowmvi-debugger-client = { module = "pro.respawn.flowmvi:debugger-plugin", version.ref = "flowmvi" }
-# Essenty (Decompose) integration
-flowmvi-essenty = { module = "pro.respawn.flowmvi:essenty", version.ref = "flowmvi" }
-flowmvi-essenty-compose = { module = "pro.respawn.flowmvi:essenty-compose", version.ref = "flowmvi" }
-
-# JNA
-net-java-jna = { module = "net.java.dev.jna:jna", version.require = "5.8.0" }
-
-# Bonsai (Trees for Compose)
-bonsai-core = { module = "cafe.adriel.bonsai:bonsai-core", version.require = "1.2.0" }
 
 [plugins]
 # Build Conventions
@@ -112,16 +55,5 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
-# Android
-android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
-android-application = { id = "com.android.library", version.ref = "android-gradle-plugin" }
-
 # Gradle
 gradle-publish = { id = "com.gradle.plugin-publish", version.require = "1.2.1" }
-
-# Jetbrains
-jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
-jetbrains-compiler-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
-# GraalVM
-graalvm-native = { id = "org.graalvm.buildtools.native", version.ref = "graalvm" }

@@ -6,9 +6,14 @@ import io.ktor.utils.io.core.*
 import io.rsocket.kotlin.RSocketError
 import io.rsocket.kotlin.RSocketRequestHandlerBuilder
 import io.rsocket.kotlin.payload.Payload
+import io.rsocket.kotlin.payload.buildPayload
+import io.rsocket.kotlin.payload.data
+import io.rsocket.kotlin.payload.metadata
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.io.Buffer
+import kotlinx.io.Source
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.decodeFromByteArray
@@ -395,10 +400,10 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
         strategy: SerializationStrategy<T>,
         serverMetadata: ServerMetadata,
     ): Payload {
-        return Payload(
-            ByteReadPacket(protobuf.encodeToByteArray(strategy, this@toPayload)),
-            ByteReadPacket(protobuf.encodeToByteArray(ServerMetadata.serializer(), serverMetadata))
-        )
+        return buildPayload {
+            data(protobuf.encodeToByteArray(strategy, this@toPayload))
+            metadata(protobuf.encodeToByteArray(ServerMetadata.serializer(), serverMetadata))
+        }
     }
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -408,15 +413,15 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
     ): Flow<Payload> {
         return flow {
             emit(
-                Payload(
-                    ByteReadPacket.Empty, ByteReadPacket(protobuf.encodeToByteArray<ServerMetadata>(serverMetadata))
-                )
+                buildPayload {
+                    metadata(protobuf.encodeToByteArray<ServerMetadata>(serverMetadata))
+                }
             )
             collect {
                 emit(
-                    Payload(
-                        data = ByteReadPacket(protobuf.encodeToByteArray(strategy, it)),
-                    )
+                    buildPayload {
+                        data(protobuf.encodeToByteArray(strategy, it))
+                    }
                 )
             }
         }
