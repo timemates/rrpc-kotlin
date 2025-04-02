@@ -3,6 +3,7 @@
 
 package org.timemates.rrpc.client
 
+import com.google.protobuf.ProtoEmpty
 import io.ktor.utils.io.core.*
 import io.rsocket.kotlin.payload.Payload
 import kotlinx.coroutines.flow.*
@@ -13,6 +14,7 @@ import org.timemates.rrpc.annotations.InternalRRpcAPI
 import org.timemates.rrpc.client.config.RRpcClientConfig
 import org.timemates.rrpc.instances.protobuf
 import org.timemates.rrpc.interceptors.InterceptorContext
+import org.timemates.rrpc.interceptors.Interceptors
 import org.timemates.rrpc.metadata.ClientMetadata
 import org.timemates.rrpc.metadata.ServerMetadata
 import org.timemates.rrpc.options.OptionsWithValue
@@ -40,7 +42,7 @@ public class ClientRequestHandler(
      * @return The response data.
      */
     @OptIn(InternalRRpcAPI::class)
-    public suspend fun <T : Any, R : Any> requestResponse(
+    public suspend fun <T : ProtoType, R : ProtoType> requestResponse(
         metadata: ClientMetadata,
         data: T,
         options: OptionsWithValue,
@@ -51,7 +53,7 @@ public class ClientRequestHandler(
             Single(data),
             metadata,
             options,
-            instances,
+            instances.plus(RequestType.REQUEST_RESPONSE),
         )
 
         val finalMetadata = requestContext?.metadata ?: metadata
@@ -112,7 +114,7 @@ public class ClientRequestHandler(
      * @return A flow of the response data.
      */
     @OptIn(InternalRRpcAPI::class)
-    public fun <T : Any, R : Any> requestStream(
+    public fun <T : ProtoType, R : ProtoType> requestStream(
         metadata: ClientMetadata,
         data: T,
         options: OptionsWithValue,
@@ -124,7 +126,7 @@ public class ClientRequestHandler(
                 Single(data),
                 metadata,
                 options,
-                instances,
+                instances.plus(RequestType.REQUEST_STREAM),
             )
 
             val finalMetadata = requestContext?.metadata ?: metadata
@@ -155,7 +157,7 @@ public class ClientRequestHandler(
      * @return A flow of the response data.
      */
     @OptIn(InternalRRpcAPI::class)
-    public fun <T : Any, R : Any> requestChannel(
+    public fun <T : ProtoType, R : ProtoType> requestChannel(
         metadata: ClientMetadata,
         data: Flow<T>,
         options: OptionsWithValue,
@@ -167,7 +169,7 @@ public class ClientRequestHandler(
                 Streaming(data),
                 metadata,
                 options,
-                instances,
+                instances.plus(RequestType.REQUEST_CHANNEL),
             )
 
             handleStreamingResponse(
@@ -193,20 +195,97 @@ public class ClientRequestHandler(
         }
     }
 
-    public suspend fun <T : Any> fireAndForget(
+    public suspend fun <T : ProtoType> fireAndForget(
         metadata: ClientMetadata,
         data: T,
         options: OptionsWithValue,
         serializationStrategy: SerializationStrategy<T>,
     ): Unit = with(config) {
-        TODO()
+        val requestContext = interceptors.runInputInterceptors(
+            Single(data),
+            metadata,
+            options,
+            instances.plus(RequestType.FIRE_AND_FORGET),
+        )
+
+        handleNonRetuningRequest(
+            interceptors = interceptors,
+            requestContext = requestContext,
+            options = requestContext?.options ?: options,
+            call = {
+                rsocket.fireAndForget(
+                    Payload(
+                        data = ByteReadPacket(protobuf.encodeToByteArray(serializationStrategy, data)),
+                        metadata = ByteReadPacket(
+                            protobuf.encodeToByteArray<ClientMetadata>(requestContext?.metadata ?: metadata)
+                        )
+                    )
+                )
+            }
+        )
     }
 
-    public suspend fun <T : Any> metadataPush(
+    public suspend fun metadataPush(
         metadata: ClientMetadata,
         options: OptionsWithValue,
     ): Unit = with(config) {
-        TODO()
+        val requestContext = interceptors.runInputInterceptors(
+            Single.EMPTY,
+            metadata,
+            options,
+            instances.plus(RequestType.METADATA_PUSH),
+        )
+
+        handleNonRetuningRequest(
+            interceptors = interceptors,
+            requestContext = requestContext,
+            options = requestContext?.options ?: options,
+            call = {
+                rsocket.metadataPush(
+                    metadata = ByteReadPacket(
+                        protobuf.encodeToByteArray<ClientMetadata>(requestContext?.metadata ?: metadata)
+                    )
+                )
+            }
+        )
+    }
+
+    private suspend fun handleNonRetuningRequest(
+        interceptors: Interceptors,
+        requestContext: InterceptorContext<ClientMetadata>?,
+        options: OptionsWithValue,
+        call: suspend () -> Unit,
+    ) {
+        val response = try {
+            call()
+        } catch (e: Exception) {
+            e
+        }
+
+        if (interceptors.response.isNotEmpty()) {
+            val result = interceptors.response.fold(
+                InterceptorContext(
+                    data = when (response) {
+                        is Exception -> Failure(response)
+                        else -> Single(ProtoEmpty.Default)
+                    },
+                    metadata = ServerMetadata.EMPTY,
+                    options = options,
+                    instances = requestContext?.instances ?: config.instances,
+                )
+            ) { acc, interceptor ->
+                interceptor.intercept(acc)
+            }
+
+            return if (result.data is Failure)
+                throw (result.data as Failure).exception
+            else Unit
+        }
+
+        return when (response) {
+            is Exception -> throw response
+            else -> Unit
+        }
     }
 
     /**
@@ -218,32 +297,35 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return A flow of the response data.
      */
-    private suspend fun <R : Any> FlowCollector<R>.handleStreamingResponse(
+    private suspend fun <R : ProtoType> FlowCollector<R>.handleStreamingResponse(
         response: Flow<Payload>,
         options: OptionsWithValue,
         requestContext: InterceptorContext<ClientMetadata>?,
         deserializationStrategy: DeserializationStrategy<R>,
     ): Unit = with(config) {
         if (interceptors.response.isEmpty()) {
-            return emitAll(response.drop(1).map { protobuf.decodeFromByteArray(deserializationStrategy, it.data.readBytes()) })
+            return emitAll(
+                response.drop(1)
+                    .map { protobuf.decodeFromByteArray(deserializationStrategy, it.data.readBytes()) }
+            )
         }
-            // the first element is always metadata-only
-            val serverMetadata: ServerMetadata = protobuf.decodeFromByteArray(
-                response.first().metadata?.readBytes() ?: noMetadataError()
-            )
+        // the first element is always metadata-only
+        val serverMetadata: ServerMetadata = protobuf.decodeFromByteArray(
+            response.first().metadata?.readBytes() ?: noMetadataError()
+        )
 
-            val context = interceptors.runOutputInterceptors(
-                Streaming(
-                    response.map {
-                        protobuf.decodeFromByteArray(deserializationStrategy, it.data.readBytes())
-                    }
-                ),
-                serverMetadata,
-                options,
-                requestContext?.instances ?: instances,
-            )
+        val context = interceptors.runOutputInterceptors(
+            Streaming(
+                response.map {
+                    protobuf.decodeFromByteArray(deserializationStrategy, it.data.readBytes())
+                }
+            ),
+            serverMetadata,
+            options,
+            requestContext?.instances ?: instances,
+        )
 
-            emitAll(context!!.data.requireStreaming() as Flow<R>)
+        emitAll(context!!.data.requireStreaming() as Flow<R>)
     }
 
     /**
