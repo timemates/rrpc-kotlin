@@ -3,7 +3,7 @@ syntax = "proto3";
 package timemates.rrpc;
 
 import "google/protobuf/descriptor.proto";
-import "timemates/rrpc/nested_extend_strategy.proto";
+import "timemates/rrpc/extension_generation_strategy.proto";
 import "timemates/rrpc/internal_options.proto";
 
 // The Ack message type is used for fire-and-forget requests and metadata push in RPCs.
