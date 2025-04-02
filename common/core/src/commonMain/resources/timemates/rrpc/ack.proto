@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package timemates.rrpc;
 
+import "google/protobuf/descriptor.proto";
+import "timemates/rrpc/nested_extend_strategy.proto";
+import "timemates/rrpc/internal_options.proto";
+
 // The Ack message type is used for fire-and-forget requests and metadata push in RPCs.
 //
 // In the fire-and-forget pattern, the client sends a request and does not expect any response data.
@@ -19,9 +23,7 @@ package timemates.rrpc;
 //
 // Example 1: Fire-and-Forget RPC
 // service MyService {
-//     rpc foo(Bar) returns (Ack) {
-//      option (timemates.rrpc.enforcedRequestType) = FIRE_AND_FORGET;
-//     }
+//     rpc foo(Bar) returns (Ack);
 // }
 //
 // message Bar {
@@ -30,12 +32,12 @@ package timemates.rrpc;
 //
 // Example 2: Metadata Push
 // service MetadataService {
-//     rpc pushMetadata(Ack) returns (Ack) {
-//          option (timemates.rrpc.enforcedRequestType) = METADATA_PUSH;
-//     }
+//     rpc pushMetadata(Ack) returns (Ack);
 // }
 //
 // For cases when Ack is specified in the RPC request type, but not in the returning type – it's
 // treated as google.protobuf.Empty, with the difference that actual underlying type is ByteReadPacket.Empty for Kotlin.
 //
-message Ack {}
+message Ack {
+  option (timemates.rrpc.internal.source_only_message) = true;
+}
