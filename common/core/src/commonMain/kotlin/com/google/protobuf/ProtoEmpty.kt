@@ -1,7 +1,7 @@
 package com.google.protobuf
 
 import kotlinx.serialization.Serializable
-import org.timemates.rrpc.ProtoType
+import app.timemate.rrpc.ProtoType
 
 @Serializable
 public class ProtoEmpty private constructor(): ProtoType {

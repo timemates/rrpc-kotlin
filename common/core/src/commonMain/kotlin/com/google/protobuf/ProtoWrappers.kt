@@ -1,7 +1,7 @@
 package com.google.protobuf
 
 import kotlinx.serialization.Serializable
-import org.timemates.rrpc.ProtoType
+import app.timemate.rrpc.ProtoType
 
 /**
  * Wrapper for a 32-bit integer value based on the standard Protobuf `Int32Value` type.

@@ -1,8 +1,8 @@
-package org.timemates.rrpc.client.schema.request
+package app.timemate.rrpc.client.schema.request
 
 import kotlinx.serialization.Serializable
-import org.timemates.rrpc.common.schema.RSNode
-import org.timemates.rrpc.common.schema.value.RSDeclarationUrl
+import app.timemate.rrpc.common.schema.RSNode
+import app.timemate.rrpc.common.schema.value.RSDeclarationUrl
 
 /**
  * Represents a batched request to retrieve multiple metadata entities by their declaration URLs.

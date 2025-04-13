@@ -6,7 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
 import kotlinx.serialization.protobuf.ProtoOneOf
-import org.timemates.rrpc.ProtoType
+import app.timemate.rrpc.ProtoType
 import kotlin.jvm.JvmInline
 
 /**

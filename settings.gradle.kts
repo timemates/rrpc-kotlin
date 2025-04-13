@@ -5,6 +5,7 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         google()
+        mavenLocal()
         maven("https://maven.timemates.org")
     }
 }
@@ -13,6 +14,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
         maven("https://jitpack.io")
         maven("https://maven.y9vad9.com")
         maven("https://maven.timemates.org")
@@ -37,7 +39,9 @@ include(
     //":client:schema",
 )
 
-//include(":integration-tests")
+include(":generator")
+
+include(":integration-tests")
 
 //include(
 //    ":tooling:rrpc-testing-app",

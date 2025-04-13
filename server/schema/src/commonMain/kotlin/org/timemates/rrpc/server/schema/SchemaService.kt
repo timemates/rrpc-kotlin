@@ -1,16 +1,16 @@
-package org.timemates.rrpc.server.schema
+package app.timemate.rrpc.server.schema
 
 import io.rsocket.kotlin.RSocketError
-import org.timemates.rrpc.common.schema.RSFile
-import org.timemates.rrpc.common.schema.RSService
-import org.timemates.rrpc.common.schema.RSType
-import org.timemates.rrpc.options.OptionsWithValue
-import org.timemates.rrpc.server.module.RRpcService
-import org.timemates.rrpc.server.module.descriptors.ProcedureDescriptor
-import org.timemates.rrpc.server.module.descriptors.ServiceDescriptor
-import org.timemates.rrpc.server.schema.request.BatchedRequest
-import org.timemates.rrpc.server.schema.request.PagedRequest
-import org.timemates.rrpc.server.schema.request.decoded
+import app.timemate.rrpc.common.schema.RSFile
+import app.timemate.rrpc.common.schema.RSService
+import app.timemate.rrpc.common.schema.RSType
+import app.timemate.rrpc.options.OptionsWithValue
+import app.timemate.rrpc.server.module.RRpcService
+import app.timemate.rrpc.server.module.descriptors.ProcedureDescriptor
+import app.timemate.rrpc.server.module.descriptors.ServiceDescriptor
+import app.timemate.rrpc.server.schema.request.BatchedRequest
+import app.timemate.rrpc.server.schema.request.PagedRequest
+import app.timemate.rrpc.server.schema.request.decoded
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**

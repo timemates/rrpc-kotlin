@@ -1,4 +1,4 @@
-package org.timemates.rrpc.generator.kotlin.dyser
+package app.timemate.rrpc.generator.kotlin.dyser
 
 import com.google.protobuf.*
 import kotlinx.serialization.KSerializer
@@ -9,9 +9,9 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import org.timemates.rrpc.common.schema.RSResolver
-import org.timemates.rrpc.common.schema.RSType
-import org.timemates.rrpc.common.schema.value.RMDeclarationUrl
+import app.timemate.rrpc.common.schema.RSResolver
+import app.timemate.rrpc.common.schema.RSType
+import app.timemate.rrpc.common.schema.value.RMDeclarationUrl
 
 internal class MessageValuesSerializer(
     private val type: RSType.Message,

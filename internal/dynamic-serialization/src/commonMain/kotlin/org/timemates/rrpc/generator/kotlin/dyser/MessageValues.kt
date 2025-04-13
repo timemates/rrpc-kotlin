@@ -1,4 +1,4 @@
-package org.timemates.rrpc.generator.kotlin.dyser
+package app.timemate.rrpc.generator.kotlin.dyser
 
 /**
  * Represents the values of a message in the form of a map of tag numbers to field values.

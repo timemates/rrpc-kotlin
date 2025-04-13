@@ -3,7 +3,7 @@ package com.google.protobuf
 import kotlinx.serialization.*
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlinx.serialization.protobuf.ProtoNumber
-import org.timemates.rrpc.ProtoType
+import app.timemate.rrpc.ProtoType
 
 
 /**

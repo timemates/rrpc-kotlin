@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
+group = "app.timemate.rrpc.server"
+version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
+
 dependencies {
     // -- Serialization --
     commonMainApi(libs.kotlinx.serialization.proto)
@@ -28,7 +31,7 @@ kotlin {
 
 mavenPublishing {
     coordinates(
-        groupId = "org.timemates.rrpc",
+        groupId = "app.timemate.rrpc",
         artifactId = "common-core",
         version = System.getenv("LIB_VERSION") ?: return@mavenPublishing,
     )

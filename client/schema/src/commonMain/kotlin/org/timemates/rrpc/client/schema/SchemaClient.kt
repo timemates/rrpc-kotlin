@@ -1,16 +1,16 @@
-package org.timemates.rrpc.client.schema
+package app.timemate.rrpc.client.schema
 
-import org.timemates.rrpc.annotations.InternalRRpcAPI
-import org.timemates.rrpc.client.RRpcServiceClient
-import org.timemates.rrpc.client.config.RRpcClientConfig
-import org.timemates.rrpc.client.options.RPCsOptions
-import org.timemates.rrpc.client.schema.request.PagedRequest
-import org.timemates.rrpc.common.schema.RSFile
-import org.timemates.rrpc.common.schema.RSService
-import org.timemates.rrpc.metadata.ClientMetadata
-import org.timemates.rrpc.options.OptionsWithValue
-import org.timemates.rrpc.client.schema.request.BatchedRequest
-import org.timemates.rrpc.common.schema.RSType
+import app.timemate.rrpc.annotations.InternalRRpcAPI
+import app.timemate.rrpc.client.RRpcServiceClient
+import app.timemate.rrpc.client.config.RRpcClientConfig
+import app.timemate.rrpc.client.options.RPCsOptions
+import app.timemate.rrpc.client.schema.request.PagedRequest
+import app.timemate.rrpc.common.schema.RSFile
+import app.timemate.rrpc.common.schema.RSService
+import app.timemate.rrpc.metadata.ClientMetadata
+import app.timemate.rrpc.options.OptionsWithValue
+import app.timemate.rrpc.client.schema.request.BatchedRequest
+import app.timemate.rrpc.common.schema.RSType
 import io.rsocket.kotlin.RSocketError
 
 /**

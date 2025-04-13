@@ -5,6 +5,8 @@ kotlinx-serialization = "1.8.1"
 ktor = "3.1.1"
 rsocket = "0.20.0"
 mockk = "1.13.17"
+rrpc-generator = "SNAPSHOT"
+graalvm = "0.10.3"
 
 [libraries]
 # kotlinx libraries
@@ -24,6 +26,9 @@ ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.re
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
+# Square Up
+squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.require = "2.0.0" }
+
 # RSocket libraries
 rsocket-server = { module = "io.rsocket.kotlin:ktor-server-rsocket", version.ref = "rsocket" }
 rsocket-client = { module = "io.rsocket.kotlin:ktor-client-rsocket", version.ref = "rsocket" }
@@ -38,6 +43,11 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 # Plugin classpaths
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 vanniktech-maven-publish = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.require = "0.25.3" }
+
+# rRPC generator
+timemate-rrpc-schema = { module = "app.timemate.rrpc:schema-core", version.ref = "rrpc-generator" }
+timemate-rrpc-pluginApi = { module = "app.timemate.rrpc:generator-plugin-api", version.ref = "rrpc-generator" }
+
 
 [plugins]
 # Build Conventions
@@ -57,3 +67,12 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 # Gradle
 gradle-publish = { id = "com.gradle.plugin-publish", version.require = "1.2.1" }
+
+# GraalVM
+graalvm-native = { id = "org.graalvm.buildtools.native", version.ref = "graalvm" }
+
+# Shadow Jar
+shadowJar = { id = "com.gradleup.shadow", version.require = "9.0.0-beta12" }
+
+# rRPC
+timemate-rrpc = { id = "app.timemate.rrpc", version.ref = "rrpc-generator" }

@@ -6,7 +6,7 @@ kotlin {
     explicitApi()
 }
 
-group = "org.timemates.rrpc"
+group = "app.timemate.rrpc"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
@@ -21,7 +21,7 @@ dependencies {
 
 mavenPublishing {
     coordinates(
-        groupId = "org.timemates.rrpc",
+        groupId = "app.timemate.rrpc",
         artifactId = "dynamic-serialization",
         version = System.getenv("LIB_VERSION") ?: return@mavenPublishing,
     )

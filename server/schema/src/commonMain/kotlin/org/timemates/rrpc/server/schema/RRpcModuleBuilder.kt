@@ -1,6 +1,6 @@
-package org.timemates.rrpc.server.schema
+package app.timemate.rrpc.server.schema
 
-import org.timemates.rrpc.server.module.RRpcModuleBuilder
+import app.timemate.rrpc.server.module.RRpcModuleBuilder
 
 /**
  * Registers a [SchemaService] for given module. By default, it will use

@@ -1,4 +1,4 @@
-package org.timemates.rrpc.generator.kotlin.dyser
+package app.timemate.rrpc.generator.kotlin.dyser
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor

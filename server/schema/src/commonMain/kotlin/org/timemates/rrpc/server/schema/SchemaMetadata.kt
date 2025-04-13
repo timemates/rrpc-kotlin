@@ -1,6 +1,6 @@
-package org.timemates.rrpc.server.schema
+package app.timemate.rrpc.server.schema
 
-import org.timemates.rrpc.common.schema.RSResolver
+import app.timemate.rrpc.common.schema.RSResolver
 
 public fun SchemaMetadata(resolver: RSResolver): SchemaMetadata = DelegatedSchemaMetadataGroup(resolver)
 

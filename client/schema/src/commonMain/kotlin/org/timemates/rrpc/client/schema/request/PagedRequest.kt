@@ -1,4 +1,4 @@
-package org.timemates.rrpc.client.schema.request
+package app.timemate.rrpc.client.schema.request
 
 import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
