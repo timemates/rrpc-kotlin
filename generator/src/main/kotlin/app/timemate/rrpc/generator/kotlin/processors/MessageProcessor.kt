@@ -50,7 +50,7 @@ public object MessageProcessor : Processor<RSMessage, Pair<TypeSpec, FunSpec?>> 
         val typeSpec = TypeSpec.classBuilder(className)
             .addSuperinterface(LibClassNames.ProtoType)
             .addAnnotation(PoetAnnotations.OptIn(LibClassNames.ExperimentalSerializationApi))
-            .addKdoc(data.documentation.replace("%", "%%").orEmpty())
+            .addKdoc(data.documentation.replace("%", "%%"))
             .addAnnotation(PoetAnnotations.Serializable)
             .primaryConstructor(
                 generatePrimaryConstructor(

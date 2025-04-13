@@ -90,10 +90,6 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
             else instancesContainer!! + container
         }
 
-        /**
-         * Builds the final instance of [T] using the provided RSocket and interceptors.
-         * @return The built instance of [T].
-         */
         @OptIn(ExperimentalInterceptorsApi::class)
         public fun build(): RRpcClientConfig {
             return RRpcClientConfig(

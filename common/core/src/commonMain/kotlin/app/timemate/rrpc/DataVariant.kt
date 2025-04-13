@@ -1,3 +1,5 @@
+@file:Suppress("UnusedFlow")
+
 package app.timemate.rrpc
 
 import com.google.protobuf.ProtoEmpty
@@ -51,7 +53,6 @@ public data class Single<T : ProtoType>(public val value: T) : DataVariant<T> {
  * In addition, it's applicable only if original expected type is [Single]. For [Streaming] use flow's
  * operators to handle failures.
  *
- * @param T The type of the value that was expected.
  * @property exception The exception representing the failure.
  */
 public data class Failure(public val exception: Exception) : DataVariant<Nothing> {

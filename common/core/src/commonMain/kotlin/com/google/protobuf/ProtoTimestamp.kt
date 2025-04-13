@@ -11,10 +11,10 @@ import app.timemate.rrpc.ProtoType
  * Constructs a [ProtoTimestamp] using a builder.
  *
  * This function allows you to create a [ProtoTimestamp] instance by applying configuration
- * to a [Builder] and then building it. This is a convenient way to initialize a [ProtoTimestamp]
+ * to a [com.google.protobuf.ProtoTimestamp.Builder] and then building it. This is a convenient way to initialize a [ProtoTimestamp]
  * with specific values for `seconds` and `nanos`.
  *
- * @param builder A lambda function to configure the [Builder] instance.
+ * @param builder A lambda function to configure the [com.google.protobuf.ProtoTimestamp.Builder] instance.
  * @return A [ProtoTimestamp] instance with the configured values.
  */
 public fun ProtoTimestamp(builder: ProtoTimestamp.Builder.() -> Unit): ProtoTimestamp =
@@ -22,7 +22,7 @@ public fun ProtoTimestamp(builder: ProtoTimestamp.Builder.() -> Unit): ProtoTime
 
 /**
  * Represents a timestamp as defined by the ProtoBuf specification.
- * This corresponds to the [google.protobuf.Timestamp] type in Protocol Buffers.
+ * This corresponds to the `google.protobuf.Timestamp` type in Protocol Buffers.
  *
  * A [ProtoTimestamp] holds the number of seconds and nanoseconds since the Unix epoch.
  *

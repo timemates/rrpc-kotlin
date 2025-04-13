@@ -8,8 +8,6 @@ import app.timemate.rrpc.server.module.descriptors.ServiceDescriptor
 public interface RRpcService {
     /**
      * Represents a descriptor for a service. Contains name, procedures and so on.
-     *
-     * @see ProcedureDescriptor
      */
     public val descriptor: ServiceDescriptor
 }

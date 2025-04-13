@@ -61,7 +61,7 @@ public object ServerProcessor : Processor<RSService, TypeSpec> {
 
         return ProcessResult.Success(
             FunSpec.builder(rpc.kotlinName)
-                .addKdoc(rpc.documentation.replace("%", "%%").orEmpty())
+                .addKdoc(rpc.documentation.replace("%", "%%"))
                 .addModifiers(KModifier.ABSTRACT)
                 .deprecated(rpc.options.isDeprecated)
                 .addParameter("context", LibClassNames.RequestContext)

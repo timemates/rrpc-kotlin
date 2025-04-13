@@ -391,7 +391,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
     /**
      * Extension function to convert a value to a Payload.
      *
-     * @param value The value to convert.
+     * @receiver The value to convert.
      * @param strategy The serialization strategy for the value.
      * @param serverMetadata The metadata to include with the server response.
      * @return The Payload representing the value.

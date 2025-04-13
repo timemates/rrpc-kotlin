@@ -58,7 +58,6 @@ public data class Interceptors(
      * @param clientMetadata The client metadata.
      * @param options The options for the procedure.
      * @param instanceContainer The instance container.
-     * @param block The block of code to execute after running the interceptors.
      * @return The result of the block execution.
      */
     @InternalRRpcAPI
