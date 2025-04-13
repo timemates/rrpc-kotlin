@@ -1,17 +1,18 @@
+import org.gradle.kotlin.dsl.rrpc
+
 plugins {
     id(libs.plugins.conventions.jvm.core.get().pluginId)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.timemate.rrpc)
 }
 
-group = "org.timemates.rrpc"
+group = "app.timemate.rrpc"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {
     // -- Project --
     implementation(projects.server.core)
-    //implementation(projects.server.schema)
     implementation(projects.client.core)
-    implementation(projects.client.schema)
 
     // -- Serialization --
     implementation(libs.kotlinx.serialization.proto)
@@ -26,14 +27,35 @@ dependencies {
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.websockets)
 
-    // -- JUnit --
-    implementation(libs.junit.jupiter)
-
     // -- MockK --
     implementation(libs.mockk)
 
     // -- Coroutines
     implementation(libs.kotlinx.coroutines.test)
+
+    // -- Tests --
+    implementation(libs.kotlin.test.junit)
 }
 
+val rrpcOutputFolder = layout.buildDirectory.dir("generated/rrpc").get().asFile
 
+rrpc {
+    inputs {
+        source {
+            directory(file("src/test/resources"))
+        }
+    }
+
+    outputFolder = rrpcOutputFolder
+    permitPackageCycles = true
+
+    plugins {
+        add(projects.generator)
+    }
+}
+
+kotlin {
+    sourceSets.test {
+        kotlin.srcDir(rrpcOutputFolder)
+    }
+}

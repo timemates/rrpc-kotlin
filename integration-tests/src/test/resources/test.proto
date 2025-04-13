@@ -1,0 +1,158 @@
+// This file is designed to stress-test code generators for proto3.
+// It contains many corner cases: reserved field numbers/names, oneofs, maps,
+// nested messages, enums with custom options, and custom option extensions.
+// Note: In proto3, extensions are permitted only for options.
+
+syntax = "proto3";
+
+// Import descriptor.proto in order to define custom option extensions.
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FileOptions {
+  // A custom file option: a 64-bit unsigned integer.
+  uint64 custom_file_option = 50000;
+}
+
+extend google.protobuf.MessageOptions {
+  // A custom message option: a string value.
+  string custom_message_option = 50001;
+}
+
+extend google.protobuf.FieldOptions {
+  // A custom field option: a string value.
+  string custom_field_option = 50002;
+}
+
+extend google.protobuf.OneofOptions {
+  // A custom oneof option: an int32 value.
+  int32 custom_oneof_option = 50003;
+}
+
+extend google.protobuf.EnumOptions {
+  // A custom enum option: an int32 value.
+  int32 custom_enum_option = 50004;
+}
+
+extend google.protobuf.EnumValueOptions {
+  // A custom enum value option: a bool value.
+  bool custom_enum_value_option = 50005;
+}
+
+extend google.protobuf.ServiceOptions {
+  // A custom service option: a string value.
+  string custom_service_option = 50006;
+}
+
+
+// A local enum to be used as a method option.
+enum TestMethodOpt {
+
+  TESTMETHODOPT_UNSPECIFIED = 0;
+  TESTMETHODOPT_ALPHA = 1;
+  TESTMETHODOPT_BETA  = 2;
+}
+
+// -----------------------------------------------------------------------
+// A message that uses various proto3 features and custom options.
+// It demonstrates reserved fields/ranges, oneofs, map fields, nested types,
+// and even a recursive field.
+
+message TestMessage {
+  // nested extend to check for correctness of importing / generating overall.
+  extend google.protobuf.MethodOptions {
+    // A custom method option: an enum defined locally.
+    TestMethodOpt custom_method_option = 50007;
+  }
+
+  // Apply a custom message option.
+  option (custom_message_option) = "TestMessageOptionValue";
+
+  // Reserve some field numbers and names.
+  // In proto3, reserved names must be provided as string literals.
+  reserved 2, 5 to 7;
+  reserved "foo", "bar";
+
+  // Oneof that demonstrates explicit presence.
+  oneof test_oneof {
+    // Attach a custom option on the oneof (custom_oneof_option).
+    option (custom_oneof_option) = 42;
+
+    // These fields do not have an explicit label. Their presence will be
+    // tracked explicitly (they are in a oneof).
+    int32 id = 1;
+    string name = 3;
+  }
+
+  // A normal scalar field with a custom field option.
+  int32 int_field = 4 [(custom_field_option) = "IntFieldOptionValue"];
+
+  // A string field without any special options.
+  string string_field = 8;
+
+  // A repeated field; proto3 repeated fields are implicitly packed for numeric types.
+  repeated double repeated_field = 9;
+
+  // A nested message.
+  message NestedMessage {
+    // A simple nested field.
+    int64 nested_field = 1;
+
+    // Demonstrate a custom option on a nested message by applying a custom
+    // option to the message (via MessageOptions extension).
+    option (custom_message_option) = "NestedMessageOption";
+  }
+
+  // A nested enum.
+  enum TestEnum {
+    // In proto3 the first value must be zero.
+    TEST_ENUM_UNSPECIFIED = 0;
+    FIRST = 1;
+    SECOND = 2;
+  }
+
+  // A map field.
+  map<string, NestedMessage> map_field = 10;
+
+  // An optional field explicitly declared as such (available in recent proto3).
+  // Even though proto3 fields are "optional" by default, this syntax makes presence explicit.
+  optional bool optional_field = 11;
+
+  // A field with JSON name override. Doesn't mean anything to generator for now.
+  string json_field = 12 [json_name = "jsonCustomName"];
+
+  // A oneof with multiple field types.
+  oneof multi_type_oneof {
+    // A nested message type defined locally.
+    NestedWrapper wrapper = 13;
+    bytes raw_data = 14;
+  }
+
+  // Nested message used in oneof.
+  message NestedWrapper {
+    string data = 1;
+  }
+
+  // Recursive message field (points to the same type).
+  // Note: proto3 allows recursive definitions.
+  TestMessage child = 16;
+}
+
+// -----------------------------------------------------------------------
+// A separate message that demonstrates using a well-known type (Any).
+import "google/protobuf/any.proto";
+
+message AnyHolder {
+  google.protobuf.Any any_field = 1;
+}
+
+// -----------------------------------------------------------------------
+// A service to showcase custom options at the service and method level.
+service TestService {
+  // Attach custom service option.
+  option (custom_service_option) = "ServiceOptionValue";
+
+  rpc TestMethod(TestMessage) returns (TestMessage) {
+    // Attach custom method option using our local enum.
+    option (TestMessage.custom_method_option) = TESTMETHODOPT_BETA;
+  }
+}

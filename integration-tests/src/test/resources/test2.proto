@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "test.proto";
+import "google/protobuf/any.proto";
+
+service TestService2 {
+  rpc testRpc(google.protobuf.Any) returns (google.protobuf.Any) {
+    // should correctly import it
+    option (TestMessage.custom_method_option) = TESTMETHODOPT_ALPHA;
+  }
+}
