@@ -9,6 +9,7 @@ import app.timemate.rrpc.annotations.InternalRRpcAPI
 import app.timemate.rrpc.instances.*
 import app.timemate.rrpc.interceptors.RRpcInterceptor
 import app.timemate.rrpc.interceptors.Interceptors
+import app.timemate.rrpc.interceptors.InterceptorsBuilder
 import app.timemate.rrpc.metadata.ClientMetadata
 import app.timemate.rrpc.metadata.ServerMetadata
 import kotlin.properties.Delegates
@@ -36,78 +37,21 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
     }
 
     public class Builder {
-        /** List of interceptors for request processing */
-        @ExperimentalInterceptorsApi
-        private val requestInterceptors: MutableList<RRpcInterceptor<ClientMetadata>> = mutableListOf()
-
-        /** List of interceptors for response processing */
-        @ExperimentalInterceptorsApi
-        private val responseInterceptors: MutableList<RRpcInterceptor<ServerMetadata>> = mutableListOf()
-
         /** The RSocket instance to use */
         private var rsocket: RSocket by Delegates.notNull()
 
         /** The container of provided instances */
         private var instancesContainer: InstanceContainer? = null
 
-        /**
-         * Adds a list of interceptors for processing requests.
-         * @param interceptors List of request interceptors to add.
-         * @return This builder instance.
-         */
-        @ExperimentalInterceptorsApi
-        public fun requestInterceptors(interceptors: List<RRpcInterceptor<ClientMetadata>>): Builder = apply {
-            this.requestInterceptors += interceptors
-        }
+        private var interceptorsBuilder: InterceptorsBuilder = InterceptorsBuilder()
 
         /**
-         * Adds one or more interceptors for processing requests.
-         * @param interceptors One or more request interceptors to add.
-         * @return This builder instance.
+         * Specifies the request / response interceptors. Experimental feature
+         * due to possible API changes.
          */
         @ExperimentalInterceptorsApi
-        public fun requestInterceptors(vararg interceptors: RRpcInterceptor<ClientMetadata>): Builder = apply {
-            this.requestInterceptors += interceptors
-        }
-
-        /**
-         * Adds an interceptor for processing requests.
-         * @param interceptor The request interceptor to add.
-         * @return This builder instance.
-         */
-        @ExperimentalInterceptorsApi
-        public fun requestInterceptor(interceptor: RRpcInterceptor<ClientMetadata>): Builder = apply {
-            this.requestInterceptors += interceptor
-        }
-
-        /**
-         * Adds a list of interceptors for processing responses.
-         * @param interceptors List of response interceptors to add.
-         * @return This builder instance.
-         */
-        @ExperimentalInterceptorsApi
-        public fun responseInterceptors(interceptors: List<RRpcInterceptor<ServerMetadata>>): Builder = apply {
-            this.responseInterceptors += interceptors
-        }
-
-        /**
-         * Adds one or more interceptors for processing responses.
-         * @param interceptors One or more response interceptors to add.
-         * @return This builder instance.
-         */
-        @ExperimentalInterceptorsApi
-        public fun responseInterceptors(vararg interceptors: RRpcInterceptor<ServerMetadata>): Builder = apply {
-            this.responseInterceptors += interceptors
-        }
-
-        /**
-         * Adds an interceptor for processing responses.
-         * @param interceptor The response interceptor to add.
-         * @return This builder instance.
-         */
-        @ExperimentalInterceptorsApi
-        public fun responseInterceptor(interceptor: RRpcInterceptor<ServerMetadata>): Builder = apply {
-            this.responseInterceptors += interceptor
+        public fun interceptors(block: InterceptorsBuilder.() -> Unit) {
+            interceptorsBuilder.block()
         }
 
         /**
@@ -154,7 +98,7 @@ public data class RRpcClientConfig @OptIn(ExperimentalInterceptorsApi::class) co
         public fun build(): RRpcClientConfig {
             return RRpcClientConfig(
                 rsocket,
-                Interceptors(requestInterceptors, responseInterceptors),
+                interceptorsBuilder.build(),
                 instancesContainer ?: InstanceContainer(emptyMap()),
             )
         }
