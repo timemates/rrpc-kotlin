@@ -1,10 +1,14 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id("com.vanniktech.maven.publish")
 }
 
 mavenPublishing {
+    publishToMavenCentral(SonatypeHost.DEFAULT)
+
     pom {
-        url.set("https://github.com/RRpc/rrpc-kotlin")
+        url.set("https://github.com/timemates/rrpc-kotlin")
         inceptionYear.set("2023")
 
         licenses {
@@ -24,37 +28,16 @@ mavenPublishing {
         }
 
         scm {
-            url.set("https://github.com/RRpc/rrpc-kotlin")
-            connection.set("scm:git:git://github.com/RRpc/rrpc-kotlin.git")
-            developerConnection.set("scm:git:ssh://git@github.com/RRpc/rrpc-kotlin.git")
+            url.set("https://github.com/timemates/rrpc-kotlin")
+            connection.set("scm:git:git://github.com/timemates/rrpc-kotlin.git")
+            developerConnection.set("scm:git:ssh://git@github.com/timemates/rrpc-kotlin.git")
         }
 
         issueManagement {
             system.set("GitHub Issues")
-            url.set("https://github.com/RRpc/rrpc-kotlin/issues")
+            url.set("https://github.com/timemates/rrpc-kotlin/issues")
         }
     }
-}
 
-publishing {
-    repositories {
-        if (project.hasProperty("publish-reposilite")) {
-            maven {
-                val isDev = version.toString().contains("dev")
-
-                name = if (isDev) "timeMatesDev" else "timeMatesReleases"
-                url = if (isDev) uri("https://maven.timemates.org/dev") else uri("https://maven.timemates.org/releases")
-
-                credentials {
-                    username = System.getenv("REPOSILITE_USER")
-                    password = System.getenv("REPOSILITE_SECRET")
-                }
-            }
-        } else {
-            logger.log(
-                LogLevel.INFO,
-                "Publishing is disabled: publish-locally or publish-reposilite parameter should be used to specify publication destination."
-            )
-        }
-    }
+    signAllPublications()
 }
