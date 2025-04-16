@@ -64,42 +64,46 @@ internal object LibClassNames {
 
     val RequestContext = ClassName("app.timemate.rrpc.server", "RequestContext")
 
-    val ProtoType = ClassName("app.timemate.rrpc", "ProtoType")
+    val ProtoType = ClassName("app.timemate.rrpc", "RSProtoType")
 
     fun ProtoTypeDefinition(type: TypeName) = ProtoType.nestedClass("Definition")
             .parameterizedBy(type)
 
+    val SchemaMetadataModule = ClassName("app.timemate.rrpc.metadata.common", "SchemaMetadataModule")
+    val GlobalSchemaMetadataModule = ClassName("app.timemate.rrpc.metadata.common", "GlobalSchemaMetadataModule")
+
+
     object RS {
-        val File = ClassName("app.timemate.rrpc.common.metadata", "RSFile")
-        val Constant = ClassName("app.timemate.rrpc.common.metadata", "RSEnumConstant")
-        val Extend = ClassName("app.timemate.rrpc.common.metadata", "RSExtend")
-        val Field = ClassName("app.timemate.rrpc.common.metadata", "RSField")
-        val OneOf = ClassName("app.timemate.rrpc.common.metadata", "RSOneOf")
-        val Option = ClassName("app.timemate.rrpc.common.metadata", "RSOption")
+        val File = ClassName("app.timemate.rrpc.proto.schema", "RSFile")
+        val Constant = ClassName("app.timemate.rrpc.proto.schema", "RSEnumConstant")
+        val Extend = ClassName("app.timemate.rrpc.proto.schema", "RSExtend")
+        val Field = ClassName("app.timemate.rrpc.proto.schema", "RSField")
+        val OneOf = ClassName("app.timemate.rrpc.proto.schema", "RSOneOf")
+        val Option = ClassName("app.timemate.rrpc.proto.schema", "RSOption")
         val OptionValueRaw = Option.nestedClass("Value").nestedClass("Raw")
         val OptionValueRawMap = Option.nestedClass("Value").nestedClass("RawMap")
         val OptionValueMessageMap = Option.nestedClass("Value").nestedClass("MessageMap")
-        val Options = ClassName("app.timemate.rrpc.common.metadata", "RSOptions")
-        val Rpc = ClassName("app.timemate.rrpc.common.metadata", "RSRpc")
-        val Message = ClassName("app.timemate.rrpc.common.metadata", "RSType", "Message")
-        val Enum = ClassName("app.timemate.rrpc.common.metadata", "RSType", "Enum")
-        val Enclosing = ClassName("app.timemate.rrpc.common.metadata", "RSType", "Enclosing")
+        val Options = ClassName("app.timemate.rrpc.proto.schema", "RSOptions")
+        val Rpc = ClassName("app.timemate.rrpc.proto.schema", "RSRpc")
+        val Message = ClassName("app.timemate.rrpc.proto.schema", "RSMessage")
+        val Enum = ClassName("app.timemate.rrpc.proto.schema", "RSEnum")
+        val Enclosing = ClassName("app.timemate.rrpc.proto.schema", "RSEnclosingType")
 
-        val Service = ClassName("app.timemate.rrpc.common.metadata", "RSService")
+        val Service = ClassName("app.timemate.rrpc.proto.schema", "RSService")
 
-        val TypeMemberUrl = ClassName("app.timemate.rrpc.common.metadata", "RSTypeMemberUrl")
-        val StreamableTypeUrl = ClassName("app.timemate.rrpc.common.metadata", "StreamableRSTypeUrl")
+        val TypeMemberUrl = ClassName("app.timemate.rrpc.proto.schema", "RSTypeMemberUrl")
+        val StreamableTypeUrl = ClassName("app.timemate.rrpc.proto.schema", "StreamableRSTypeUrl")
 
         object Value {
-            val PackageName = ClassName("app.timemate.rrpc.common.metadata.value", "RSPackageName")
-            val TypeUrl = ClassName("app.timemate.rrpc.common.metadata.value", "RSTypeUrl")
+            val PackageName = ClassName("app.timemate.rrpc.proto.schema.value", "RSPackageName")
+            val TypeUrl = ClassName("app.timemate.rrpc.proto.schema.value", "RSDeclarationUrl")
+            val FieldLabel = ClassName("app.timemate.rrpc.proto.schema.value", "RSFieldLabel")
+            val LocationPath = ClassName("app.timemate.rrpc.proto.schema.value", "LocationPath")
         }
 
-        val Resolver = ClassName("app.timemate.rrpc.common.metadata", "RSResolver")
+        val ElementLocation = ClassName("app.timemate.rrpc.proto.schema", "RSElementLocation")
 
-        object Server {
-            val MetadataLookup = ClassName("app.timemate.rrpc.server.metadata", "MetadataLookup")
-        }
+        val Resolver = ClassName("app.timemate.rrpc.proto.schema", "RSResolver")
     }
 
     object Wrappers {

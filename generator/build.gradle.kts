@@ -14,11 +14,11 @@ kotlin {
     explicitApi()
 }
 
-application {
-    mainClass.set("app.timemate.rrpc.generator.kotlin.MainKt")
-}
-
 val mainClassPath = "app.timemate.rrpc.generator.kotlin.MainKt"
+
+application {
+    mainClass.set(mainClassPath)
+}
 
 // --------------------------------------
 // Dependencies

@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package timemate.rrpc;
+
+import "google/protobuf/descriptor.proto";
+import "timemate/rrpc/internal_options.proto";
+
+option java_package = "app.timemate.rrpc.generation.option";
+
+// Defines how extensions should be handled in generated code,
+// affecting their accessibility and placement in different languages.
+//
+// This setting applies to all extension declarations, whether they are
+// at the top level or inside a message. The default behavior differs based on
+// placement:
+// - **Top-level `extend`**: Defaults to [EXTENSION], meaning options
+//   are treated as global extensions.
+// - **Nested `extend` inside a message**: Defaults to [REGULAR], meaning
+//   options are accessed through the enclosing message instead of the global scope.
+//
+// This setting is particularly relevant for languages with extension support
+// (e.g., Kotlin, Swift, C#), where options can be generated as member functions
+// rather than global extensions.
+enum ExtendOptionStrategy {
+  // Marker for generators not to generate this declaration.
+  // Used only in [option_scope_strategy] that has [RETENTION_SOURCE].
+  option(timemate.rrpc.internal.source_only_enum) = true;
+
+  // This feature as experimental. We search for better design
+  // of supporting this feature. Generator should warn about usage of this option.
+  option(timemate.rrpc.internal.experimental_enum) = true;
+
+  // Uses a namespaced approach where options are accessed through
+  // the enclosing message instead of the global extension scope.
+  //
+  // Example:
+  // - **Nested Extend**: `MessageClassWithExtendInside.myOption`
+  // - **Top-Level Extend**: Can be generated as a regular field instead of an extension.
+  //
+  // This approach is recommended for languages that support extensions,
+  // such as Kotlin, Swift, and C#.
+  REGULAR = 0;
+
+  // Treats extensions as globally accessible regardless of where they are declared.
+  //
+  // Example: `RSOption.myOption`, even if the extend is inside a message.
+  //
+  // **Special case for Kotlin**: Options are still generated inside
+  // the companion object of the defining message but can be imported like
+  // regular top-level extensions.
+  EXTENSION = 1;
+}
+
+extend google.protobuf.FieldOptions {
+  // Determines the strategy for handling options within an `extend` declaration,
+  // affecting how generators expose these options in supported languages.
+  //
+  // - **Default behavior**:
+  //   - [EXTENSION] for top-level extensions.
+  //   - [REGULAR] for nested extensions inside a message.
+  //
+  // This feature as experimental. We search for better design
+  // of supporting this feature. Generator should warn about usage of this option.
+  ExtendOptionStrategy extension_generation_strategy = 45001 [
+    retention = RETENTION_SOURCE,
+    (timemate.rrpc.internal.experimental_field) = true
+  ];
+}

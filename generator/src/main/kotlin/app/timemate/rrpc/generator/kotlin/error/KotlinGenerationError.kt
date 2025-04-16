@@ -5,7 +5,6 @@ import app.timemate.rrpc.proto.schema.RSElementLocation
 import app.timemate.rrpc.proto.schema.RSExtend
 import app.timemate.rrpc.proto.schema.RSFile
 import app.timemate.rrpc.proto.schema.RSRpc
-import app.timemate.rrpc.proto.schema.RSType
 import app.timemate.rrpc.proto.schema.RSTypeMemberUrl
 import app.timemate.rrpc.proto.schema.value.RSDeclarationUrl
 
@@ -74,4 +73,10 @@ public data class UnsupportedTypeError(
     public val type: RSDeclarationUrl,
 ) : KotlinGenerationError {
     override val message: String = "Type '${type}' is not supported by the generator."
+}
+
+public data class UnsupportedTypeForSerializationError(
+    public val typeUrl: RSDeclarationUrl,
+) : KotlinGenerationError {
+    override val message: String = "Type '${typeUrl}' is not supported by the kotlinx.serialization.protobuf, therefore cannot be used in the generation."
 }

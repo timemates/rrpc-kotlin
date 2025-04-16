@@ -1,7 +1,6 @@
 package app.timemate.rrpc.generator.kotlin
 
 import app.timemate.rrpc.generator.GeneratorContext
-import app.timemate.rrpc.generator.kotlin.error.KotlinGenerationError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okio.FileSystem
@@ -14,9 +13,17 @@ import app.timemate.rrpc.proto.schema.RSFile
 import app.timemate.rrpc.generator.plugin.api.RSResolver
 import app.timemate.rrpc.generator.kotlin.options.*
 import app.timemate.rrpc.generator.kotlin.processors.FileProcessor
+import app.timemate.rrpc.generator.kotlin.processors.metadata.CompoundFilesMetadataProcessor
 import app.timemate.rrpc.generator.plugin.api.result.ProcessingError
 import app.timemate.rrpc.generator.plugin.api.result.flatten
 import app.timemate.rrpc.generator.plugin.api.result.getOrElse
+import app.timemate.rrpc.generator.plugin.api.result.map
+import app.timemate.rrpc.generator.plugin.api.result.onFailure
+import app.timemate.rrpc.generator.plugin.api.result.onSuccess
+import app.timemate.rrpc.proto.schema.RSMessage
+import app.timemate.rrpc.proto.schema.RSTypeMemberUrl
+import kotlin.math.log
+import kotlin.sequences.forEach
 
 public object KotlinPluginService : GenerationPluginService {
     override val options: List<OptionDescriptor> = listOf(
@@ -28,6 +35,7 @@ public object KotlinPluginService : GenerationPluginService {
         GenerationOptions.METADATA_GENERATION,
         GenerationOptions.METADATA_SCOPE_NAME,
         GenerationOptions.ADAPT_NAMES,
+        GenerationOptions.MESSAGE_DATA_MODIFIER,
     ).map { it.toOptionDescriptor() }
 
     override val name: String = "rrpc-kotlin-gen"
@@ -36,55 +44,71 @@ public object KotlinPluginService : GenerationPluginService {
         options: GenerationOptions,
         files: List<RSFile>,
         logger: RLogger,
-    ): Unit = withContext(Dispatchers.IO) {
-        logger.lifecycle("test started")
-        val options = KotlinPluginOptions(options)
+    ) {
+        try {
+            withContext(Dispatchers.IO) {
+                val options = KotlinPluginOptions(options)
 
-        FileSystem.SYSTEM.deleteRecursively(options.output)
-        FileSystem.SYSTEM.createDirectories(options.output)
+                FileSystem.SYSTEM.deleteRecursively(options.output)
+                FileSystem.SYSTEM.createDirectories(options.output)
 
-        if (options.isServerGenerationEnabled)
-            logger.debug("Configured to generate server stubs.")
-        else logger.debug("Configured not to generate server stubs.")
+                if (options.isServerGenerationEnabled)
+                    logger.lifecycle("Configured to generate server stubs.")
+                else logger.lifecycle("Configured not to generate server stubs.")
 
-        if (options.isClientGenerationEnabled)
-            logger.debug("Configured to generate client-specific code.")
-        else logger.debug("Configured not to generate client-specific code.")
+                if (options.isClientGenerationEnabled)
+                    logger.lifecycle("Configured to generate client-specific code.")
+                else logger.lifecycle("Configured not to generate client-specific code.")
 
-        if (!options.isTypesGenerationEnabled)
-            logger.debug("Configured not to generate proto types.")
+                if (!options.isTypesGenerationEnabled)
+                    logger.lifecycle("Configured not to generate proto types.")
 
-        val resolver = RSResolver(files)
+                val resolver = RSResolver(files)
 
-        val context = GeneratorContext(
-            options,
-            emptyMap(),
-            logger,
-            resolver,
-        )
 
-        logger.lifecycle("test 2")
-        resolver.resolveAvailableFiles().toList().filterNot {
-            it.packageName?.value?.startsWith("google.protobuf") == true ||
-                it.packageName?.value?.startsWith("wire") == true
-        }.map { file ->
-            FileProcessor.process(file, context)
-        }.flatten().getOrElse {
-            printPrettyErrors(logger, it.errors)
-            return@withContext
-        }.forEach { spec ->
-            logger.debug("Writing file: ${spec.relativePath}")
-            spec.writeTo(directory = options.output.toNioPath())
+                val context = GeneratorContext(
+                    options,
+                    emptyMap(),
+                    logger,
+                    resolver,
+                )
+
+                val unpermittedGoogleProtoFiles = listOf("any", "duration", "empty", "struct", "timestamp", "wrappers")
+
+                resolver.resolveAvailableFiles().toList().filterNot {
+                    it.name in unpermittedGoogleProtoFiles && it.packageName?.value == "google.protobuf"
+                }.map { file ->
+                    FileProcessor.process(file, context)
+                }.flatten().getOrElse {
+                    printPrettyErrors(logger, it.errors)
+                    return@withContext
+                }.filter {
+                    it.funSpecs.isNotEmpty() || it.members.isNotEmpty() || it.propertySpecs.isNotEmpty()
+                }.forEach { spec ->
+                    logger.debug("Writing file: ${spec.relativePath}")
+                    spec.writeTo(directory = options.output.toNioPath())
+                }
+
+                if (options.metadataGeneration) {
+                    logger.lifecycle("Configured to generate metadata code.")
+                    CompoundFilesMetadataProcessor.process(
+                        resolver.resolveAvailableFiles().toList(),
+                        context,
+                    ).onSuccess { files ->
+                        files.forEach {
+                            logger.debug("Writing file: ${it.relativePath}")
+                            it.writeTo(options.output.toNioPath())
+                        }
+                    }.onFailure {
+                        printPrettyErrors(logger, it.errors)
+                    }
+                } else {
+                    logger.lifecycle("Configured not to generate metadata code.")
+                }
+            }
+        } catch (e: Exception) {
+            logger.error(e.stackTraceToString())
         }
-//        if (options.metadataGeneration) {
-//            logger.debug("Configured to generate metadata code.")
-//            CombinedFilesMetadataGenerator.generate(
-//                name = options.metadataScopeName,
-//                resolver = resolver,
-//            ).writeTo(options.output.toNioPath())
-//        } else {
-//            logger.debug("Configured not to generate metadata code.")
-//        }
     }
 
     private suspend fun printPrettyErrors(

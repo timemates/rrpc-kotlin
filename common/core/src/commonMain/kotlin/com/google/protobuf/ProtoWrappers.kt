@@ -1,7 +1,7 @@
 package com.google.protobuf
 
 import kotlinx.serialization.Serializable
-import app.timemate.rrpc.ProtoType
+import app.timemate.rrpc.RSProtoType
 
 /**
  * Wrapper for a 32-bit integer value based on the standard Protobuf `Int32Value` type.
@@ -12,13 +12,13 @@ import app.timemate.rrpc.ProtoType
 @Serializable
 public class ProtoInt32Wrapper(
     public val value: Int = 0,
-) : ProtoType {
-    public companion object Definition : ProtoType.Definition<ProtoInt32Wrapper> {
+) : RSProtoType {
+    public companion object Definition : RSProtoType.Definition<ProtoInt32Wrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.Int32Value"
         override val Default: ProtoInt32Wrapper = ProtoInt32Wrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }
 
@@ -31,13 +31,13 @@ public class ProtoInt32Wrapper(
 @Serializable
 public class ProtoInt64Wrapper(
     public val value: Long = 0L,
-) : ProtoType {
-    public companion object Definition : ProtoType.Definition<ProtoInt64Wrapper> {
+) : RSProtoType {
+    public companion object Definition : RSProtoType.Definition<ProtoInt64Wrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.Int64Value"
         override val Default: ProtoInt64Wrapper = ProtoInt64Wrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }
 
@@ -50,13 +50,13 @@ public class ProtoInt64Wrapper(
 @Serializable
 public class ProtoFloatWrapper(
     public val value: Float = 0.0F,
-) : ProtoType {
-    public companion object Definition : ProtoType.Definition<ProtoFloatWrapper> {
+) : RSProtoType {
+    public companion object Definition : RSProtoType.Definition<ProtoFloatWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.FloatValue"
         override val Default: ProtoFloatWrapper = ProtoFloatWrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }
 
@@ -69,13 +69,13 @@ public class ProtoFloatWrapper(
 @Serializable
 public class ProtoDoubleWrapper(
     public val value: Double = 0.0,
-) : ProtoType {
-    public companion object Definition : ProtoType.Definition<ProtoDoubleWrapper> {
+) : RSProtoType {
+    public companion object Definition : RSProtoType.Definition<ProtoDoubleWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.DoubleValue"
         override val Default: ProtoDoubleWrapper = ProtoDoubleWrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }
 
@@ -88,13 +88,13 @@ public class ProtoDoubleWrapper(
 @Serializable
 public class ProtoBoolWrapper(
     public val value: Boolean = false,
-) : ProtoType {
-    public companion object Definition : ProtoType.Definition<ProtoBoolWrapper> {
+) : RSProtoType {
+    public companion object Definition : RSProtoType.Definition<ProtoBoolWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.BoolValue"
         override val Default: ProtoBoolWrapper = ProtoBoolWrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }
 
@@ -107,14 +107,14 @@ public class ProtoBoolWrapper(
 @Serializable
 public class ProtoStringWrapper(
     public val value: String = "",
-) : ProtoType {
+) : RSProtoType {
 
-    public companion object Definition : ProtoType.Definition<ProtoStringWrapper> {
+    public companion object Definition : RSProtoType.Definition<ProtoStringWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.StringValue"
         override val Default: ProtoStringWrapper = ProtoStringWrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }
 
@@ -127,13 +127,13 @@ public class ProtoStringWrapper(
 @Serializable
 public class ProtoBytesWrapper(
     public val value: ByteArray = ByteArray(0),
-) : ProtoType {
-    public companion object Definition : ProtoType.Definition<ProtoBytesWrapper> {
+) : RSProtoType {
+    public companion object Definition : RSProtoType.Definition<ProtoBytesWrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.BytesValue"
         override val Default: ProtoBytesWrapper = ProtoBytesWrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }
 
@@ -146,13 +146,13 @@ public class ProtoBytesWrapper(
 @Serializable
 public class ProtoUInt32Wrapper(
     public val value: UInt = 0u,
-) : ProtoType {
-    public companion object Definition : ProtoType.Definition<ProtoUInt32Wrapper> {
+) : RSProtoType {
+    public companion object Definition : RSProtoType.Definition<ProtoUInt32Wrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.UInt32Value"
         override val Default: ProtoUInt32Wrapper = ProtoUInt32Wrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }
 
@@ -165,12 +165,12 @@ public class ProtoUInt32Wrapper(
 @Serializable
 public class ProtoUInt64Wrapper(
     public val value: ULong = 0uL,
-) : ProtoType {
-    public companion object Definition : ProtoType.Definition<ProtoUInt64Wrapper> {
+) : RSProtoType {
+    public companion object Definition : RSProtoType.Definition<ProtoUInt64Wrapper> {
         override val url: String = "type.googleapis.com/google.protobuf.UInt64Value"
         override val Default: ProtoUInt64Wrapper = ProtoUInt64Wrapper()
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Definition
 }

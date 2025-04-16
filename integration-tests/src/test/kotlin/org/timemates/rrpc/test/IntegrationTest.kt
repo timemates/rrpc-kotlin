@@ -3,6 +3,7 @@ package org.timemates.rrpc.test
 import TestServiceClient
 import app.timemate.rrpc.annotations.ExperimentalInterceptorsApi
 import app.timemate.rrpc.client.config.RRpcClientConfig
+import app.timemate.rrpc.metadata.generated.timemate.rrpc.AckFileMetadata
 import app.timemate.rrpc.server.module.RRpcModule
 import app.timemate.rrpc.server.module.rrpcEndpoint
 import io.ktor.client.*

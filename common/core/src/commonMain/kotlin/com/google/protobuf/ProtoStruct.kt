@@ -6,7 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
 import kotlinx.serialization.protobuf.ProtoOneOf
-import app.timemate.rrpc.ProtoType
+import app.timemate.rrpc.RSProtoType
 import kotlin.jvm.JvmInline
 
 /**
@@ -21,8 +21,8 @@ import kotlin.jvm.JvmInline
 @Serializable
 public class ProtoStruct private constructor(
     public val fields: Map<String, ProtoStructValue> = emptyMap(),
-) : ProtoType {
-    public companion object : ProtoType.Definition<ProtoStruct> {
+) : RSProtoType {
+    public companion object : RSProtoType.Definition<ProtoStruct> {
         override val url: String
             get() = "type.googleapis.com/google.protobuf.Struct"
         override val Default: ProtoStruct = ProtoStruct()
@@ -36,7 +36,7 @@ public class ProtoStruct private constructor(
         }
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Companion
 
     override fun toString(): String {

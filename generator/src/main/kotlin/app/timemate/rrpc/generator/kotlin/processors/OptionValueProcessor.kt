@@ -140,7 +140,6 @@ public object OptionValueProcessor : Processor<RSOption, CodeBlock> {
         typeUrl: RSDeclarationUrl,
         value: RSOption.Value?,
     ): ProcessResult<CodeBlock> {
-        println("custom type: $typeUrl")
         if (typeUrl == RSDeclarationUrl.Companion.ANY) {
             return ProcessResult.Failure(
                 ProtoAnyCannotBeOptionError(
@@ -157,8 +156,6 @@ public object OptionValueProcessor : Processor<RSOption, CodeBlock> {
                 )
             }
             .getOrElse { return it }
-
-        println("resolved: $className, $type")
 
         return ProcessResult.Success(
             buildCodeBlock {

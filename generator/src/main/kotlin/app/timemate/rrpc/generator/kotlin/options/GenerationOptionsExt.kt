@@ -10,7 +10,7 @@ public val GenerationOptions.Companion.KOTLIN_SERVER_GENERATION: SingleGeneratio
         name = "server_generation",
         description = "Indicates whether server stubs should be generated for Kotlin. False by default.",
         valueKind = OptionTypeKind.Boolean,
-        constructor = { it.toBooleanStrictOrNull() != false }
+        constructor = { it.toBooleanStrict() }
     )
 }
 
@@ -19,7 +19,7 @@ public val GenerationOptions.Companion.KOTLIN_CLIENT_GENERATION: SingleGeneratio
         name = "client_generation",
         description = "Indicates whether client stubs should be generated for Kotlin. False by default.",
         valueKind = OptionTypeKind.Boolean,
-        constructor = { it.toBooleanStrictOrNull() != false }
+        constructor = { it.toBooleanStrict() }
     )
 }
 
@@ -28,7 +28,7 @@ public val GenerationOptions.Companion.KOTLIN_TYPE_GENERATION: SingleGenerationO
         name = "type_generation",
         description = "Indicates whether data types should be generated for Kotlin. False by default.",
         valueKind = OptionTypeKind.Boolean,
-        constructor = { it.toBooleanStrictOrNull() != false }
+        constructor = { it.toBooleanStrict() }
     )
 }
 
@@ -37,7 +37,7 @@ public val GenerationOptions.Companion.METADATA_GENERATION: SingleGenerationOpti
         name = "metadata_generation",
         description = "Specifies whether metadata should be generated.",
         valueKind = OptionTypeKind.Boolean,
-        constructor = { it.toBooleanStrictOrNull() == true }
+        constructor = { it.toBooleanStrict() }
     )
 }
 
@@ -55,7 +55,7 @@ public val GenerationOptions.Companion.ADAPT_NAMES: SingleGenerationOption<Boole
         name = "adapt_names",
         description = "Specifies whether the kotlin generator should adapt field and other names when generating code. When false, the original name will be retained.",
         valueKind = OptionTypeKind.Boolean,
-        constructor = { it.toBooleanStrictOrNull() != false }
+        constructor = { it.toBooleanStrict() }
     )
 }
 
@@ -64,6 +64,6 @@ public val GenerationOptions.Companion.MESSAGE_DATA_MODIFIER: SingleGenerationOp
         name = "message_data_modifier",
         description = "Specifies whether data modifier should be generated for messages. True by default.",
         valueKind = OptionTypeKind.Boolean,
-        constructor = { it.toBooleanStrictOrNull() != false }
+        constructor = { it.toBooleanStrict() }
     )
 }

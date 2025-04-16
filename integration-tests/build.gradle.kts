@@ -13,6 +13,8 @@ dependencies {
     // -- Project --
     implementation(projects.server.core)
     implementation(projects.client.core)
+    implementation(libs.timemate.rrpc.schema)
+    implementation(projects.common.metadata)
 
     // -- Serialization --
     implementation(libs.kotlinx.serialization.proto)
@@ -42,6 +44,7 @@ val rrpcOutputFolder = layout.buildDirectory.dir("generated/rrpc").get().asFile
 rrpc {
     inputs {
         source {
+            artifact(projects.common.core)
             directory(file("src/test/resources"))
         }
     }
@@ -50,12 +53,16 @@ rrpc {
     permitPackageCycles = true
 
     plugins {
-        add(projects.generator)
+        add(projects.generator) {
+            option("server_generation", true)
+            option("metadata_generation", true)
+            option("metadata_scope_name", "Test23")
+        }
     }
 }
 
 kotlin {
     sourceSets.test {
-        kotlin.srcDir(rrpcOutputFolder)
+        kotlin.srcDir(rrpcOutputFolder.resolve("rrpc-kotlin-gen"))
     }
 }
