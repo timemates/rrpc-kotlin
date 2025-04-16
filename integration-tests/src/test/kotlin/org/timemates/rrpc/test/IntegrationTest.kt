@@ -61,8 +61,10 @@ class IntegrationTest {
         TestServiceClient(
             config = RRpcClientConfig.create {
                 rsocket(rSocket)
-                requestInterceptor(RequestTestInterceptor())
-                responseInterceptor(ResponseTestInterceptor())
+                interceptors {
+                    request(RequestTestInterceptor())
+                    response(ResponseTestInterceptor())
+                }
                 instances {
                     register(SomeValue(0))
                 }
