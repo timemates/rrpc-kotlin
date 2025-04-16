@@ -3,7 +3,7 @@ package com.google.protobuf
 import kotlinx.serialization.*
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlinx.serialization.protobuf.ProtoNumber
-import app.timemate.rrpc.ProtoType
+import app.timemate.rrpc.RSProtoType
 
 
 /**
@@ -32,8 +32,8 @@ public class ProtoAny private constructor(
     public val typeName: String = "",
     @ProtoNumber(2)
     public val value: ByteArray = byteArrayOf(),
-) : ProtoType {
-    public companion object : ProtoType.Definition<ProtoAny> {
+) : RSProtoType {
+    public companion object : RSProtoType.Definition<ProtoAny> {
 
         /**
          * Packs a given `ProtoType` instance into a `ProtoAny`.
@@ -48,7 +48,7 @@ public class ProtoAny private constructor(
          * @return A `ProtoAny` instance containing the serialized message.
          */
         @OptIn(ExperimentalSerializationApi::class)
-        public fun <T : ProtoType> pack(
+        public fun <T : RSProtoType> pack(
             value: T,
             serializer: SerializationStrategy<T>,
             protoBuf: ProtoBuf = ProtoBuf,
@@ -72,7 +72,7 @@ public class ProtoAny private constructor(
     /**
      * Provides the definition of the `ProtoAny` type.
      */
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Companion
 
     /**
@@ -81,7 +81,7 @@ public class ProtoAny private constructor(
      * @param definition The definition of the type to check against.
      * @return `true` if the contained message is of the given type, `false` otherwise.
      */
-    public fun typeOf(definition: ProtoType.Definition<*>): Boolean {
+    public fun typeOf(definition: RSProtoType.Definition<*>): Boolean {
         return typeName == definition.url
     }
 
@@ -97,7 +97,7 @@ public class ProtoAny private constructor(
      * @return The deserialized `ProtoType` instance.
      * @throws SerializationException If the deserialization fails.
      */
-    public fun <T : ProtoType> unpack(
+    public fun <T : RSProtoType> unpack(
         deserializer: DeserializationStrategy<T>,
         protoBuf: ProtoBuf = ProtoBuf,
     ): T {
@@ -121,7 +121,7 @@ public val ProtoAny.isEmpty: Boolean get() = typeName.isEmpty() && value.isEmpty
  * @return A `ProtoAny` instance containing the serialized message.
  */
 @OptIn(ExperimentalSerializationApi::class)
-public inline fun <reified T : ProtoType> ProtoAny.Companion.pack(value: T, protoBuf: ProtoBuf = ProtoBuf): ProtoAny {
+public inline fun <reified T : RSProtoType> ProtoAny.Companion.pack(value: T, protoBuf: ProtoBuf = ProtoBuf): ProtoAny {
     return pack(value, serializer<T>(), protoBuf)
 }
 
@@ -136,7 +136,7 @@ public inline fun <reified T : ProtoType> ProtoAny.Companion.pack(value: T, prot
  * @throws SerializationException If the deserialization fails.
  */
 @OptIn(ExperimentalSerializationApi::class)
-public inline fun <reified T : ProtoType> ProtoAny.unpack(protoBuf: ProtoBuf = ProtoBuf): T {
+public inline fun <reified T : RSProtoType> ProtoAny.unpack(protoBuf: ProtoBuf = ProtoBuf): T {
     return this.unpack(serializer(), protoBuf)
 }
 
@@ -144,7 +144,7 @@ public inline fun <reified T : ProtoType> ProtoAny.unpack(protoBuf: ProtoBuf = P
  * Tries to unpack the value and if it's failed, [defaultValue] is called
  * as a fallback.
  */
-public inline fun <reified T : ProtoType> ProtoAny.unpackOr(
+public inline fun <reified T : RSProtoType> ProtoAny.unpackOr(
     protoBuf: ProtoBuf = ProtoBuf,
     defaultValue: () -> T,
 ): T {

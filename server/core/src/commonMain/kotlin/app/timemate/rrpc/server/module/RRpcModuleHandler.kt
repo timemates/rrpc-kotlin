@@ -12,8 +12,6 @@ import io.rsocket.kotlin.payload.metadata
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.decodeFromByteArray
@@ -73,7 +71,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
             )
             val service = getService(metadata)
             val method =
-                service.procedure<ProcedureDescriptor.RequestResponse<ProtoType, ProtoType>>(metadata.procedureName)
+                service.procedure<ProcedureDescriptor.RequestResponse<RSProtoType, RSProtoType>>(metadata.procedureName)
                     ?: handleException(ProcedureNotFoundException(metadata), null)
 
             val options = method.options
@@ -134,7 +132,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
 
             val service = getService(metadata)
             val method =
-                service.procedure<ProcedureDescriptor.RequestStream<ProtoType, ProtoType>>(metadata.procedureName)
+                service.procedure<ProcedureDescriptor.RequestStream<RSProtoType, RSProtoType>>(metadata.procedureName)
                     ?: handleException(ProcedureNotFoundException(metadata), null)
 
             val options = method.options
@@ -195,7 +193,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
 
             val service = getService(metadata)
             val method =
-                service.procedure<ProcedureDescriptor.RequestChannel<ProtoType, ProtoType>>(metadata.procedureName)
+                service.procedure<ProcedureDescriptor.RequestChannel<RSProtoType, RSProtoType>>(metadata.procedureName)
                     ?: handleException(ProcedureNotFoundException(metadata), null)
 
             val options = method.options
@@ -256,7 +254,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
         )
 
         val service = getService(metadata)
-        val method = service.procedure<ProcedureDescriptor.FireAndForget<ProtoType>>(metadata.procedureName)
+        val method = service.procedure<ProcedureDescriptor.FireAndForget<RSProtoType>>(metadata.procedureName)
             ?: handleException(ProcedureNotFoundException(metadata), null)
 
         val options = method.options
@@ -415,6 +413,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
             emit(
                 buildPayload {
                     metadata(protobuf.encodeToByteArray<ServerMetadata>(serverMetadata))
+                    data(byteArrayOf())
                 }
             )
             collect {

@@ -19,8 +19,6 @@ import app.timemate.rrpc.proto.schema.isRequestResponse
 import app.timemate.rrpc.proto.schema.isRequestStream
 import app.timemate.rrpc.proto.schema.kotlinName
 import app.timemate.rrpc.proto.schema.sourceOnly
-import app.timemate.rrpc.generator.plugin.api.annotation.ExperimentalGeneratorFunctionality
-import app.timemate.rrpc.generator.plugin.api.option.ExtensionGenerationStrategy
 import app.timemate.rrpc.proto.schema.value.RSDeclarationUrl
 import app.timemate.rrpc.generator.kotlin.internal.PoetAnnotations
 import app.timemate.rrpc.generator.*
@@ -34,8 +32,9 @@ import app.timemate.rrpc.generator.kotlin.error.ClientOnlyStreamingRpcError
 import app.timemate.rrpc.generator.kotlin.error.FileCannotBeResolvedError
 import app.timemate.rrpc.generator.kotlin.error.UnresolvableDeclarationMemberError
 import app.timemate.rrpc.generator.kotlin.internal.ext.asTypeName
-import app.timemate.rrpc.generator.plugin.api.option.extensionGenerationStrategy
 import app.timemate.rrpc.proto.schema.kotlinPackage
+import app.timemate.rrpc.proto.schema.option.ExtendGenerationStrategy
+import app.timemate.rrpc.proto.schema.option.extendGenerationStrategy
 import app.timemate.rrpc.proto.schema.value.RSPackageName
 
 public object ClientProcessor : Processor<RSService, TypeSpec> {
@@ -71,7 +70,6 @@ public object ClientProcessor : Processor<RSService, TypeSpec> {
         )
     }
 
-    @OptIn(ExperimentalGeneratorFunctionality::class)
     private suspend fun GeneratorContext.processOptions(
         optionsMap: Map<String, RSOptions>,
     ): ProcessResult<PropertySpec> {
@@ -117,17 +115,17 @@ public object ClientProcessor : Processor<RSService, TypeSpec> {
                                 )
                             }
 
-                            val strategy = field.options.extensionGenerationStrategy
+                            val strategy = field.options.extendGenerationStrategy
                                 ?: if (field.namespaces!!.simpleNames.any()) {
-                                    ExtensionGenerationStrategy.REGULAR
+                                    ExtendGenerationStrategy.REGULAR
                                 } else {
-                                    ExtensionGenerationStrategy.EXTENSION
+                                    ExtendGenerationStrategy.EXTENSION
                                 }
 
                             when (strategy) {
-                                ExtensionGenerationStrategy.EXTENSION ->
+                                ExtendGenerationStrategy.EXTENSION ->
                                     add("%T.${fieldName} to ", LibClassNames.Option.RPC)
-                                ExtensionGenerationStrategy.REGULAR ->
+                                ExtendGenerationStrategy.REGULAR ->
                                     add("%T.$fieldName to ", ClassName(field.namespaces!!.packageName.value, field.namespaces!!.simpleNames))
                             }
 

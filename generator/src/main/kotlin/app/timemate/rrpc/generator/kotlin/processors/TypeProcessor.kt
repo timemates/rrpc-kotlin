@@ -51,7 +51,7 @@ public object TypeProcessor : Processor<RSType, Pair<TypeSpec, FunSpec?>?> {
                     TypeSpec.companionObjectBuilder()
                         .addProperty(
                             PropertySpec.builder("Default", ClassName("", data.name))
-                                .initializer(data.constants.first { it.tag == 0 }.name)
+                                .initializer(data.constants.minByOrNull { it.tag }!!.name)
                                 .build()
                         )
                         .addFunctions(nested.mapNotNull { it?.second })

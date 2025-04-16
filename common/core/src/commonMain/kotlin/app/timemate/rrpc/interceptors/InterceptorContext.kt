@@ -3,7 +3,7 @@
 package app.timemate.rrpc.interceptors
 
 import app.timemate.rrpc.DataVariant
-import app.timemate.rrpc.ProtoType
+import app.timemate.rrpc.RSProtoType
 import app.timemate.rrpc.annotations.InternalRRpcAPI
 import app.timemate.rrpc.instances.InstanceContainer
 import app.timemate.rrpc.instances.ProvidableInstance
@@ -24,7 +24,7 @@ import kotlin.jvm.JvmSynthetic
  */
 @OptIn(InternalRRpcAPI::class)
 public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcAPI constructor(
-    public val data: DataVariant<ProtoType>,
+    public val data: DataVariant<RSProtoType>,
     public val metadata: TMetadata,
     public val options: OptionsWithValue,
     public val instances: InstanceContainer,
@@ -50,7 +50,7 @@ public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcAPI const
      */
     @JvmSynthetic
     public fun copy(
-        data: DataVariant<ProtoType> = this.data,
+        data: DataVariant<RSProtoType> = this.data,
         extra: ExtraMetadata = this.metadata.extra,
         options: OptionsWithValue = this.options,
         instances: InstanceContainer = this.instances,
@@ -67,7 +67,7 @@ public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcAPI const
     public class Builder<TMetadata : RRpcMetadata>(
         private var instances: InstanceContainer,
         private var metadata: TMetadata,
-        private var data: DataVariant<ProtoType>,
+        private var data: DataVariant<RSProtoType>,
         private var options: OptionsWithValue,
     ) {
         /**
@@ -114,7 +114,7 @@ public class InterceptorContext<TMetadata : RRpcMetadata> @InternalRRpcAPI const
          * @return This builder instance for chaining method calls.
          * @throws IllegalArgumentException if the data type of [value] does not match the current data type.
          */
-        public fun data(value: DataVariant<ProtoType>): Builder<TMetadata> {
+        public fun data(value: DataVariant<RSProtoType>): Builder<TMetadata> {
             data = value
             return this
         }

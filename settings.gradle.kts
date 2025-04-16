@@ -27,16 +27,18 @@ includeBuild("build-conventions")
 
 include(
     ":common:core",
+    ":common:metadata",
+    ":common:metadata:communication",
 )
 
 include(
     ":server:core",
-    //":server:schema",
+    ":server:metadata",
 )
 
 include(
     ":client:core",
-    //":client:schema",
+    ":client:metadata",
 )
 
 include(":generator")

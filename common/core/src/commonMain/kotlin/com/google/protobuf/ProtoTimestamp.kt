@@ -5,7 +5,7 @@ package com.google.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import app.timemate.rrpc.ProtoType
+import app.timemate.rrpc.RSProtoType
 
 /**
  * Constructs a [ProtoTimestamp] using a builder.
@@ -38,8 +38,8 @@ public class ProtoTimestamp private constructor(
     public val seconds: Long = 0,
     @ProtoNumber(2)
     public val nanos: Int = 0,
-) : ProtoType {
-    public companion object : ProtoType.Definition<ProtoTimestamp> {
+) : RSProtoType {
+    public companion object : RSProtoType.Definition<ProtoTimestamp> {
         /**
          * Creates a [ProtoTimestamp] representing a specific number of seconds since the Unix epoch.
          *
@@ -85,7 +85,7 @@ public class ProtoTimestamp private constructor(
         }
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Companion
 
     override fun toString(): String {

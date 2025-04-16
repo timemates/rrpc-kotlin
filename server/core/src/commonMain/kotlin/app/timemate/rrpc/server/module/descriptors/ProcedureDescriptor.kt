@@ -3,7 +3,7 @@ package app.timemate.rrpc.server.module.descriptors
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
-import app.timemate.rrpc.ProtoType
+import app.timemate.rrpc.RSProtoType
 import app.timemate.rrpc.options.OptionsWithValue
 import app.timemate.rrpc.server.OptionsContainer
 import app.timemate.rrpc.server.RequestContext
@@ -28,7 +28,7 @@ public sealed interface ProcedureDescriptor : OptionsContainer {
      * @param procedure The suspend function representing the procedure logic.
      * @param options The list of options associated with the procedure.
      */
-    public class RequestResponse<TInput : ProtoType, TOutput : ProtoType>(
+    public class RequestResponse<TInput : RSProtoType, TOutput : RSProtoType>(
         override val name: String,
         public val inputSerializer: DeserializationStrategy<TInput>,
         public val outputSerializer: SerializationStrategy<TOutput>,
@@ -56,11 +56,11 @@ public sealed interface ProcedureDescriptor : OptionsContainer {
      * @param procedure The suspend function representing the procedure logic.
      * @param options The list of options associated with the procedure.
      */
-    public class RequestStream<TInput : ProtoType, TOutput : ProtoType>(
+    public class RequestStream<TInput : RSProtoType, TOutput : RSProtoType>(
         override val name: String,
         public val inputSerializer: DeserializationStrategy<TInput>,
         public val outputSerializer: SerializationStrategy<TOutput>,
-        private val procedure: suspend (RequestContext, TInput) -> Flow<TOutput>,
+        private val procedure: (RequestContext, TInput) -> Flow<TOutput>,
         options: OptionsWithValue,
     ) : ProcedureDescriptor, OptionsContainer by optionsContainer(options) {
         /**
@@ -84,11 +84,11 @@ public sealed interface ProcedureDescriptor : OptionsContainer {
      * @param procedure The suspend function representing the procedure logic.
      * @param options The list of options associated with the procedure.
      */
-    public class RequestChannel<TInput : ProtoType, TOutput : ProtoType>(
+    public class RequestChannel<TInput : RSProtoType, TOutput : RSProtoType>(
         override val name: String,
         public val inputSerializer: DeserializationStrategy<TInput>,
         public val outputSerializer: SerializationStrategy<TOutput>,
-        private val procedure: suspend (RequestContext, Flow<TInput>) -> Flow<TOutput>,
+        private val procedure: (RequestContext, Flow<TInput>) -> Flow<TOutput>,
         options: OptionsWithValue,
     ) : ProcedureDescriptor, OptionsContainer by optionsContainer(options) {
         /**
@@ -110,7 +110,7 @@ public sealed interface ProcedureDescriptor : OptionsContainer {
     /**
      * Represents a Fire-And-Forget request type in RSocket.
      */
-    public class FireAndForget<TInput : ProtoType>(
+    public class FireAndForget<TInput : RSProtoType>(
         override val name: String,
         public val inputSerializer: DeserializationStrategy<TInput>,
         private val procedure: suspend (RequestContext, TInput) -> Unit,

@@ -5,7 +5,7 @@ package com.google.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
-import app.timemate.rrpc.ProtoType
+import app.timemate.rrpc.RSProtoType
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
@@ -32,8 +32,8 @@ public class ProtoDuration private constructor(
     public val seconds: Long = 0,
     @ProtoNumber(2)
     public val nanos: Int = 0,
-) : ProtoType {
-    public companion object : ProtoType.Definition<ProtoDuration> {
+) : RSProtoType {
+    public companion object : RSProtoType.Definition<ProtoDuration> {
         public fun ofSeconds(seconds: Long): ProtoDuration {
             return ProtoDuration(seconds, 0)
         }
@@ -60,7 +60,7 @@ public class ProtoDuration private constructor(
         }
     }
 
-    override val definition: ProtoType.Definition<*>
+    override val definition: RSProtoType.Definition<*>
         get() = Companion
 
     override fun toString(): String {

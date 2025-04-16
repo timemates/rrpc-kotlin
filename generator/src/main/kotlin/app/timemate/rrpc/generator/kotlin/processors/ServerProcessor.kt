@@ -1,39 +1,23 @@
 package app.timemate.rrpc.generator.kotlin.processors
 
-import com.squareup.kotlinpoet.*
-import app.timemate.rrpc.proto.schema.RSOptions
-import app.timemate.rrpc.proto.schema.RSRpc
-import app.timemate.rrpc.proto.schema.RSService
-import app.timemate.rrpc.proto.schema.isDeprecated
-import app.timemate.rrpc.proto.schema.isFireAndForget
-import app.timemate.rrpc.proto.schema.isMetadataPush
-import app.timemate.rrpc.proto.schema.isRequestChannel
-import app.timemate.rrpc.proto.schema.isRequestResponse
-import app.timemate.rrpc.proto.schema.isRequestStream
-import app.timemate.rrpc.proto.schema.kotlinName
-import app.timemate.rrpc.proto.schema.kotlinPackage
-import app.timemate.rrpc.proto.schema.sourceOnly
-import app.timemate.rrpc.generator.plugin.api.RSResolver
-import app.timemate.rrpc.generator.plugin.api.result.ProcessResult
-import app.timemate.rrpc.generator.plugin.api.result.andAccumulate
-import app.timemate.rrpc.generator.plugin.api.result.flatten
-import app.timemate.rrpc.generator.plugin.api.result.getOrElse
-import app.timemate.rrpc.generator.plugin.api.result.onFailure
-import app.timemate.rrpc.generator.plugin.api.result.onSuccess
-import app.timemate.rrpc.proto.schema.value.RSDeclarationUrl
-import app.timemate.rrpc.proto.schema.value.RSPackageName
-import app.timemate.rrpc.generator.*
+import app.timemate.rrpc.generator.GeneratorContext
+import app.timemate.rrpc.generator.Processor
 import app.timemate.rrpc.generator.kotlin.error.FileCannotBeResolvedError
+import app.timemate.rrpc.generator.kotlin.error.UnresolvableDeclarationMemberError
 import app.timemate.rrpc.generator.kotlin.internal.ImportRequirement
 import app.timemate.rrpc.generator.kotlin.internal.LibClassNames
 import app.timemate.rrpc.generator.kotlin.internal.ext.addImport
+import app.timemate.rrpc.generator.kotlin.internal.ext.asTypeName
 import app.timemate.rrpc.generator.kotlin.internal.ext.deprecated
 import app.timemate.rrpc.generator.kotlin.internal.ext.newline
-import app.timemate.rrpc.generator.kotlin.error.UnresolvableDeclarationMemberError
-import app.timemate.rrpc.generator.kotlin.internal.ext.asTypeName
-import app.timemate.rrpc.generator.plugin.api.annotation.ExperimentalGeneratorFunctionality
-import app.timemate.rrpc.generator.plugin.api.option.ExtensionGenerationStrategy
-import app.timemate.rrpc.generator.plugin.api.option.extensionGenerationStrategy
+import app.timemate.rrpc.generator.plugin.api.RSResolver
+import app.timemate.rrpc.generator.plugin.api.result.*
+import app.timemate.rrpc.proto.schema.*
+import app.timemate.rrpc.proto.schema.option.ExtendGenerationStrategy
+import app.timemate.rrpc.proto.schema.option.extendGenerationStrategy
+import app.timemate.rrpc.proto.schema.value.RSDeclarationUrl
+import app.timemate.rrpc.proto.schema.value.RSPackageName
+import com.squareup.kotlinpoet.*
 
 public object ServerProcessor : Processor<RSService, TypeSpec> {
     override suspend fun GeneratorContext.process(data: RSService): ProcessResult<TypeSpec> {
@@ -171,7 +155,6 @@ public object ServerProcessor : Processor<RSService, TypeSpec> {
         )
     }
 
-    @OptIn(ExperimentalGeneratorFunctionality::class)
     private suspend fun GeneratorContext.generateRawOptions(
         options: RSOptions,
         resolver: RSResolver,
@@ -221,18 +204,22 @@ public object ServerProcessor : Processor<RSService, TypeSpec> {
                         )
                     }
 
-                    val strategy = field.options.extensionGenerationStrategy
+                    val strategy = field.options.extendGenerationStrategy
                         ?: if (field.namespaces!!.simpleNames.any()) {
-                            ExtensionGenerationStrategy.REGULAR
+                            ExtendGenerationStrategy.REGULAR
                         } else {
-                            ExtensionGenerationStrategy.EXTENSION
+                            ExtendGenerationStrategy.EXTENSION
                         }
 
                     when (strategy) {
-                        ExtensionGenerationStrategy.REGULAR -> {
-                            add("%T.$fieldName to ", ClassName(field.namespaces!!.packageName.value, field.namespaces!!.simpleNames))
+                        ExtendGenerationStrategy.REGULAR -> {
+                            add(
+                                "%T.$fieldName to ",
+                                ClassName(field.namespaces!!.packageName.value, field.namespaces!!.simpleNames)
+                            )
                         }
-                        ExtensionGenerationStrategy.EXTENSION ->
+
+                        ExtendGenerationStrategy.EXTENSION ->
                             add(
                                 format = "%T.${fieldName} to ",
                                 when (optionsType) {

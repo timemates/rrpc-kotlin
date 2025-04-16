@@ -11,6 +11,7 @@ import app.timemate.rrpc.generator.plugin.api.result.ProcessResult
 import app.timemate.rrpc.generator.plugin.api.result.andAccumulate
 import app.timemate.rrpc.generator.kotlin.internal.LibClassNames
 import app.timemate.rrpc.generator.kotlin.error.UnresolvableDeclarationError
+import app.timemate.rrpc.generator.kotlin.error.UnsupportedTypeForSerializationError
 import app.timemate.rrpc.generator.plugin.api.result.map
 
 internal fun RSDeclarationUrl.asTypeName(resolver: RSResolver): ProcessResult<TypeName> {
@@ -39,12 +40,14 @@ internal fun RSDeclarationUrl.asTypeName(resolver: RSResolver): ProcessResult<Ty
         RSDeclarationUrl.BYTES_VALUE -> LibClassNames.Wrappers.BYTES_VALUE
         RSDeclarationUrl.STRING -> STRING
         RSDeclarationUrl.BOOL -> BOOLEAN
-        RSDeclarationUrl.INT32, RSDeclarationUrl.SINT32, RSDeclarationUrl.FIXED32, RSDeclarationUrl.SFIXED32 -> INT
-        RSDeclarationUrl.INT64, RSDeclarationUrl.SINT64, RSDeclarationUrl.FIXED64, RSDeclarationUrl.SFIXED64 -> LONG
+        RSDeclarationUrl.INT32, RSDeclarationUrl.SINT32, RSDeclarationUrl.FIXED32 -> INT
+        RSDeclarationUrl.INT64, RSDeclarationUrl.SINT64, RSDeclarationUrl.FIXED64 -> LONG
         RSDeclarationUrl.BYTES -> BYTE_ARRAY
         RSDeclarationUrl.FLOAT -> FLOAT
         RSDeclarationUrl.UINT32 -> U_INT
         RSDeclarationUrl.UINT64 -> U_LONG
+        RSDeclarationUrl.SFIXED32, RSDeclarationUrl.SFIXED64 ->
+            return ProcessResult.Failure(UnsupportedTypeForSerializationError(this))
         RSDeclarationUrl.DOUBLE -> DOUBLE
         else -> {
             val file = resolver.resolveFileOf(this)

@@ -13,7 +13,7 @@ import kotlin.jvm.JvmSynthetic
  *
  * @param T The type of the value.
  */
-public sealed interface DataVariant<out T : ProtoType> {
+public sealed interface DataVariant<out T : RSProtoType> {
 
     /**
      * Checks if the other [DataVariant] is of the same type as this one.
@@ -30,7 +30,7 @@ public sealed interface DataVariant<out T : ProtoType> {
  * @param T The type of the value.
  * @property value The single value.
  */
-public data class Single<T : ProtoType>(public val value: T) : DataVariant<T> {
+public data class Single<T : RSProtoType>(public val value: T) : DataVariant<T> {
     public companion object {
         /**
          * Denotes that single has no value inside. Usually, it's applicable only
@@ -67,7 +67,7 @@ public data class Failure(public val exception: Exception) : DataVariant<Nothing
  * @param T The type of the values in the stream.
  * @property flow The flow of values.
  */
-public class Streaming<T : ProtoType>(
+public class Streaming<T : RSProtoType>(
     @get:JvmSynthetic
     public val flow: Flow<T>,
 ) : DataVariant<T> {
@@ -86,7 +86,7 @@ public class Streaming<T : ProtoType>(
  * @return `true` if the variant is a [Single], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : ProtoType> DataVariant<T>.isSingle(): Boolean {
+public inline fun <T : RSProtoType> DataVariant<T>.isSingle(): Boolean {
     contract {
         returns(true) implies (this@isSingle is Single<T>)
         returns(false) implies (this@isSingle !is Single<T>)
@@ -101,7 +101,7 @@ public inline fun <T : ProtoType> DataVariant<T>.isSingle(): Boolean {
  * @return `true` if the variant is a [Streaming], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : ProtoType> DataVariant<T>.isStreaming(): Boolean {
+public inline fun <T : RSProtoType> DataVariant<T>.isStreaming(): Boolean {
     contract {
         returns(true) implies (this@isStreaming is Streaming<T>)
         returns(false) implies (this@isStreaming !is Streaming<T>)
@@ -116,7 +116,7 @@ public inline fun <T : ProtoType> DataVariant<T>.isStreaming(): Boolean {
  * @return `true` if the variant is a [Failure], `false` otherwise.
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : ProtoType> DataVariant<T>.isFailure(): Boolean {
+public inline fun <T : RSProtoType> DataVariant<T>.isFailure(): Boolean {
     contract {
         returns(true) implies (this@isFailure is Failure)
         returns(false) implies (this@isFailure !is Failure)
@@ -132,7 +132,7 @@ public inline fun <T : ProtoType> DataVariant<T>.isFailure(): Boolean {
  * @throws IllegalStateException if the variant is not a [Single].
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : ProtoType> DataVariant<T>.requireSingle(): T {
+public inline fun <T : RSProtoType> DataVariant<T>.requireSingle(): T {
     contract {
         returns() implies (this@requireSingle is Single<T>)
     }
@@ -146,7 +146,7 @@ public inline fun <T : ProtoType> DataVariant<T>.requireSingle(): T {
  * @throws IllegalStateException if the variant is not a [Streaming].
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : ProtoType> DataVariant<T>.requireStreaming(): Flow<T> {
+public inline fun <T : RSProtoType> DataVariant<T>.requireStreaming(): Flow<T> {
     contract {
         returns() implies (this@requireStreaming is Streaming<T>)
     }
@@ -160,7 +160,7 @@ public inline fun <T : ProtoType> DataVariant<T>.requireStreaming(): Flow<T> {
  * @throws IllegalStateException if the variant is not a [Single].
  */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T : ProtoType> DataVariant<T>.requireFailure(): Exception {
+public inline fun <T : RSProtoType> DataVariant<T>.requireFailure(): Exception {
     contract {
         returns() implies (this@requireFailure is Failure)
     }

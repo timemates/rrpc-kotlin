@@ -46,7 +46,7 @@ public class ClientRequestHandler(
      * @return The response data.
      */
     @OptIn(InternalRRpcAPI::class)
-    public suspend fun <T : ProtoType, R : ProtoType> requestResponse(
+    public suspend fun <T : RSProtoType, R : RSProtoType> requestResponse(
         metadata: ClientMetadata,
         data: T,
         options: OptionsWithValue,
@@ -118,7 +118,7 @@ public class ClientRequestHandler(
      * @return A flow of the response data.
      */
     @OptIn(InternalRRpcAPI::class)
-    public fun <T : ProtoType, R : ProtoType> requestStream(
+    public fun <T : RSProtoType, R : RSProtoType> requestStream(
         metadata: ClientMetadata,
         data: T,
         options: OptionsWithValue,
@@ -161,7 +161,7 @@ public class ClientRequestHandler(
      * @return A flow of the response data.
      */
     @OptIn(InternalRRpcAPI::class)
-    public fun <T : ProtoType, R : ProtoType> requestChannel(
+    public fun <T : RSProtoType, R : RSProtoType> requestChannel(
         metadata: ClientMetadata,
         data: Flow<T>,
         options: OptionsWithValue,
@@ -187,6 +187,7 @@ public class ClientRequestHandler(
                                 requestContext?.metadata ?: metadata
                             )
                         )
+                        data(byteArrayOf())
                     },
                     payloads = (requestContext?.data?.requireStreaming() ?: data)
                         .map {
@@ -202,7 +203,7 @@ public class ClientRequestHandler(
         }
     }
 
-    public suspend fun <T : ProtoType> fireAndForget(
+    public suspend fun <T : RSProtoType> fireAndForget(
         metadata: ClientMetadata,
         data: T,
         options: OptionsWithValue,
@@ -302,7 +303,7 @@ public class ClientRequestHandler(
      * @param deserializationStrategy Deserialization strategy for the response data.
      * @return A flow of the response data.
      */
-    private suspend fun <R : ProtoType> FlowCollector<R>.handleStreamingResponse(
+    private suspend fun <R : RSProtoType> FlowCollector<R>.handleStreamingResponse(
         response: Flow<Payload>,
         options: OptionsWithValue,
         requestContext: InterceptorContext<ClientMetadata>?,

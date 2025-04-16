@@ -60,3 +60,18 @@ internal fun CodeBlock.Builder.addDocumentation(doc: String?) {
         doc.replace("\"", "\\\""),
     )
 }
+
+internal val List<String>.codeRepresentation: CodeBlock get() {
+    if (isEmpty()) return CodeBlock.of("emptyList()")
+    return buildCodeBlock {
+        add("listOf(")
+        indent()
+        forEach {
+            newline()
+            add("%S,", it)
+            newline()
+        }
+        unindent()
+        add(")")
+    }
+}

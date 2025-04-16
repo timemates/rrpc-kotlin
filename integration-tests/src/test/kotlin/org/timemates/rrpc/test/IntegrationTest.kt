@@ -3,6 +3,7 @@ package org.timemates.rrpc.test
 import TestServiceClient
 import app.timemate.rrpc.annotations.ExperimentalInterceptorsApi
 import app.timemate.rrpc.client.config.RRpcClientConfig
+import app.timemate.rrpc.metadata.generated.timemate.rrpc.AckFileMetadata
 import app.timemate.rrpc.server.module.RRpcModule
 import app.timemate.rrpc.server.module.rrpcEndpoint
 import io.ktor.client.*
@@ -18,6 +19,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -60,8 +62,10 @@ class IntegrationTest {
         TestServiceClient(
             config = RRpcClientConfig.create {
                 rsocket(rSocket)
-                requestInterceptor(RequestTestInterceptor())
-                responseInterceptor(ResponseTestInterceptor())
+                interceptors {
+                    request(RequestTestInterceptor())
+                    response(ResponseTestInterceptor())
+                }
                 instances {
                     register(SomeValue(0))
                 }
@@ -74,5 +78,10 @@ class IntegrationTest {
         val result = client.await().testMethod(TestMessage.Default)
         assertEquals("test", result.stringField)
         assertEquals(listOf(0.1, 0.2, 3.0), result.repeatedField)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        serverInstance.stop()
     }
 }

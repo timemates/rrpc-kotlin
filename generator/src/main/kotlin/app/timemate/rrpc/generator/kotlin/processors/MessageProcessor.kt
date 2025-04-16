@@ -20,6 +20,7 @@ import app.timemate.rrpc.proto.schema.kotlinName
 import app.timemate.rrpc.proto.schema.value.RSDeclarationUrl
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import kotlin.math.log
 
 public object MessageProcessor : Processor<RSMessage, Pair<TypeSpec, FunSpec?>> {
     override suspend fun GeneratorContext.process(data: RSMessage): ProcessResult<Pair<TypeSpec, FunSpec?>> {
@@ -124,10 +125,22 @@ public object MessageProcessor : Processor<RSMessage, Pair<TypeSpec, FunSpec?>> 
 
             PropertySpec.builder(fieldName, parameterTypes[index])
                 .initializer(fieldName)
-                .addKdoc(field.documentation?.replace("%", "%%").orEmpty())
+                .addKdoc(field.documentation.replace("%", "%%"))
                 .addAnnotation(PoetAnnotations.ProtoNumber(field.tag))
                 .apply {
-                    if (field.isRepeated && field.typeUrl.isScalar) addAnnotation(PoetAnnotations.ProtoPacked)
+                    if (field.isRepeated && field.typeUrl.isScalar) {
+                        addAnnotation(PoetAnnotations.ProtoPacked)
+                    }
+
+                    if (field.typeUrl == RSDeclarationUrl.FIXED32 || field.typeUrl == RSDeclarationUrl.FIXED64) {
+                        addAnnotation(PoetAnnotations.ProtoType("FIXED"))
+                    }
+
+                    if (field.typeUrl == RSDeclarationUrl.SINT32 || field.typeUrl == RSDeclarationUrl.SINT64) {
+                        addAnnotation(PoetAnnotations.ProtoType("SIGNED"))
+                    }
+
+
                 }
                 .build()
         }
@@ -238,14 +251,19 @@ public object MessageProcessor : Processor<RSMessage, Pair<TypeSpec, FunSpec?>> 
         declaredFields: List<Pair<PropertySpec, RSField>>,
         oneOfs: List<PropertySpec>,
     ): TypeSpec {
-        val returnParametersSet = (declaredFields.map { it.first.name } + oneOfs.map { it.name })
+        val returnParametersSet = (declaredFields.map { MemberName("",it.first.name) } + oneOfs.map { MemberName("", it.name) })
+            .toTypedArray()
+        val returnParametersFormat = returnParametersSet.mapIndexed { index, _ -> "%${index + 1}N" }
             .joinToString(", ")
 
         return TypeSpec.classBuilder("DSLBuilder")
             .addProperties(declaredFields.map { (spec, type) ->
                 spec.toBuilder().initializer(type.defaultValue).mutable(true).also {
                     it.annotations.clear()
-                    it.addAnnotation(JvmField::class)
+                    it.kdoc.clear()
+
+                    if (type.typeUrl != RSDeclarationUrl.UINT32 && type.typeUrl != RSDeclarationUrl.UINT64)
+                        it.addAnnotation(JvmField::class)
                 }.initializer(type.defaultValue.toString()).build()
             })
             .addProperties(oneOfs.map {
@@ -255,7 +273,7 @@ public object MessageProcessor : Processor<RSMessage, Pair<TypeSpec, FunSpec?>> 
             })
             .addFunction(
                 FunSpec.builder("build")
-                    .addCode("return ${name}(${returnParametersSet})")
+                    .addCode("return ${name}(${returnParametersFormat})", args = returnParametersSet)
                     .returns(ClassName("", name))
                     .build()
             )

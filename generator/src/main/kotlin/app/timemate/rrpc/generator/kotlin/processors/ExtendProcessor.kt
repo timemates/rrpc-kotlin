@@ -1,25 +1,20 @@
 package app.timemate.rrpc.generator.kotlin.processors
 
+import app.timemate.rrpc.generator.GeneratorContext
+import app.timemate.rrpc.generator.Processor
+import app.timemate.rrpc.generator.kotlin.error.ExtendingMessagesAreNotSupportedError
+import app.timemate.rrpc.generator.kotlin.internal.LibClassNames
+import app.timemate.rrpc.generator.kotlin.internal.ext.asTypeName
+import app.timemate.rrpc.generator.plugin.api.result.ProcessResult
+import app.timemate.rrpc.generator.plugin.api.result.flatten
+import app.timemate.rrpc.generator.plugin.api.result.map
+import app.timemate.rrpc.proto.schema.*
+import app.timemate.rrpc.proto.schema.option.ExtendGenerationStrategy
+import app.timemate.rrpc.proto.schema.option.extendGenerationStrategy
+import app.timemate.rrpc.proto.schema.value.RSDeclarationUrl
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
-import app.timemate.rrpc.generator.plugin.api.annotation.ExperimentalGeneratorFunctionality
-import app.timemate.rrpc.generator.plugin.api.option.ExtensionGenerationStrategy
-import app.timemate.rrpc.proto.schema.RSExtend
-import app.timemate.rrpc.proto.schema.RSField
-import app.timemate.rrpc.proto.schema.RSOptions
-import app.timemate.rrpc.proto.schema.kotlinName
-import app.timemate.rrpc.proto.schema.sourceOnly
-import app.timemate.rrpc.proto.schema.value.RSDeclarationUrl
-import app.timemate.rrpc.generator.GeneratorContext
-import app.timemate.rrpc.generator.plugin.api.result.ProcessResult
-import app.timemate.rrpc.generator.Processor
-import app.timemate.rrpc.generator.kotlin.error.ExtendingMessagesAreNotSupportedError
-import app.timemate.rrpc.generator.plugin.api.result.flatten
-import app.timemate.rrpc.generator.kotlin.internal.LibClassNames
-import app.timemate.rrpc.generator.kotlin.internal.ext.asTypeName
-import app.timemate.rrpc.generator.plugin.api.option.extensionGenerationStrategy
-import app.timemate.rrpc.generator.plugin.api.result.map
 
 public object ExtendProcessor : Processor<RSExtend, List<PropertySpec>> {
     override suspend fun GeneratorContext.process(data: RSExtend): ProcessResult<List<PropertySpec>> {
@@ -66,15 +61,14 @@ public object ExtendProcessor : Processor<RSExtend, List<PropertySpec>> {
         }
     }
 
-    @OptIn(ExperimentalGeneratorFunctionality::class)
     private fun GeneratorContext.generateOption(
         field: RSField,
         type: ClassName,
         topLevel: Boolean,
     ): ProcessResult<PropertySpec> {
         // the decision is dependent on context, please refer to the documentation of strategy
-        val strategy = field.options.extensionGenerationStrategy
-            ?: if (topLevel) ExtensionGenerationStrategy.REGULAR else ExtensionGenerationStrategy.EXTENSION
+        val strategy = field.options.extendGenerationStrategy
+            ?: if (topLevel) ExtendGenerationStrategy.REGULAR else ExtendGenerationStrategy.EXTENSION
 
         return field.typeUrl.asTypeName(resolver).map { optionType ->
             val fieldName = if (options.adaptNames) field.kotlinName else field.name
@@ -82,7 +76,7 @@ public object ExtendProcessor : Processor<RSExtend, List<PropertySpec>> {
             PropertySpec.Companion.builder(fieldName, type.parameterizedBy(optionType))
                 .addKdoc(field.documentation?.replace("%", "%%").orEmpty())
                 .apply {
-                    if (strategy == ExtensionGenerationStrategy.EXTENSION)
+                    if (strategy == ExtendGenerationStrategy.EXTENSION)
                         receiver(type.nestedClass("Companion"))
                 }
                 .delegate(

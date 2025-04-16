@@ -4,7 +4,7 @@ package app.timemate.rrpc.interceptors
 
 import app.timemate.rrpc.DataVariant
 import app.timemate.rrpc.Failure
-import app.timemate.rrpc.ProtoType
+import app.timemate.rrpc.RSProtoType
 import app.timemate.rrpc.annotations.ExperimentalInterceptorsApi
 import app.timemate.rrpc.annotations.InternalRRpcAPI
 import app.timemate.rrpc.instances.InstanceContainer
@@ -62,7 +62,7 @@ public data class Interceptors(
      */
     @InternalRRpcAPI
     public suspend inline fun runInputInterceptors(
-        data: DataVariant<ProtoType>,
+        data: DataVariant<RSProtoType>,
         clientMetadata: ClientMetadata,
         options: OptionsWithValue,
         instanceContainer: InstanceContainer,
@@ -96,7 +96,7 @@ public data class Interceptors(
      */
     @InternalRRpcAPI
     public suspend fun runOutputInterceptors(
-        data: DataVariant<ProtoType>,
+        data: DataVariant<RSProtoType>,
         serverMetadata: ServerMetadata,
         options: OptionsWithValue,
         instanceContainer: InstanceContainer
