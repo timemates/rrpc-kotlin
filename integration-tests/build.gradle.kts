@@ -15,6 +15,8 @@ dependencies {
     implementation(projects.client.core)
     implementation(libs.timemate.rrpc.schema)
     implementation(projects.common.metadata)
+    implementation(projects.server.metadata)
+    implementation(projects.client.metadata)
 
     // -- Serialization --
     implementation(libs.kotlinx.serialization.proto)

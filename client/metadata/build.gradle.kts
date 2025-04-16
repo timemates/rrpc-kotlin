@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
 }
 
-group = "app.timemate.rrpc"
+group = "app.timemate.rrpc.metadata.client"
 version = System.getenv("LIB_VERSION") ?: "SNAPSHOT"
 
 dependencies {

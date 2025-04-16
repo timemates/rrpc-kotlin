@@ -1,24 +1,33 @@
-package org.timemates.rrpc.test
+package org.timemates.rrpc.test.metadata
 
 import TestServiceClient
 import app.timemate.rrpc.annotations.ExperimentalInterceptorsApi
 import app.timemate.rrpc.client.config.RRpcClientConfig
-import app.timemate.rrpc.metadata.generated.timemate.rrpc.AckFileMetadata
+import app.timemate.rrpc.metadata.common.communication.GetAllFilesRequest
+import app.timemate.rrpc.metadata.generated.Test23MetadataModule
 import app.timemate.rrpc.server.module.RRpcModule
 import app.timemate.rrpc.server.module.rrpcEndpoint
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.server.application.install
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.routing.routing
+import io.ktor.server.websocket.WebSockets
 import io.rsocket.kotlin.ktor.client.rSocket
 import io.rsocket.kotlin.ktor.server.RSocketSupport
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
+import org.timemates.rrpc.client.schema.SchemaMetadataServiceClient
+import org.timemates.rrpc.server.schema.DefaultSchemaMetadataService
+import org.timemates.rrpc.test.RequestTestInterceptor
+import org.timemates.rrpc.test.ResponseTestInterceptor
+import org.timemates.rrpc.test.ServerTestService
+import org.timemates.rrpc.test.SomeValue
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,16 +38,7 @@ class IntegrationTest {
     @OptIn(ExperimentalInterceptorsApi::class)
     private val serverModule = RRpcModule {
         services {
-            register(ServerTestService())
-        }
-
-        instances {
-            register(SomeValue(0))
-        }
-
-        interceptors {
-            request(RequestTestInterceptor())
-            response(ResponseTestInterceptor())
+            register(DefaultSchemaMetadataService(Test23MetadataModule()))
         }
     }
 
@@ -59,25 +59,20 @@ class IntegrationTest {
     @OptIn(DelicateCoroutinesApi::class, ExperimentalInterceptorsApi::class)
     private val client = GlobalScope.async {
         val rSocket = httpClient.rSocket("ws://localhost:9393/rrpc")
-        TestServiceClient(
+        SchemaMetadataServiceClient(
             config = RRpcClientConfig.create {
                 rsocket(rSocket)
-                interceptors {
-                    request(RequestTestInterceptor())
-                    response(ResponseTestInterceptor())
-                }
-                instances {
-                    register(SomeValue(0))
-                }
             }
         )
     }
 
     @Test
-    fun `test run and interceptors`(): Unit = runTest {
-        val result = client.await().testMethod(TestMessage.Default)
-        assertEquals("test", result.stringField)
-        assertEquals(listOf(0.1, 0.2, 3.0), result.repeatedField)
+    fun `test provides all files`(): Unit = runTest {
+        val result = client.await().getAllFiles(GetAllFilesRequest.Default)
+            .map { it.files }
+            .toList()
+            .flatten()
+        assertEquals(13, result.size)
     }
 
     @AfterTest

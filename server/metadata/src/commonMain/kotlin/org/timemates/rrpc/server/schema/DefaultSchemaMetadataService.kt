@@ -24,7 +24,7 @@ public class DefaultSchemaMetadataService(
         context: RequestContext,
         request: GetAllFilesRequest,
     ): Flow<GetAllFilesRequest.Response> = flow {
-        val pageSize = request.pageSize
+        val pageSize = request.pageSize.takeUnless { it <= 0 || it > 30 } ?: 30
         val pageToken = request.pageToken?.decodeBase64ToString() ?: "0"  // Default to first page
         var currentIndex = pageToken.toInt()
 
@@ -73,7 +73,7 @@ public class DefaultSchemaMetadataService(
         context: RequestContext,
         request: GetAllTypesRequest,
     ): Flow<GetAllTypesRequest.Response> = flow {
-        val pageSize = request.pageSize
+        val pageSize = request.pageSize.takeUnless { it <= 0 || it > 30 } ?: 30
         val pageToken = request.pageToken?.decodeBase64ToString() ?: "0"  // Default to first page
         var currentIndex = pageToken.toInt()
 
@@ -108,7 +108,7 @@ public class DefaultSchemaMetadataService(
         context: RequestContext,
         request: GetAllServicesRequest,
     ): Flow<GetAllServicesRequest.Response> = flow {
-        val pageSize = request.pageSize
+        val pageSize = request.pageSize.takeUnless { it <= 0 || it > 30 } ?: 30
         val pageToken = request.pageToken?.decodeBase64ToString() ?: "0"  // Default to first page
         var currentIndex = pageToken.toInt()
 
@@ -154,7 +154,7 @@ public class DefaultSchemaMetadataService(
         context: RequestContext,
         request: GetAllExtendsRequest,
     ): Flow<GetAllExtendsRequest.Response> = flow {
-        val pageSize = request.pageSize
+        val pageSize = request.pageSize.takeUnless { it <= 0 || it > 30 } ?: 30
         var pageToken = request.pageToken?.decodeBase64ToString() ?: "0"  // Default to first page
         var currentIndex = pageToken.toInt()
 

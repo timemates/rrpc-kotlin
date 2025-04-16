@@ -187,6 +187,7 @@ public class ClientRequestHandler(
                                 requestContext?.metadata ?: metadata
                             )
                         )
+                        data(byteArrayOf())
                     },
                     payloads = (requestContext?.data?.requireStreaming() ?: data)
                         .map {

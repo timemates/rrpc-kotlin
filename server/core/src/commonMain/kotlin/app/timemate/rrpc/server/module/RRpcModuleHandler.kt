@@ -413,6 +413,7 @@ public class RRpcModuleHandler(private val module: RRpcModule) {
             emit(
                 buildPayload {
                     metadata(protobuf.encodeToByteArray<ServerMetadata>(serverMetadata))
+                    data(byteArrayOf())
                 }
             )
             collect {

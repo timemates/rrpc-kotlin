@@ -5,7 +5,7 @@ package timemate.rrpc;
 import "google/protobuf/descriptor.proto";
 import "timemate/rrpc/internal_options.proto";
 
-option java_package = "app.timemate.rrpc.generation.option";
+option java_package = "app.timemate.rrpc.proto.schema.option";
 
 // Defines how extensions should be handled in generated code,
 // affecting their accessibility and placement in different languages.
@@ -21,7 +21,7 @@ option java_package = "app.timemate.rrpc.generation.option";
 // This setting is particularly relevant for languages with extension support
 // (e.g., Kotlin, Swift, C#), where options can be generated as member functions
 // rather than global extensions.
-enum ExtendOptionStrategy {
+enum ExtendGenerationStrategy {
   // Marker for generators not to generate this declaration.
   // Used only in [option_scope_strategy] that has [RETENTION_SOURCE].
   option(timemate.rrpc.internal.source_only_enum) = true;
@@ -61,7 +61,7 @@ extend google.protobuf.FieldOptions {
   //
   // This feature as experimental. We search for better design
   // of supporting this feature. Generator should warn about usage of this option.
-  ExtendOptionStrategy extension_generation_strategy = 45001 [
+  ExtendGenerationStrategy extension_generation_strategy = 45001 [
     retention = RETENTION_SOURCE,
     (timemate.rrpc.internal.experimental_field) = true
   ];
